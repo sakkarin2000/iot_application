@@ -23,8 +23,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-
+  
+  
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
@@ -43,6 +43,24 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+  - images/
+
+  fonts:
+  - family: mali
+    fonts:
+    - asset: fonts/Mali-Bold.ttf
+    - asset: fonts/Mali-BoldItalic.ttf
+    - asset: fonts/Mali-ExtraLight.ttf
+    - asset: fonts/Mali-ExtraLightItalic.ttf
+    - asset: fonts/Mali-Italic.ttf
+    - asset: fonts/Mali-Light.ttf
+    - asset: fonts/Mali-LightItalic.ttf
+    - asset: fonts/Mali-Medium.ttf
+    - asset: fonts/Mali-MediumItalic.ttf
+    - asset: fonts/Mali-Regular.ttf
+    - asset: fonts/Mali-SemiBold.ttf
+    - asset: fonts/Mali-SemiBoldItalic.ttf
 
   # To add assets to your application, add an assets section, like this:
   # assets:
