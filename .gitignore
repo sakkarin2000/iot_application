@@ -17,3 +17,17 @@ android/.gradle/configuration-cache/
 android/.gradle/vcs-1/
 
 android/local.properties
+
+.flutter-plugins
+
+ios/Pods/Manifest.lock
+
+android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
+
+.flutter-plugins-dependencies
+
+ios/Runner/GeneratedPluginRegistrant.m
+
+lib/generated_plugin_registrant.dart
+
+pubspec.lock
