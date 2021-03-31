@@ -250,15 +250,24 @@ class _HomePageState extends State<HomePage> {
                                   fontWeight: FontWeight.w700,
                                   fontSize: 14,
                                 ),
-                              )),
+                              )
+                          ),
                         ),
                       ),
                     ),
                   ),
                   ..._selectedEvents.map((value) => ListTile(
-                        title: Text(
-                            "${value.event} @${value.start}-${value.stop}"),
-                      )),
+                    title: Text(
+                        "${value.event} @${value.start}-${value.stop}",
+                        style: GoogleFonts.mali(
+                          textStyle: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                          ),
+                        )
+                    ),
+                  )),
                 ],
               )),
           borderRadius: radius,
@@ -276,10 +285,10 @@ class _HomePageState extends State<HomePage> {
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
-              content: SingleChildScrollView(
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
+          content: SingleChildScrollView(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
                     TextField(
                         controller: _eventController,
                         decoration: InputDecoration(
@@ -296,49 +305,49 @@ class _HomePageState extends State<HomePage> {
                             labelText: "Stop time",
                             hintText: "Enter stop time"))
                   ])),
-              actions: <Widget>[
-                TextButton(
-                  child: Text("Cancel"),
-                  onPressed: () {
-                    if (_events[_controller.selectedDay] != null) {
-                      _events[_controller.selectedDay].add('temporary fix');
-                      _events[_controller.selectedDay].removeLast();
-                    } else {
-                      _events[_controller.selectedDay] = ['temporary fix'];
-                      _events[_controller.selectedDay].removeLast();
-                    }
-                    Navigator.pop(context, false);
-                    // Navigator.pop(null);
-                  },
-                ),
-                TextButton(
-                  child: Text("Save"),
-                  onPressed: () {
-                    if (_eventController.text.isEmpty) return;
-                    if (_startController.text.isEmpty)
-                      _startController.text = '12.00';
-                    if (_stopController.text.isEmpty)
-                      _stopController.text = '13.00';
-                    if (_events[_controller.selectedDay] != null) {
-                      _events[_controller.selectedDay].add(Event(
-                          _eventController.text,
-                          _startController.text,
-                          _stopController.text));
-                    } else {
-                      _events[_controller.selectedDay] = [
-                        Event(_eventController.text, _startController.text,
-                            _stopController.text)
-                      ];
-                    }
-                    _eventController.clear();
-                    _startController.clear();
-                    _stopController.clear();
-                    Navigator.pop(context, true);
-                    // Navigator.pop(context);
-                  },
-                )
-              ],
-            )).then((event) {
+          actions: <Widget>[
+            TextButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                if (_events[_controller.selectedDay] != null) {
+                  _events[_controller.selectedDay].add('temporary fix');
+                  _events[_controller.selectedDay].removeLast();
+                } else {
+                  _events[_controller.selectedDay] = ['temporary fix'];
+                  _events[_controller.selectedDay].removeLast();
+                }
+                Navigator.pop(context, false);
+                // Navigator.pop(null);
+              },
+            ),
+            TextButton(
+              child: Text("Save"),
+              onPressed: () {
+                if (_eventController.text.isEmpty) return;
+                if (_startController.text.isEmpty)
+                  _startController.text = '12.00';
+                if (_stopController.text.isEmpty)
+                  _stopController.text = '13.00';
+                if (_events[_controller.selectedDay] != null) {
+                  _events[_controller.selectedDay].add(Event(
+                      _eventController.text,
+                      _startController.text,
+                      _stopController.text));
+                } else {
+                  _events[_controller.selectedDay] = [
+                    Event(_eventController.text, _startController.text,
+                        _stopController.text)
+                  ];
+                }
+                _eventController.clear();
+                _startController.clear();
+                _stopController.clear();
+                Navigator.pop(context, true);
+                // Navigator.pop(context);
+              },
+            )
+          ],
+        )).then((event) {
       if (event == null) return;
       if (event) {
       } else {}
