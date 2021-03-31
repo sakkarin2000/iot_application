@@ -6,11 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'src/authentication.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
+class Login extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -33,16 +29,15 @@ class LoginPage extends StatelessWidget {
       backgroundColor: Color(0xFF153970),
       body: Center(
         child: Consumer<ApplicationState>(
-                    builder: (context, appState, _) => Authentication(
-                        loginState: appState.loginState,
-                        email: appState.email,
-                        startLoginFlow: appState.startLoginFlow,
-                        verifyEmail: appState.verifyEmail,
-                        signInWithEmailAndPassword:
-                            appState.signInWithEmailAndPassword,
-                        cancelRegistration: appState.cancelRegistration,
-                        registerAccount: appState.registerAccount,
-                        signOut: appState.signOut)),
+            builder: (context, appState, _) => Authentication(
+                loginState: appState.loginState,
+                email: appState.email,
+                startLoginFlow: appState.startLoginFlow,
+                verifyEmail: appState.verifyEmail,
+                signInWithEmailAndPassword: appState.signInWithEmailAndPassword,
+                cancelRegistration: appState.cancelRegistration,
+                registerAccount: appState.registerAccount,
+                signOut: appState.signOut)),
       ),
     );
   }
@@ -132,22 +127,24 @@ class ApplicationState extends ChangeNotifier {
   }
 }
 
-class HomePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: ListView(children: [
-      Consumer<ApplicationState>(
-        builder: (context, appState, _) => Authentication(
-            loginState: appState.loginState,
-            email: appState.email,
-            startLoginFlow: appState.startLoginFlow,
-            verifyEmail: appState.verifyEmail,
-            signInWithEmailAndPassword: appState.signInWithEmailAndPassword,
-            cancelRegistration: appState.cancelRegistration,
-            registerAccount: appState.registerAccount,
-            signOut: appState.signOut),
-      ),
-    ]));
-  }
-}
+// class HomePage extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return 
+    
+//     Scaffold(
+//         body: ListView(children: [
+//       Consumer<ApplicationState>(
+//         builder: (context, appState, _) => Authentication(
+//             loginState: appState.loginState,
+//             email: appState.email,
+//             startLoginFlow: appState.startLoginFlow,
+//             verifyEmail: appState.verifyEmail,
+//             signInWithEmailAndPassword: appState.signInWithEmailAndPassword,
+//             cancelRegistration: appState.cancelRegistration,
+//             registerAccount: appState.registerAccount,
+//             signOut: appState.signOut),
+//       ),
+//     ]));
+//   }
+// }

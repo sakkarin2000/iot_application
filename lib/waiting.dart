@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
+import 'login.dart';
 //import 'package:hexcolor/hexcolor.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
+class Waiting extends StatelessWidget {
   hexColor(String colorhexcode) {
     String colornew = '0xff' + colorhexcode;
     colornew = colornew.replaceAll('#', '');
@@ -68,7 +65,10 @@ class MyApp extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                //something just like this too doo doo too doo doo
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Login()),
+                );
               },
               style: ElevatedButton.styleFrom(
                   primary: Color(hexColor('#E17262')),
