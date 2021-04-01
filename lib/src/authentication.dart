@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'widgets.dart';
+import '../widgets/button.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -553,13 +553,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    hexColor(String colorhexcode) {
-      String colornew = '0xff' + colorhexcode;
-      colornew = colornew.replaceAll('#', '');
-      int colorint = int.parse(colornew);
-      return colorint;
-    }
-
     BorderRadiusGeometry radius = BorderRadius.only(
       topLeft: Radius.circular(40.0),
       topRight: Radius.circular(40.0),
@@ -569,7 +562,7 @@ class _HomePageState extends State<HomePage> {
       Text('I',
           style: GoogleFonts.mali(
             textStyle: TextStyle(
-              color: Color(hexColor('#BED4DF')),
+              color: Color(0xFFBED4DF),
               fontWeight: FontWeight.w800,
               fontSize: 20,
             ),
@@ -577,7 +570,7 @@ class _HomePageState extends State<HomePage> {
       Text('o',
           style: GoogleFonts.mali(
             textStyle: TextStyle(
-              color: Color(hexColor('#CCADA5')),
+              color: Color(0xFFCCADA5),
               fontWeight: FontWeight.w800,
               fontSize: 20,
             ),
@@ -585,7 +578,7 @@ class _HomePageState extends State<HomePage> {
       Text('T',
           style: GoogleFonts.mali(
             textStyle: TextStyle(
-              color: Color(hexColor('#FFB9A3')),
+              color: Color(0xFFFFB9A3),
               fontWeight: FontWeight.w800,
               fontSize: 20,
             ),
@@ -593,7 +586,7 @@ class _HomePageState extends State<HomePage> {
     ];
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Color(hexColor('#30415E'))),
+        iconTheme: IconThemeData(color: Color(0xFF30415E)),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -612,7 +605,7 @@ class _HomePageState extends State<HomePage> {
                 decoration: BoxDecoration(
                     // gradient: LinearGradient(
                     //     colors: <Color>[Color(0xff153970), Color(0xff153970)]),
-                    color: Color(hexColor('#153970'))),
+                    color: Color(0xFF153970)),
                 child: Container(
                   child: Column(
                     children: <Widget>[
@@ -648,7 +641,7 @@ class _HomePageState extends State<HomePage> {
                   Text('Planning',
                       style: GoogleFonts.mali(
                         textStyle: TextStyle(
-                          color: Color(hexColor('#30415E')),
+                          color: Color(0xFF30415E),
                           fontWeight: FontWeight.w800,
                           fontSize: 30,
                         ),
@@ -656,7 +649,7 @@ class _HomePageState extends State<HomePage> {
                   Text('Your Event',
                       style: GoogleFonts.mali(
                         textStyle: TextStyle(
-                          color: Color(hexColor('#30415E')),
+                          color: Color(0xFF30415E),
                           fontWeight: FontWeight.w800,
                           fontSize: 30,
                         ),
@@ -672,7 +665,7 @@ class _HomePageState extends State<HomePage> {
                   width: 1,
                 ),
               ),
-              color: Color(hexColor('#EFF4FF')),
+              color: Color(0xFFEFF4FF),
               margin: const EdgeInsets.all(25.0),
               child: TableCalendar(
                 events: _events,
@@ -684,8 +677,7 @@ class _HomePageState extends State<HomePage> {
                 calendarStyle: CalendarStyle(
                     unavailableStyle: TextStyle(fontWeight: FontWeight.w700),
                     weekdayStyle: TextStyle(
-                        color: Color(hexColor('#153970')),
-                        fontWeight: FontWeight.w700),
+                        color: Color(0xFF153970), fontWeight: FontWeight.w700),
                     canEventMarkersOverflow: true,
                     todayColor: Colors.orange,
                     selectedColor: Theme.of(context).primaryColor,
@@ -695,7 +687,7 @@ class _HomePageState extends State<HomePage> {
                         color: Colors.white)),
                 headerStyle: HeaderStyle(
                   titleTextStyle: TextStyle(
-                      color: Color(hexColor('#153970')),
+                      color: Color(0xFF153970),
                       fontSize: 18,
                       fontWeight: FontWeight.w700),
                   centerHeaderTitle: true,
@@ -749,8 +741,8 @@ class _HomePageState extends State<HomePage> {
             child: Text("This is the sliding Widget"),
           ),
           collapsed: Container(
-              decoration: BoxDecoration(
-                  color: Color(hexColor('#153970')), borderRadius: radius),
+              decoration:
+                  BoxDecoration(color: Color(0xFF153970), borderRadius: radius),
               child: Column(
                 children: [
                   Container(
@@ -903,7 +895,7 @@ class CustomListTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20.0, 0, 8.0, 0),
       child: InkWell(
-        splashColor: Color(0xffBED4DF),
+        splashColor: Color(0xFFBED4DF),
         onTap: onTap,
         child: Container(
           height: 60,

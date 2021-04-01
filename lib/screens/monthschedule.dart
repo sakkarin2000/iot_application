@@ -56,12 +56,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    hexColor(String colorhexcode) {
-      String colornew = '0xff' + colorhexcode;
-      colornew = colornew.replaceAll('#', '');
-      int colorint = int.parse(colornew);
-      return colorint;
-    }
 
     BorderRadiusGeometry radius = BorderRadius.only(
       topLeft: Radius.circular(40.0),
@@ -72,7 +66,7 @@ class _HomePageState extends State<HomePage> {
       Text('I',
           style: GoogleFonts.mali(
             textStyle: TextStyle(
-              color: Color(hexColor('#BED4DF')),
+              color: Color(0xFFBED4DF),
               fontWeight: FontWeight.w800,
               fontSize: 20,
             ),
@@ -80,7 +74,7 @@ class _HomePageState extends State<HomePage> {
       Text('o',
           style: GoogleFonts.mali(
             textStyle: TextStyle(
-              color: Color(hexColor('#CCADA5')),
+              color: Color(0xFFCCADA5),
               fontWeight: FontWeight.w800,
               fontSize: 20,
             ),
@@ -88,7 +82,7 @@ class _HomePageState extends State<HomePage> {
       Text('T',
           style: GoogleFonts.mali(
             textStyle: TextStyle(
-              color: Color(hexColor('#FFB9A3')),
+              color: Color(0xFFFFB9A3),
               fontWeight: FontWeight.w800,
               fontSize: 20,
             ),
@@ -101,7 +95,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             IconButton(
               icon: const Icon(Icons.dehaze_rounded),
-              color: Color(hexColor('#30415E')),
+              color: Color(0xFF30415E),
               onPressed: () {},
             ),
             Row(
@@ -124,7 +118,7 @@ class _HomePageState extends State<HomePage> {
                   Text('Planning',
                       style: GoogleFonts.mali(
                         textStyle: TextStyle(
-                          color: Color(hexColor('#30415E')),
+                          color: Color(0xFF30415E),
                           fontWeight: FontWeight.w800,
                           fontSize: 30,
                         ),
@@ -132,7 +126,7 @@ class _HomePageState extends State<HomePage> {
                   Text('Your Event',
                       style: GoogleFonts.mali(
                         textStyle: TextStyle(
-                          color: Color(hexColor('#30415E')),
+                          color: Color(0xFF30415E),
                           fontWeight: FontWeight.w800,
                           fontSize: 30,
                         ),
@@ -148,7 +142,7 @@ class _HomePageState extends State<HomePage> {
                   width: 1,
                 ),
               ),
-              color: Color(hexColor('#EFF4FF')),
+              color: Color(0xFFEFF4FF),
               margin: const EdgeInsets.all(25.0),
               child: TableCalendar(
                 events: _events,
@@ -160,7 +154,7 @@ class _HomePageState extends State<HomePage> {
                 calendarStyle: CalendarStyle(
                     unavailableStyle: TextStyle(fontWeight: FontWeight.w700),
                     weekdayStyle: TextStyle(
-                        color: Color(hexColor('#153970')),
+                        color: Color(0xFF153970),
                         fontWeight: FontWeight.w700),
                     canEventMarkersOverflow: true,
                     todayColor: Colors.orange,
@@ -171,7 +165,7 @@ class _HomePageState extends State<HomePage> {
                         color: Colors.white)),
                 headerStyle: HeaderStyle(
                   titleTextStyle: TextStyle(
-                      color: Color(hexColor('#153970')),
+                      color: Color(0xFF53970),
                       fontSize: 18,
                       fontWeight: FontWeight.w700),
                   centerHeaderTitle: true,
@@ -226,7 +220,7 @@ class _HomePageState extends State<HomePage> {
           ),
           collapsed: Container(
               decoration: BoxDecoration(
-                  color: Color(hexColor('#153970')), borderRadius: radius),
+                  color: Color(0xFF153970), borderRadius: radius),
               child: Column(
                 children: [
                   Container(
