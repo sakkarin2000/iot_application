@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iot_application/widgets/hamburger.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -89,15 +90,12 @@ class _HomePageState extends State<HomePage> {
           )),
     ];
     return Scaffold(
+      drawer: Hamburgerja(),
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Color(0xFF30415E)),
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            IconButton(
-              icon: const Icon(Icons.dehaze_rounded),
-              color: Color(0xFF30415E),
-              onPressed: () {},
-            ),
             Row(
               children: logo,
             ),
@@ -165,7 +163,7 @@ class _HomePageState extends State<HomePage> {
                         color: Colors.white)),
                 headerStyle: HeaderStyle(
                   titleTextStyle: TextStyle(
-                      color: Color(0xFF53970),
+                      color: Color(0xFF153970),
                       fontSize: 18,
                       fontWeight: FontWeight.w700),
                   centerHeaderTitle: true,
@@ -268,6 +266,7 @@ class _HomePageState extends State<HomePage> {
         )
       ]),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Color(0xFF17A489),
         child: Icon(Icons.add),
         onPressed: _showAddDialog,
       ),

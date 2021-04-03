@@ -32,45 +32,35 @@ class Hamburgerja extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        iconTheme: IconThemeData(color: Color(hexColor('#30415E'))),
-        title: Text(title),
-      ),
-      // body: Center(child: Text('My Page!')),
-      drawer: Drawer(
-        
-        child: ListView(
-          children: <Widget>[
-            DrawerHeader(
-                decoration: BoxDecoration(
+    return Drawer(
+      child: ListView(
+        children: <Widget>[
+          DrawerHeader(
+              decoration: BoxDecoration(
                   // gradient: LinearGradient(
                   //     colors: <Color>[Color(0xff153970), Color(0xff153970)]),
-                  color: Color(hexColor('#153970'))
+                  color: Color(hexColor('#153970'))),
+              child: Container(
+                child: Column(
+                  children: <Widget>[
+                    Material(
+                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                      elevation: 10,
+                      child: Padding(padding: EdgeInsets.all(8.0)),
+                      // child: Image.asset('name')
+                    ),
+                    Text('Name',
+                        style: TextStyle(color: Colors.white, fontSize: 18)),
+                  ],
                 ),
-                child: Container(
-                  child: Column(
-                    children: <Widget>[
-                      Material(
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                        elevation: 10,
-                        child: Padding(padding: EdgeInsets.all(8.0)),
-                        // child: Image.asset('name')
-                      ),
-                      Text('Name',
-                          style: TextStyle(color: Colors.white, fontSize: 18)),
-                    ],
-                  ),
-                )),
-
-            CustomListTile(Icons.account_box, 'Profile', () => {}),
-            CustomListTile(Icons.calendar_today, 'My Schedule', () => {}),
-            CustomListTile(Icons.category, 'Categories', () => {}),
-            CustomListTile(Icons.report, 'Report Problem', () => {}),
-            CustomListTile(Icons.settings, 'Change password', () => {}),
-            CustomListTile(Icons.logout, 'Logout', () => {}),
-          ],
-        ),
+              )),
+          CustomListTile(Icons.account_box, 'Profile', () => {}),
+          CustomListTile(Icons.calendar_today, 'My Schedule', () => {}),
+          CustomListTile(Icons.category, 'Categories', () => {}),
+          CustomListTile(Icons.report, 'Report Problem', () => {}),
+          CustomListTile(Icons.settings, 'Change password', () => {}),
+          CustomListTile(Icons.logout, 'Logout', () => {}),
+        ],
       ),
     );
   }
@@ -97,11 +87,10 @@ class CustomListTile extends StatelessWidget {
               Row(children: <Widget>[
                 Icon(icon),
                 Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Text(
-                      text,
+                  padding: const EdgeInsets.all(20.0),
+                  child: Text(text,
                       style: TextStyle(color: Color(0xff153970), fontSize: 18)),
-                    )
+                )
               ])
             ],
           ),
