@@ -12,15 +12,14 @@ class StyledButton extends StatelessWidget {
             backgroundColor: Color(0xFFE17262),
             primary: Colors.white,
             textStyle: TextStyle(
-              // fontSize: 24,
+              fontFamily: 'mali',
               fontWeight: FontWeight.bold,
             ),
-            // padding: EdgeInsets.symmetric(
-            //   horizontal: 52,
-            //   vertical: 19,
-            // ),
+            padding: EdgeInsets.symmetric(
+              horizontal: 30
+            ),
             shape: RoundedRectangleBorder(
-                borderRadius: new BorderRadius.circular(15.0))),
+                borderRadius: BorderRadius.circular(10.0))),
         onPressed: onPressed,
         child: child,
       );

@@ -4,9 +4,8 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-void main() => runApp(MyApp());
 
-class MyApp extends StatelessWidget {
+class MonthSchedule extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

@@ -29,6 +29,13 @@
             {
               "client_id": "896586371288-rqtmqr8cbo74n56b261s9ts6666fmnsu.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "896586371288-22hpn87oahmj8kfutn0qq7qu63tl2fjn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.iotapplication"
+              }
             }
           ]
         }

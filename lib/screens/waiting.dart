@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'monthschedule.dart';
 import 'login.dart';
-import '../src/authentication.dart';
+import 'package:iot_application/providers/applicationstate.dart';
+import 'package:provider/provider.dart';
 
 class Waiting extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -59,10 +60,16 @@ class Waiting extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Login()),
-                );
+                Navigator.push(context, PageRouteBuilder(
+                    pageBuilder: (BuildContext context, _, __) {
+                  return ChangeNotifierProvider(
+                      create: (context) => ApplicationState(),
+                      builder: (context, _) => Consumer<ApplicationState>(
+                          builder: (ctx, auth, _) => MaterialApp(
+                              home: auth.credentials != null
+                                  ? MonthSchedule()
+                                  : LoginPage())));
+                }));
               },
               style: ElevatedButton.styleFrom(
                   primary: Color(0xFFE17262),
@@ -90,7 +97,6 @@ class Waiting extends StatelessWidget {
           ),
         ),
       ),
-      //child: Text('Hello',style: TextStyle(fontFamily: 'mali'),),
     );
   }
 }

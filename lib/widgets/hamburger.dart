@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:iot_application/providers/applicationstate.dart';
 
 void main() => runApp(MyApp());
 
@@ -59,7 +61,13 @@ class Hamburgerja extends StatelessWidget {
           CustomListTile(Icons.category, 'Categories', () => {}),
           CustomListTile(Icons.report, 'Report Problem', () => {}),
           CustomListTile(Icons.settings, 'Change password', () => {}),
-          CustomListTile(Icons.logout, 'Logout', () => {}),
+          CustomListTile(
+              Icons.logout,
+              'Logout',
+              () => {
+                    Provider.of<ApplicationState>(context, listen: false)
+                        .logout()
+                  }),
         ],
       ),
     );
