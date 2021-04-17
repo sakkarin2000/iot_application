@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:iot_application/model/event.dart';
 import 'package:iot_application/widgets/hamburger.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 
 class MonthSchedule extends StatelessWidget {
   @override
@@ -56,7 +56,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     BorderRadiusGeometry radius = BorderRadius.only(
       topLeft: Radius.circular(40.0),
       topRight: Radius.circular(40.0),
@@ -151,8 +150,7 @@ class _HomePageState extends State<HomePage> {
                 calendarStyle: CalendarStyle(
                     unavailableStyle: TextStyle(fontWeight: FontWeight.w700),
                     weekdayStyle: TextStyle(
-                        color: Color(0xFF153970),
-                        fontWeight: FontWeight.w700),
+                        color: Color(0xFF153970), fontWeight: FontWeight.w700),
                     canEventMarkersOverflow: true,
                     todayColor: Colors.orange,
                     selectedColor: Theme.of(context).primaryColor,
@@ -216,8 +214,8 @@ class _HomePageState extends State<HomePage> {
             child: Text("This is the sliding Widget"),
           ),
           collapsed: Container(
-              decoration: BoxDecoration(
-                  color: Color(0xFF153970), borderRadius: radius),
+              decoration:
+                  BoxDecoration(color: Color(0xFF153970), borderRadius: radius),
               child: Column(
                 children: [
                   Container(
@@ -241,24 +239,22 @@ class _HomePageState extends State<HomePage> {
                                   fontWeight: FontWeight.w700,
                                   fontSize: 14,
                                 ),
-                              )
-                          ),
+                              )),
                         ),
                       ),
                     ),
                   ),
                   ..._selectedEvents.map((value) => ListTile(
-                    title: Text(
-                        "${value.event} @${value.start}-${value.stop}",
-                        style: GoogleFonts.mali(
-                          textStyle: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                          ),
-                        )
-                    ),
-                  )),
+                        title:
+                            Text("${value.event} @${value.start}-${value.stop}",
+                                style: GoogleFonts.mali(
+                                  textStyle: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14,
+                                  ),
+                                )),
+                      )),
                 ],
               )),
           borderRadius: radius,
@@ -277,10 +273,10 @@ class _HomePageState extends State<HomePage> {
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
-          content: SingleChildScrollView(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
+              content: SingleChildScrollView(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
                     TextField(
                         controller: _eventController,
                         decoration: InputDecoration(
@@ -297,49 +293,49 @@ class _HomePageState extends State<HomePage> {
                             labelText: "Stop time",
                             hintText: "Enter stop time"))
                   ])),
-          actions: <Widget>[
-            TextButton(
-              child: Text("Cancel"),
-              onPressed: () {
-                if (_events[_controller.selectedDay] != null) {
-                  _events[_controller.selectedDay].add('temporary fix');
-                  _events[_controller.selectedDay].removeLast();
-                } else {
-                  _events[_controller.selectedDay] = ['temporary fix'];
-                  _events[_controller.selectedDay].removeLast();
-                }
-                Navigator.pop(context, false);
-                // Navigator.pop(null);
-              },
-            ),
-            TextButton(
-              child: Text("Save"),
-              onPressed: () {
-                if (_eventController.text.isEmpty) return;
-                if (_startController.text.isEmpty)
-                  _startController.text = '12.00';
-                if (_stopController.text.isEmpty)
-                  _stopController.text = '13.00';
-                if (_events[_controller.selectedDay] != null) {
-                  _events[_controller.selectedDay].add(Event(
-                      _eventController.text,
-                      _startController.text,
-                      _stopController.text));
-                } else {
-                  _events[_controller.selectedDay] = [
-                    Event(_eventController.text, _startController.text,
-                        _stopController.text)
-                  ];
-                }
-                _eventController.clear();
-                _startController.clear();
-                _stopController.clear();
-                Navigator.pop(context, true);
-                // Navigator.pop(context);
-              },
-            )
-          ],
-        )).then((event) {
+              actions: <Widget>[
+                TextButton(
+                  child: Text("Cancel"),
+                  onPressed: () {
+                    if (_events[_controller.selectedDay] != null) {
+                      _events[_controller.selectedDay].add('temporary fix');
+                      _events[_controller.selectedDay].removeLast();
+                    } else {
+                      _events[_controller.selectedDay] = ['temporary fix'];
+                      _events[_controller.selectedDay].removeLast();
+                    }
+                    Navigator.pop(context, false);
+                    // Navigator.pop(null);
+                  },
+                ),
+                TextButton(
+                  child: Text("Save"),
+                  onPressed: () {
+                    if (_eventController.text.isEmpty) return;
+                    if (_startController.text.isEmpty)
+                      _startController.text = '12.00';
+                    if (_stopController.text.isEmpty)
+                      _stopController.text = '13.00';
+                    if (_events[_controller.selectedDay] != null) {
+                      _events[_controller.selectedDay].add(Event(
+                          _eventController.text,
+                          _startController.text,
+                          _stopController.text));
+                    } else {
+                      _events[_controller.selectedDay] = [
+                        Event(_eventController.text, _startController.text,
+                            _stopController.text)
+                      ];
+                    }
+                    _eventController.clear();
+                    _startController.clear();
+                    _stopController.clear();
+                    Navigator.pop(context, true);
+                    // Navigator.pop(context);
+                  },
+                )
+              ],
+            )).then((event) {
       if (event == null) return;
       if (event) {
       } else {}
@@ -347,17 +343,5 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _selectedEvents = _events[_controller.selectedDay];
     });
-  }
-}
-
-class Event {
-  String event;
-  String start;
-  String stop;
-
-  Event(String x, String y, String z) {
-    this.event = x;
-    this.start = y;
-    this.stop = z;
   }
 }
