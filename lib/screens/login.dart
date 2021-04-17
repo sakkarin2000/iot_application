@@ -5,8 +5,14 @@ import 'package:provider/provider.dart';
 import 'package:iot_application/providers/applicationstate.dart';
 import 'signup.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
+
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   @override

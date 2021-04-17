@@ -10,6 +10,7 @@ class ApplicationState extends ChangeNotifier {
   Future<void> init() async {
     await Firebase.initializeApp();
     FirebaseAuth.instance.userChanges().listen((user) {
+      print(user);
       if (user != null) {
         credentials = user.email;
       } else {
@@ -30,10 +31,7 @@ class ApplicationState extends ChangeNotifier {
     try {
       var status = await FirebaseAuth.instance
           .fetchSignInMethodsForEmail(userInfo.email);
-      if (!status.contains('password')) {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: userInfo.email, password: userInfo.password);
-      } else {
+      if (status.contains('password')) {
         try {
           await FirebaseAuth.instance.signInWithEmailAndPassword(
               email: userInfo.email, password: userInfo.password);
@@ -44,7 +42,31 @@ class ApplicationState extends ChangeNotifier {
                     title: Text("Email is already used with others password"),
                   ));
         }
+      } else {
+        showDialog(
+            context: context,
+            builder: (_) => AlertDialog(
+                  title: Text("Please create new account"),
+                ));
       }
+    } on FirebaseAuthException catch (_) {
+      showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+                title: Text("Email is Invalid Format"),
+              ));
+    }
+    notifyListeners();
+  }
+
+  Future<void> signup(String email, String displayName, String password,
+      BuildContext context) async {
+    UserInfo userInfo = UserInfo(email: email, password: password);
+    try {
+      var status = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: userInfo.email, password: userInfo.password);
+      await status.user.updateProfile(displayName: displayName);
+
     } on FirebaseAuthException catch (_) {
       showDialog(
           context: context,
