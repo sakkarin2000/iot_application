@@ -10,9 +10,9 @@ class ApplicationState extends ChangeNotifier {
   Future<void> init() async {
     await Firebase.initializeApp();
     FirebaseAuth.instance.userChanges().listen((user) {
+      print(user);
       if (user != null) {
         credentials = user.email;
-        notifyListeners();
       } else {
         credentials = null;
       }

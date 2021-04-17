@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:iot_application/providers/applicationstate.dart';
+import 'package:iot_application/screens/monthschedule.dart';
 
 void main() => runApp(MyApp());
 
@@ -57,9 +58,17 @@ class Hamburgerja extends StatelessWidget {
                 ),
               )),
           CustomListTile(Icons.account_box, 'Profile', () => {}),
-          CustomListTile(Icons.calendar_today, 'My Schedule', () => {}),
+          CustomListTile(
+              Icons.calendar_today,
+              'My Schedule',
+              () => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MonthSchedule()),
+                    )
+                  }),
           CustomListTile(Icons.category, 'Categories', () => {}),
-          CustomListTile(Icons.report, 'Report Problem', () => {}),
+          // CustomListTile(Icons.report, 'Report Problem', () => {}),
           CustomListTile(Icons.settings, 'Change password', () => {}),
           CustomListTile(
               Icons.logout,
@@ -88,7 +97,7 @@ class CustomListTile extends StatelessWidget {
         splashColor: Color(0xffBED4DF),
         onTap: onTap,
         child: Container(
-          height: 60,
+          height: 63,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[

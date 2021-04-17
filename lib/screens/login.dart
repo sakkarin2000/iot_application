@@ -3,7 +3,6 @@ import 'package:iot_application/widgets/textformfield.dart';
 import 'package:iot_application/widgets/button.dart';
 import 'package:provider/provider.dart';
 import 'package:iot_application/providers/applicationstate.dart';
-import 'signup.dart';
 
 class LoginPage extends StatefulWidget {
   final onChange;
@@ -20,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         alignment: Alignment.center,
         child: Column(children: <Widget>[
