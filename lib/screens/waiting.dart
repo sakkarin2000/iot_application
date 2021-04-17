@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:iot_application/screens/authenticateScreen.dart';
 import 'monthschedule.dart';
-import 'login.dart';
 import 'package:iot_application/providers/applicationstate.dart';
 import 'package:provider/provider.dart';
 
@@ -68,7 +68,7 @@ class Waiting extends StatelessWidget {
                           builder: (ctx, auth, _) => MaterialApp(
                               home: auth.credentials != null
                                   ? MonthSchedule()
-                                  : LoginPage())));
+                                  : AuthenticateScreen())));
                 }));
               },
               style: ElevatedButton.styleFrom(

@@ -1,0 +1,1 @@
+enum AuthType { Login, SignUp }

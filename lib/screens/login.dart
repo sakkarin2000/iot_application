@@ -6,6 +6,8 @@ import 'package:iot_application/providers/applicationstate.dart';
 import 'signup.dart';
 
 class LoginPage extends StatefulWidget {
+  final onChange;
+  LoginPage({this.onChange});
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -84,10 +86,7 @@ class _LoginPageState extends State<LoginPage> {
                             fontWeight: FontWeight.w500),
                       ),
                       GestureDetector(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => SignupPage()),
-                        ),
+                        onTap: () => widget.onChange(),
                         child: Text(
                           'Sign up',
                           style: TextStyle(

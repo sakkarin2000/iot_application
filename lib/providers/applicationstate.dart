@@ -10,9 +10,9 @@ class ApplicationState extends ChangeNotifier {
   Future<void> init() async {
     await Firebase.initializeApp();
     FirebaseAuth.instance.userChanges().listen((user) {
-      print(user);
       if (user != null) {
         credentials = user.email;
+        notifyListeners();
       } else {
         credentials = null;
       }
@@ -66,7 +66,6 @@ class ApplicationState extends ChangeNotifier {
       var status = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: userInfo.email, password: userInfo.password);
       await status.user.updateProfile(displayName: displayName);
-
     } on FirebaseAuthException catch (_) {
       showDialog(
           context: context,

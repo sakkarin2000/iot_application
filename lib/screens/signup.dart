@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 import 'package:iot_application/screens/monthschedule.dart';
 
 class SignupPage extends StatefulWidget {
+  final onChange;
+  SignupPage({this.onChange});
   @override
   _SignupPageState createState() => _SignupPageState();
 }
@@ -35,7 +37,7 @@ class _SignupPageState extends State<SignupPage> {
                 color: Colors.white,
                 tooltip: 'back',
                 onPressed: () {
-                  Navigator.pop(context);
+                  widget.onChange();
                 },
               ),
               Container(
