@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:iot_application/providers/applicationstate.dart';
@@ -19,18 +21,33 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class Hamburgerja extends StatelessWidget {
+class Hamburgerja extends StatefulWidget {
   final String title;
 
   Hamburgerja({Key key, this.title}) : super(key: key);
 
-  get isSelected => null;
+  @override
+  _HamburgerjaState createState() => _HamburgerjaState();
+}
 
-  hexColor(String colorhexcode) {
-    String colornew = '0xff' + colorhexcode;
-    colornew = colornew.replaceAll('#', '');
-    int colorint = int.parse(colornew);
-    return colorint;
+class _HamburgerjaState extends State<Hamburgerja> {
+  get isSelected => null;
+  String displayName;
+
+  @override
+  void initState() {
+    super.initState();
+    showDisplayName();
+  }
+
+  Future<void> showDisplayName() async {
+    await Firebase.initializeApp().then((value) async {
+      await FirebaseAuth.instance.authStateChanges().listen((event) {
+        setState(() {
+          displayName = event.displayName;
+        });
+      });
+    });
   }
 
   @override
@@ -42,7 +59,7 @@ class Hamburgerja extends StatelessWidget {
               decoration: BoxDecoration(
                   // gradient: LinearGradient(
                   //     colors: <Color>[Color(0xff153970), Color(0xff153970)]),
-                  color: Color(hexColor('#153970'))),
+                  color: Color(0xFF153970)),
               child: Container(
                 child: Column(
                   children: <Widget>[
@@ -52,7 +69,7 @@ class Hamburgerja extends StatelessWidget {
                       child: Padding(padding: EdgeInsets.all(8.0)),
                       // child: Image.asset('name')
                     ),
-                    Text('Name',
+                    Text('$displayName',
                         style: TextStyle(color: Colors.white, fontSize: 18)),
                   ],
                 ),
