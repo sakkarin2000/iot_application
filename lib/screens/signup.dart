@@ -7,7 +7,8 @@ import 'package:provider/provider.dart';
 class SignupPage extends StatelessWidget {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
+  final _formKey = GlobalKey<FormState>();
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,35 +64,41 @@ class SignupPage extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 50),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: StyledInputText(
-                      controller: _emailController,
-                      hintText: "Email",
-                      errorText: "Enter your email address"),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: StyledInputText(
-                      controller: _passwordController,
-                      hintText: "Password",
-                      isPassword: true,
-                      errorText: "Enter your password"),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 40),
-                  child: StyledButton(
-                      child: Text('Sign up'),
-                      onPressed: () {
-                        final email = _emailController.text;
-                        final password = _passwordController.text;
-                        Provider.of<ApplicationState>(context, listen: false)
-                            .login(email, password, context);
-                      }),
-                ),
-              ],
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: StyledInputText(
+                        controller: _emailController,
+                        hintText: "Email",
+                        errorText: "Enter your email address"),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: StyledInputText(
+                        controller: _passwordController,
+                        hintText: "Password",
+                        isPassword: true,
+                        errorText: "Enter your password"),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 40),
+                    child: StyledButton(
+                        child: Text('Sign up'),
+                        onPressed: () {
+                          if (_formKey.currentState.validate()) {
+                            final email = _emailController.text;
+                            final password = _passwordController.text;
+                            Provider.of<ApplicationState>(context,
+                                    listen: false)
+                                .login(email, password, context);
+                          }
+                        }),
+                  ),
+                ],
+              ),
             ),
           )
         ]),

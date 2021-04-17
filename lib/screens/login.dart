@@ -8,7 +8,7 @@ import 'signup.dart';
 class LoginPage extends StatelessWidget {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,60 +48,68 @@ class LoginPage extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 50),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: StyledInputText(
-                      controller: _emailController,
-                      hintText: "Email",
-                      errorText: "Enter your email address"),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: StyledInputText(
-                      controller: _passwordController,
-                      hintText: "Password",
-                      isPassword: true,
-                      errorText: "Enter your password"),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      'Create new account ',
-                      style: TextStyle(
-                          color: Color(0xFFF3DCD7), fontFamily: 'mali', fontWeight: FontWeight.w500),
-                    ),
-                    GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SignupPage()),
-                      ),
-                      child: Text(
-                        'Sign up',
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: StyledInputText(
+                        controller: _emailController,
+                        hintText: "Email",
+                        errorText: "Enter your email address"),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: StyledInputText(
+                        controller: _passwordController,
+                        hintText: "Password",
+                        isPassword: true,
+                        errorText: "Enter your password"),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Create new account ',
                         style: TextStyle(
-                          color: Color(0xFFF3DCD7),
-                          fontFamily: 'mali',
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
+                            color: Color(0xFFF3DCD7),
+                            fontFamily: 'mali',
+                            fontWeight: FontWeight.w500),
+                      ),
+                      GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SignupPage()),
+                        ),
+                        child: Text(
+                          'Sign up',
+                          style: TextStyle(
+                            color: Color(0xFFF3DCD7),
+                            fontFamily: 'mali',
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 40),
-                  child: StyledButton(
-                      child: Text('Log in'),
-                      onPressed: () {
-                        final email = _emailController.text;
-                        final password = _passwordController.text;
-                        Provider.of<ApplicationState>(context, listen: false)
-                            .login(email, password, context);
-                      }),
-                ),
-              ],
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 40),
+                    child: StyledButton(
+                        child: Text('Log in'),
+                        onPressed: () {
+                          if (_formKey.currentState.validate()) {
+                            final email = _emailController.text;
+                            final password = _passwordController.text;
+                            Provider.of<ApplicationState>(context,
+                                    listen: false)
+                                .login(email, password, context);
+                          }
+                        }),
+                  ),
+                ],
+              ),
             ),
           )
         ]),
