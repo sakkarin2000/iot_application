@@ -1,11 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:iot_application/model/event.dart';
+import 'package:iot_application/providers/applicationstate.dart';
 import 'package:iot_application/widgets/hamburger.dart';
+import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iot_application/providers/database.dart';
 
 class MonthSchedule extends StatelessWidget {
   @override
@@ -40,6 +44,7 @@ class _HomePageState extends State<HomePage> {
   final time = new DateFormat('HH:mm');
   bool _timeConflict = false;
   String _timeConflictText = "";
+  String _userId;
 
   @override
   void initState() {
@@ -184,6 +189,7 @@ class _HomePageState extends State<HomePage> {
                   setState(() {
                     _selectedEvents = events;
                     print(events.toString());
+                    print(_userId);
                   });
                 },
                 builders: CalendarBuilders(
@@ -254,15 +260,15 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   ..._selectedEvents.map((value) => ListTile(
-                        title:
-                            Text("${value.event} @${time.format(value.start)}-${time.format(value.stop)}",
-                                style: GoogleFonts.mali(
-                                  textStyle: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 14,
-                                  ),
-                                )),
+                        title: Text(
+                            "${value.event} @${time.format(value.start)}-${time.format(value.stop)}",
+                            style: GoogleFonts.mali(
+                              textStyle: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                              ),
+                            )),
                       )),
                 ],
               )),
@@ -274,12 +280,13 @@ class _HomePageState extends State<HomePage> {
         child: Icon(Icons.add),
         onPressed: () {
           setState(() {
-            _timeConflict=false;
-            _timeConflictText="";
-            _start=_controller.selectedDay;
-            _stop=_start.add(Duration(hours: 1));
+            _timeConflict = false;
+            _timeConflictText = "";
+            _start = _controller.selectedDay;
+            _stop = _start.add(Duration(hours: 1));
           });
-          _showAddDialog();},
+          _showAddDialog();
+        },
       ),
     );
   }
@@ -313,44 +320,43 @@ class _HomePageState extends State<HomePage> {
                         height: 50,
                         width: 700,
                         child: CupertinoDatePicker(
-                        initialDateTime: _start,
-                        mode: CupertinoDatePickerMode.time,
-                        use24hFormat: true,
-                        onDateTimeChanged: (dateTime){
-                          print(dateTime);
-                          setState(() {
-                            _timeConflict=false;
-                            _start=dateTime;
-                          });
-                          // if(_start.isAtSameMomentAs(_stop) || _start.isAfter(_stop)){
-                          //   setState(() {
-                          //     _stop=_start.add(Duration(hours: 1));
-                          //   });
-                          // }
-                        })
-                    ),
+                            initialDateTime: _start,
+                            mode: CupertinoDatePickerMode.time,
+                            use24hFormat: true,
+                            onDateTimeChanged: (dateTime) {
+                              print(dateTime);
+                              print(dateTime);
+                              setState(() {
+                                _timeConflict = false;
+                                _start = dateTime;
+                              });
+                              // if(_start.isAtSameMomentAs(_stop) || _start.isAfter(_stop)){
+                              //   setState(() {
+                              //     _stop=_start.add(Duration(hours: 1));
+                              //   });
+                              // }
+                            })),
                     Text("Stop Time"),
                     SizedBox(
-                            height: 50,
-                            width: 700,
-                            child: CupertinoDatePicker(
-                                initialDateTime: _stop,
-                                mode: CupertinoDatePickerMode.time,
-                                use24hFormat: true,
-                                onDateTimeChanged: (dateTime){
-                                  print(dateTime);
-                                  setState(() {
-                                    _timeConflict=false;
-                                    _stop=dateTime;
-                                  });
-                                  // if(_start.isAtSameMomentAs(_stop) || _start.isAfter(_stop)){
-                                  //   setState(() {
-                                  //     _start=_stop.subtract(Duration(hours: 1));
-                                  //   });
-                                  // }
-                                })
-                        ),
-                    Visibility (
+                        height: 50,
+                        width: 700,
+                        child: CupertinoDatePicker(
+                            initialDateTime: _stop,
+                            mode: CupertinoDatePickerMode.time,
+                            use24hFormat: true,
+                            onDateTimeChanged: (dateTime) {
+                              print(dateTime);
+                              setState(() {
+                                _timeConflict = false;
+                                _stop = dateTime;
+                              });
+                              // if(_start.isAtSameMomentAs(_stop) || _start.isAfter(_stop)){
+                              //   setState(() {
+                              //     _start=_stop.subtract(Duration(hours: 1));
+                              //   });
+                              // }
+                            })),
+                    Visibility(
                       visible: _timeConflict,
                       child: Text(_timeConflictText,
                           style: GoogleFonts.mali(
@@ -388,12 +394,12 @@ class _HomePageState extends State<HomePage> {
                 ),
                 TextButton(
                   child: Text("Save"),
-                  onPressed: () {
-                    if (_eventController.text.isEmpty){
+                  onPressed: () async {
+                    if (_eventController.text.isEmpty) {
                       print("Please fill activity name");
                       setState(() {
-                        _timeConflict=true;
-                        _timeConflictText="Please fill activity name";
+                        _timeConflict = true;
+                        _timeConflictText = "Please fill activity name";
                       });
                       return;
                     }
@@ -402,37 +408,52 @@ class _HomePageState extends State<HomePage> {
                     // if (_stopController.text.isEmpty)
                     //   _stopController.text = '13.00';
 
-                    if(_start.isAtSameMomentAs(_stop) || _start.isAfter(_stop)){
+                    if (_start.isAtSameMomentAs(_stop) ||
+                        _start.isAfter(_stop)) {
                       print("Stop time must be after Start time");
                       setState(() {
-                        _timeConflict=true;
-                        _timeConflictText="Stop time must be after Start time";
+                        _timeConflict = true;
+                        _timeConflictText =
+                            "Stop time must be after Start time";
                       });
                       return;
                     }
 
                     if (_events[_controller.selectedDay] != null) {
                       for (Event e in _events[_controller.selectedDay]) {
-                        if (
-                            (e.start.isAtSameMomentAs(_start) || e.start.isBefore(_start)) && (e.stop.isAtSameMomentAs(_stop) || e.stop.isAfter(_stop)) ||
-                            (_start.isAtSameMomentAs(e.start) || _start.isBefore(e.start)) && (_stop.isAtSameMomentAs(e.stop) || _stop.isAfter(e.stop)) ||
-                            e.start.isBefore(_start) && _start.isBefore(e.stop) && e.stop.isBefore(_stop) ||
-                            _start.isBefore(e.start) && e.start.isBefore(_stop) && _stop.isBefore(e.stop)
-                        ) {
+                        if ((e.start.isAtSameMomentAs(_start) ||
+                                    e.start.isBefore(_start)) &&
+                                (e.stop.isAtSameMomentAs(_stop) ||
+                                    e.stop.isAfter(_stop)) ||
+                            (_start.isAtSameMomentAs(e.start) ||
+                                    _start.isBefore(e.start)) &&
+                                (_stop.isAtSameMomentAs(e.stop) ||
+                                    _stop.isAfter(e.stop)) ||
+                            e.start.isBefore(_start) &&
+                                _start.isBefore(e.stop) &&
+                                e.stop.isBefore(_stop) ||
+                            _start.isBefore(e.start) &&
+                                e.start.isBefore(_stop) &&
+                                _stop.isBefore(e.stop)) {
                           //print("(${e.start.isAtSameMomentAs(_start)} || ${e.start.isBefore(_start)}) && (${e.stop.isAtSameMomentAs(_stop)} || ${e.stop.isAfter(_stop)})");
 
-                          print("Try to enter event with @${time.format(_start)}-${time.format(_stop)}");
-                          print("Conflict with ${e.event} @${time.format(e.start)}-${time.format(e.stop)}");
+                          print(
+                              "Try to enter event with @${time.format(_start)}-${time.format(_stop)}");
+                          print(
+                              "Conflict with ${e.event} @${time.format(e.start)}-${time.format(e.stop)}");
 
                           // print("${time.format(e.start)}<${time.format(_start)} :${e.start.isBefore(_start)}");
-                          print("Old stop time ${time.format(e.stop)}> New stop time ${time.format(_stop)} :${e.stop.isAfter(_stop)}");
+                          print(
+                              "Old stop time ${time.format(e.stop)}> New stop time ${time.format(_stop)} :${e.stop.isAfter(_stop)}");
 
                           // print("${time.format(e.start)}-${time.format(_start)} =${e.start.difference(_start)}");
-                          print("Old stop time ${time.format(e.stop)}-New stop time ${time.format(_stop)} = ${e.stop.difference(_stop)}");
+                          print(
+                              "Old stop time ${time.format(e.stop)}-New stop time ${time.format(_stop)} = ${e.stop.difference(_stop)}");
 
                           setState(() {
-                            _timeConflict=true;
-                            _timeConflictText="Conflict with @${e.event} ${time.format(e.start)}-${time.format(e.stop)}";
+                            _timeConflict = true;
+                            _timeConflictText =
+                                "Conflict with @${e.event} ${time.format(e.start)}-${time.format(e.stop)}";
                           });
                           return;
                         }
@@ -440,13 +461,30 @@ class _HomePageState extends State<HomePage> {
                     }
 
                     if (_events[_controller.selectedDay] != null) {
-                      _events[_controller.selectedDay].add(Event(
-                          _eventController.text,_start,_stop));
+                      _events[_controller.selectedDay]
+                          .add(Event(_eventController.text, _start, _stop));
+                      print(_eventController.text +
+                          '  ' +
+                          _start.toString() +
+                          '  ' +
+                          _stop.toString());
                     } else {
                       _events[_controller.selectedDay] = [
-                        Event(_eventController.text, _start, _stop)
+                        Event(_eventController.text, _start, _stop),
                       ];
+                      print(_userId +
+                          '  ' +
+                          _eventController.text +
+                          '  ' +
+                          _start.toString() +
+                          '  ' +
+                          _stop.toString());
+                      DatabaseService(uid: _userId).addEvent(
+                          _eventController.text,
+                          _start.toString(),
+                          _stop.toString());
                     }
+
                     // _start = new DateTime(_start.year, _start.month, _start.day, 12, 0, _start.second, _start.millisecond, _start.microsecond);
                     // _stop = new DateTime(_stop.year, _stop.month, _stop.day, 12, 0, _stop.second, _stop.millisecond, _stop.microsecond);
                     _eventController.clear();
