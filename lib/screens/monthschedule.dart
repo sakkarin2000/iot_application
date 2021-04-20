@@ -60,10 +60,11 @@ class _HomePageState extends State<HomePage> {
   DateTime _start = DateTime.now();
   DateTime _stop = DateTime.now();
   final time = new DateFormat('HH:mm');
-  bool _timeConflict = false;
-  String _timeConflictText = "";
+  bool _eventAlert = false;
+  String _eventAlertText = "";
   String _userId;
   List<Event> myEventList;
+
 
   @override
   void initState() {
@@ -293,7 +294,7 @@ class _HomePageState extends State<HomePage> {
                         child: Padding(
                           padding: const EdgeInsets.only(
                               top: 5, bottom: 5, left: 60, right: 60),
-                          child: Text("Today's Event",
+                          child: Text("Current day's events",
                               style: GoogleFonts.mali(
                                 textStyle: TextStyle(
                                   color: Colors.black,
@@ -325,9 +326,10 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Color(0xFF17A489),
         child: Icon(Icons.add),
         onPressed: () {
+          _eventController.clear();
           setState(() {
-            _timeConflict = false;
-            _timeConflictText = "";
+            _eventAlert = false;
+            _eventAlertText = "";
             _start = _controller.selectedDay;
             _stop = _start.add(Duration(hours: 1));
           });
@@ -341,199 +343,197 @@ class _HomePageState extends State<HomePage> {
     await showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => AlertDialog(
-              content: SingleChildScrollView(
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                    TextField(
-                        controller: _eventController,
-                        decoration: InputDecoration(
-                            labelText: "Activity",
-                            hintText: "Enter activity name")),
-                    // TextField(
-                    //     controller: _startController,
-                    //     decoration: InputDecoration(
-                    //         labelText: "Start time",
-                    //         hintText: "Enter start time")),
-                    // TextField(
-                    //     controller: _stopController,
-                    //     decoration: InputDecoration(
-                    //         labelText: "Stop time",
-                    //         hintText: "Enter stop time")),
-                    Text("Start Time"),
-                    SizedBox(
-                        height: 50,
-                        width: 700,
-                        child: CupertinoDatePicker(
-                            initialDateTime: _start,
-                            mode: CupertinoDatePickerMode.time,
-                            use24hFormat: true,
-                            onDateTimeChanged: (dateTime) {
-                              print(dateTime);
-                              print(dateTime);
-                              setState(() {
-                                _timeConflict = false;
-                                _start = dateTime;
-                              });
-                              // if(_start.isAtSameMomentAs(_stop) || _start.isAfter(_stop)){
-                              //   setState(() {
-                              //     _stop=_start.add(Duration(hours: 1));
-                              //   });
-                              // }
-                            })),
-                    Text("Stop Time"),
-                    SizedBox(
-                        height: 50,
-                        width: 700,
-                        child: CupertinoDatePicker(
-                            initialDateTime: _stop,
-                            mode: CupertinoDatePickerMode.time,
-                            use24hFormat: true,
-                            onDateTimeChanged: (dateTime) {
-                              print(dateTime);
-                              setState(() {
-                                _timeConflict = false;
-                                _stop = dateTime;
-                              });
-                              // if(_start.isAtSameMomentAs(_stop) || _start.isAfter(_stop)){
-                              //   setState(() {
-                              //     _start=_stop.subtract(Duration(hours: 1));
-                              //   });
-                              // }
-                            })),
-                    Visibility(
-                      visible: _timeConflict,
-                      child: Text(_timeConflictText,
-                          style: GoogleFonts.mali(
-                            textStyle: TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
-                            ),
-                          )),
-                    )
-                    // CupertinoDatePicker(
-                    //         initialDateTime: _stop,
-                    //         onDateTimeChanged: (dateTime){
-                    //           setState(() {
-                    //             _stop=dateTime;
-                    //           });
-                    //         }),
-                  ])),
-              actions: <Widget>[
-                TextButton(
-                  child: Text("Cancel"),
-                  onPressed: () {
-                    if (_events[_controller.selectedDay] != null) {
-                      _events[_controller.selectedDay].add('temporary fix');
-                      _events[_controller.selectedDay].removeLast();
-                    } else {
-                      _events[_controller.selectedDay] = ['temporary fix'];
-                      _events[_controller.selectedDay].removeLast();
-                    }
-                    // _start = new DateTime(_start.year, _start.month, _start.day, 12, 0, _start.second, _start.millisecond, _start.microsecond);
-                    // _stop = new DateTime(_stop.year, _stop.month, _stop.day, 12, 0, _stop.second, _stop.millisecond, _stop.microsecond);
-                    Navigator.pop(context, false);
-                    // Navigator.pop(null);
-                  },
-                ),
-                TextButton(
-                  child: Text("Save"),
-                  onPressed: () async {
-                    if (_eventController.text.isEmpty) {
-                      print("Please fill activity name");
-                      setState(() {
-                        _timeConflict = true;
-                        _timeConflictText = "Please fill activity name";
-                      });
-                      return;
-                    }
-                    // if (_startController.text.isEmpty)
-                    //   _startController.text = '12.00';
-                    // if (_stopController.text.isEmpty)
-                    //   _stopController.text = '13.00';
+        builder: (context) {
+          return StatefulBuilder(
+              builder: (context, setState) {
+                return AlertDialog(
+                    content: SingleChildScrollView(
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              TextField(
+                                  controller: _eventController,
+                                  decoration: InputDecoration(
+                                      labelText: "Event",
+                                      hintText: "Enter event name"),
+                                  onChanged: (text) {
+                                    if(text.isEmpty){
+                                      print("Please fill event name");
+                                      setState(() {
+                                        _eventAlert=true;
+                                        _eventAlertText="Please fill event name";
+                                      });
+                                    }else if(text.trim().isEmpty){
+                                        print("Event name cannot be blank");
+                                        setState(() {
+                                          _eventAlert=true;
+                                          _eventAlertText="Event name cannot be blank";
+                                        });
+                                    }else {
+                                      setState(() {
+                                        _eventAlert = false;
+                                        _eventAlertText = "";
+                                      });
+                                    }
+                                  },
+                              ),
+                              Text("Start Time"),
+                              SizedBox(
+                                  height: 50,
+                                  width: 700,
+                                  child: CupertinoDatePicker(
+                                      initialDateTime: _start,
+                                      mode: CupertinoDatePickerMode.time,
+                                      use24hFormat: true,
+                                      onDateTimeChanged: (dateTime){
+                                        print(dateTime);
+                                        setState(() {
+                                          _eventAlert=false;
+                                          _eventAlertText="";
+                                          _start=dateTime;
+                                        });
+                                      })
+                              ),
+                              Text("Stop Time"),
+                              SizedBox(
+                                  height: 50,
+                                  width: 700,
+                                  child: CupertinoDatePicker(
+                                      initialDateTime: _stop,
+                                      mode: CupertinoDatePickerMode.time,
+                                      use24hFormat: true,
+                                      onDateTimeChanged: (dateTime){
+                                        print(dateTime);
+                                        setState(() {
+                                          _eventAlert=false;
+                                          _eventAlertText="";
+                                          _stop=dateTime;
+                                        });
+                                      })
+                              ),
+                              Opacity (
+                                opacity: _eventAlert? 1:0,
+                                child: Text(_eventAlertText,
+                                    style: GoogleFonts.mali(
+                                      textStyle: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 14,
+                                      ),
+                                    )),
+                              )
+                            ])),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text("Cancel"),
+                        onPressed: () {
+                          if (_events[_controller.selectedDay] != null) {
+                            _events[_controller.selectedDay].add('temporary fix');
+                            _events[_controller.selectedDay].removeLast();
+                          } else {
+                            _events[_controller.selectedDay] = ['temporary fix'];
+                            _events[_controller.selectedDay].removeLast();
+                          }
+                          // _start = new DateTime(_start.year, _start.month, _start.day, 12, 0, _start.second, _start.millisecond, _start.microsecond);
+                          // _stop = new DateTime(_stop.year, _stop.month, _stop.day, 12, 0, _stop.second, _stop.millisecond, _stop.microsecond);
+                          Navigator.pop(context, false);
+                          // Navigator.pop(null);
+                        },
+                      ),
+                      TextButton(
+                        child: Text("Save"),
+                        onPressed: () {
 
-                    if (_start.isAtSameMomentAs(_stop) ||
-                        _start.isAfter(_stop)) {
-                      print("Stop time must be after Start time");
-                      setState(() {
-                        _timeConflict = true;
-                        _timeConflictText =
-                            "Stop time must be after Start time";
-                      });
-                      return;
-                    }
+                          if(_eventController.text.isEmpty){
+                            print("Please fill event name");
+                            setState(() {
+                              _eventAlert=true;
+                              _eventAlertText="Please fill event name";
+                            });
+                            return;
+                          }else if(_eventController.text.trim().isEmpty){
+                            print("Event name cannot be blank");
+                            setState(() {
+                              _eventAlert=true;
+                              _eventAlertText="Event name cannot be blank";
+                            });
+                            return;
+                          }
 
-                    if (_events[_controller.selectedDay] != null) {
-                      for (Event e in _events[_controller.selectedDay]) {
-                        if ((e.start.isAtSameMomentAs(_start) ||
-                                    e.start.isBefore(_start)) &&
-                                (e.stop.isAtSameMomentAs(_stop) ||
-                                    e.stop.isAfter(_stop)) ||
-                            (_start.isAtSameMomentAs(e.start) ||
-                                    _start.isBefore(e.start)) &&
-                                (_stop.isAtSameMomentAs(e.stop) ||
-                                    _stop.isAfter(e.stop)) ||
-                            e.start.isBefore(_start) &&
-                                _start.isBefore(e.stop) &&
-                                e.stop.isBefore(_stop) ||
-                            _start.isBefore(e.start) &&
-                                e.start.isBefore(_stop) &&
-                                _stop.isBefore(e.stop)) {
-                          //print("(${e.start.isAtSameMomentAs(_start)} || ${e.start.isBefore(_start)}) && (${e.stop.isAtSameMomentAs(_stop)} || ${e.stop.isAfter(_stop)})");
 
-                          print(
-                              "Try to enter event with @${time.format(_start)}-${time.format(_stop)}");
-                          print(
-                              "Conflict with ${e.event} @${time.format(e.start)}-${time.format(e.stop)}");
+                          var s2=_start.hour*60+_start.minute;
+                          var e2=_stop.hour*60+_stop.minute;
 
-                          // print("${time.format(e.start)}<${time.format(_start)} :${e.start.isBefore(_start)}");
-                          print(
-                              "Old stop time ${time.format(e.stop)}> New stop time ${time.format(_stop)} :${e.stop.isAfter(_stop)}");
+                          if(e2<=s2){
+                            print("Stop time must be after Start time");
+                            setState(() {
+                              _eventAlert=true;
+                              _eventAlertText="Stop time must be after Start time";
+                            });
+                            return;
+                          }
 
-                          // print("${time.format(e.start)}-${time.format(_start)} =${e.start.difference(_start)}");
-                          print(
-                              "Old stop time ${time.format(e.stop)}-New stop time ${time.format(_stop)} = ${e.stop.difference(_stop)}");
+                          if (_events[_controller.selectedDay] != null) {
+                            for (Event e in _events[_controller.selectedDay]) {
 
-                          setState(() {
-                            _timeConflict = true;
-                            _timeConflictText =
-                                "Conflict with @${e.event} ${time.format(e.start)}-${time.format(e.stop)}";
-                          });
-                          return;
-                        }
-                      }
-                    }
+                              var s1=e.start.hour*60+e.start.minute;
+                              var e1=e.stop.hour*60+e.stop.minute;
 
-                    if (_events[_controller.selectedDay] != null) {
-                      _events[_controller.selectedDay].add(Event(
-                          event: _eventController.text,
-                          start: _start,
-                          stop: _stop));
-                    } else {
-                      _events[_controller.selectedDay] = [
-                        Event(
-                            event: _eventController.text,
-                            start: _start,
-                            stop: _stop),
-                      ];
-                      print('Add to db2');
-                      DatabaseService(uid: _userId)
-                          .addEvent(_eventController.text, _start, _stop);
-                    }
+                              if ((s2<=s1 && s1<e2)||
+                                  (s2<e1 && e1<=e2)||
+                                  (s1<=s2 && e2<=e1)
+                              ) {
+                                print("case1");
+                                print(s2<=s1 && s1<=e2);
+                                print("case2");
+                                print(s2<e1 && e1<=e2);
+                                print("case3");
+                                print(s1<=s2 && e2<=e1);
 
-                    // _start = new DateTime(_start.year, _start.month, _start.day, 12, 0, _start.second, _start.millisecond, _start.microsecond);
-                    // _stop = new DateTime(_stop.year, _stop.month, _stop.day, 12, 0, _stop.second, _stop.millisecond, _stop.microsecond);
-                    _eventController.clear();
-                    _startController.clear();
-                    _stopController.clear();
-                    Navigator.pop(context, true);
-                    // Navigator.pop(context);
-                  },
-                )
-              ],
-            )).then((event) {
+                                setState(() {
+                                  _eventAlert=true;
+                                  _eventAlertText="Conflict with ${e.event} @${time.format(e.start)}-${time.format(e.stop)}";
+                                });
+                                return;
+                              }
+                              print("${e.event} ${time.format(e.start)}-${time.format(e.stop)}");
+                            }
+                          }
+
+                          if (_events[_controller.selectedDay] != null) {
+                            _events[_controller.selectedDay].add(Event(
+                                _eventController.text.trim().replaceAll(RegExp(" +")," "),_start,_stop));
+
+                            _events[_controller.selectedDay].sort((a, b) {
+                                var sa=a.start.hour*60+a.start.minute;
+                                var sb=b.start.hour*60+b.start.minute;
+                                return sa-sb;
+                              }
+                            );
+                          } else {
+                            _events[_controller.selectedDay] = [
+                              Event(_eventController.text.trim().replaceAll(RegExp(" +")," "), _start, _stop)
+                            ];
+                          }
+
+                          print('Add to db2');
+                          DatabaseService(uid: _userId).addEvent(
+                                _eventController.text.trim().replaceAll(RegExp(" +")," "),
+                                _start.toString(),
+                                _stop.toString()
+                          );
+                          // _start = new DateTime(_start.year, _start.month, _start.day, 12, 0, _start.second, _start.millisecond, _start.microsecond);
+                          // _stop = new DateTime(_stop.year, _stop.month, _stop.day, 12, 0, _stop.second, _stop.millisecond, _stop.microsecond);
+                          Navigator.pop(context, true);
+                          // Navigator.pop(context);
+                        },
+                      )
+                    ],
+                  );
+              }
+          );
+        }
+    ).then((event) {
       if (event == null) return;
       if (event) {
       } else {}
