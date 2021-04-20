@@ -1,11 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:iot_application/model/event.dart';
+import 'package:iot_application/providers/applicationstate.dart';
 import 'package:iot_application/widgets/hamburger.dart';
+import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iot_application/providers/database.dart';
 
 class MonthSchedule extends StatelessWidget {
   @override
@@ -39,7 +44,9 @@ class _HomePageState extends State<HomePage> {
   DateTime _stop = DateTime.now();
   final time = new DateFormat('HH:mm');
   bool _timeConflict = false;
-  String _timeConflictText = "ERROR";
+  String _timeConflictText = "";
+  String _userId;
+
 
   @override
   void initState() {
@@ -50,6 +57,17 @@ class _HomePageState extends State<HomePage> {
     _stopController = TextEditingController();
     _events = {};
     _selectedEvents = [];
+    getUserId();
+  }
+
+  Future<void> getUserId() async {
+    await Firebase.initializeApp().then((value) async {
+      await FirebaseAuth.instance.authStateChanges().listen((event) {
+        setState(() {
+          _userId = event.uid;
+        });
+      });
+    });
   }
 
   @override
@@ -179,22 +197,20 @@ class _HomePageState extends State<HomePage> {
                 ),
                 startingDayOfWeek: StartingDayOfWeek.sunday,
                 onDaySelected: (date, events, event2) {
-                  // print(date);
                   setState(() {
-
                     _selectedEvents = events;
+
                     //
-                    String a="";
-                    for(Event e in events){
-                      // e.start = new DateTime(_start.year, _start.month, _start.day, 16, 0, _start.second, _start.millisecond, _start.microsecond);
-                      // e.stop = new DateTime(_stop.year, _stop.month, _stop.day, 13, 0, _stop.second, _stop.millisecond, _stop.microsecond);
-                      print("${e.event} ${time.format(e.start)}-${time.format(e.stop)} : ${e.start.isBefore(e.stop)}");
-                      a+=", ${e.event} ${time.format(e.start)}-${time.format(e.stop)}";
-                    }
-                    if(a.isNotEmpty){
-                      print(a);
-                    }
+                    // String a="";
+                    // for(Event e in events){
+                    //   print("${e.event} ${time.format(e.start)}-${time.format(e.stop)} : ${e.start.isBefore(e.stop)}");
+                    //   a+=", ${e.event} ${time.format(e.start)}-${time.format(e.stop)}";
+                    // }
+                    // if(a.isNotEmpty){
+                    //   print(a);
+                    // }
                     //
+
                   });
                 },
                 builders: CalendarBuilders(
@@ -264,27 +280,16 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  // Visibility (
-                  //   visible: _timeConflict,
-                  //   child: Text(_timeConflictText,
-                  //       style: GoogleFonts.mali(
-                  //         textStyle: TextStyle(
-                  //           color: Colors.red,
-                  //           fontWeight: FontWeight.w700,
-                  //           fontSize: 14,
-                  //         ),
-                  //       )),
-                  // ),
                   ..._selectedEvents.map((value) => ListTile(
-                        title:
-                            Text("${value.event} @${time.format(value.start)}-${time.format(value.stop)}",
-                                style: GoogleFonts.mali(
-                                  textStyle: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 14,
-                                  ),
-                                )),
+                        title: Text(
+                            "${value.event} @${time.format(value.start)}-${time.format(value.stop)}",
+                            style: GoogleFonts.mali(
+                              textStyle: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                              ),
+                            )),
                       )),
                 ],
               )),
@@ -296,13 +301,13 @@ class _HomePageState extends State<HomePage> {
         child: Icon(Icons.add),
         onPressed: () {
           setState(() {
-            _timeConflict=false;
-            _timeConflictText="";
-            _start=_controller.selectedDay;
-            _stop=_start.add(Duration(hours: 1));
+            _timeConflict = false;
+            _timeConflictText = "";
+            _start = _controller.selectedDay;
+            _stop = _start.add(Duration(hours: 1));
           });
           _showAddDialog();
-          },
+        },
       ),
     );
   }
@@ -312,7 +317,6 @@ class _HomePageState extends State<HomePage> {
         context: context,
         barrierDismissible: false,
         builder: (context) {
-          // String contentText = "Content of Dialog";
           return StatefulBuilder(
               builder: (context, setState) {
                 return AlertDialog(
@@ -450,6 +454,12 @@ class _HomePageState extends State<HomePage> {
                               Event(_eventController.text, _start, _stop)
                             ];
                           }
+                          print('Add to db2');
+                          DatabaseService(uid: _userId).addEvent(
+                                _eventController.text,
+                                _start.toString(),
+                                _stop.toString()
+                          );
                           // _start = new DateTime(_start.year, _start.month, _start.day, 12, 0, _start.second, _start.millisecond, _start.microsecond);
                           // _stop = new DateTime(_stop.year, _stop.month, _stop.day, 12, 0, _stop.second, _stop.millisecond, _stop.microsecond);
                           _eventController.clear();

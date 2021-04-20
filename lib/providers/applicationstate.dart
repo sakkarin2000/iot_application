@@ -10,9 +10,9 @@ class ApplicationState extends ChangeNotifier {
   Future<void> init() async {
     await Firebase.initializeApp();
     FirebaseAuth.instance.userChanges().listen((user) {
+      print(user);
       if (user != null) {
         credentials = user.email;
-        notifyListeners();
       } else {
         credentials = null;
       }
@@ -63,9 +63,22 @@ class ApplicationState extends ChangeNotifier {
       BuildContext context) async {
     UserInfo userInfo = UserInfo(email: email, password: password);
     try {
-      var status = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: userInfo.email, password: userInfo.password);
-      await status.user.updateProfile(displayName: displayName);
+      var check = await FirebaseAuth.instance
+          .fetchSignInMethodsForEmail(userInfo.email);
+      if (!check.contains('email')) {
+        try {
+          var status = await FirebaseAuth.instance
+              .createUserWithEmailAndPassword(
+                  email: userInfo.email, password: userInfo.password);
+          await status.user.updateProfile(displayName: displayName);
+        } on FirebaseAuthException catch (_) {
+          showDialog(
+              context: context,
+              builder: (_) => AlertDialog(
+                    title: Text("This account is already created"),
+                  ));
+        }
+      }
     } on FirebaseAuthException catch (_) {
       showDialog(
           context: context,

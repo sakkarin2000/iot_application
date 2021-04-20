@@ -3,7 +3,6 @@ import 'package:iot_application/providers/applicationstate.dart';
 import 'package:iot_application/widgets/button.dart';
 import 'package:iot_application/widgets/textformfield.dart';
 import 'package:provider/provider.dart';
-import 'package:iot_application/screens/monthschedule.dart';
 
 class SignupPage extends StatefulWidget {
   final onChange;
@@ -24,6 +23,7 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         alignment: Alignment.center,
         child: Column(children: <Widget>[
@@ -91,7 +91,7 @@ class _SignupPageState extends State<SignupPage> {
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: StyledInputText(
                         controller: _displayNameController,
-                        hintText: "Name Surname",
+                        hintText: "Name",
                         errorText: "Enter your account name"),
                   ),
                   Padding(
