@@ -399,10 +399,10 @@ class _HomePageState extends State<HomePage> {
                           });
 
                           if (_eventController.text.isEmpty){
-                            print("Please fill activity name");
+                            print("Please fill event name");
                             setState(() {
                               _timeConflict=true;
-                              _timeConflictText="Please fill activity name";
+                              _timeConflictText="Please fill event name";
                             });
                             return;
                           }
