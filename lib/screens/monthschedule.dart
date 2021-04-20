@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:iot_application/model/event.dart';
 import 'package:iot_application/providers/applicationstate.dart';
+import 'package:iot_application/shared/constant.dart';
 import 'package:iot_application/widgets/hamburger.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -13,17 +14,33 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iot_application/providers/database.dart';
 
 class MonthSchedule extends StatelessWidget {
+  String _userId;
+  Future<void> getUserId() async {
+    await Firebase.initializeApp().then((value) async {
+      await FirebaseAuth.instance.authStateChanges().listen((event) {
+        _userId = event.uid;
+        print('uid of this user: $_userId');
+        print(DateTime.now());
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Calendar',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        textTheme: GoogleFonts.maliTextTheme(
-          Theme.of(context).textTheme,
+    getUserId();
+    return StreamProvider<List<Event>>.value(
+      initialData: null,
+      value: DatabaseService(uid: _userId).myEvent,
+      child: MaterialApp(
+        title: 'Flutter Calendar',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          textTheme: GoogleFonts.maliTextTheme(
+            Theme.of(context).textTheme,
+          ),
         ),
+        home: HomePage(),
       ),
-      home: HomePage(),
     );
   }
 }
@@ -46,6 +63,7 @@ class _HomePageState extends State<HomePage> {
   bool _timeConflict = false;
   String _timeConflictText = "";
   String _userId;
+  List<Event> myEventList;
 
   @override
   void initState() {
@@ -57,6 +75,12 @@ class _HomePageState extends State<HomePage> {
     _events = {};
     _selectedEvents = [];
     getUserId();
+    getEventList();
+  }
+
+  Future<void> getEvent() async {
+    print('event list\n');
+    print(_events);
   }
 
   Future<void> getUserId() async {
@@ -78,39 +102,48 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  Future<void> getEventList() async {
+    await Firebase.initializeApp().then((value) async {
+      await FirebaseAuth.instance.authStateChanges().listen((event) {
+        setState(() {
+          this._userId = event.uid;
+        });
+      });
+    });
+    List<Event> eventlist = await DatabaseService(uid: _userId).myEventNa;
+    setState(() {
+      myEventList = eventlist;
+    });
+    print('_userId $_userId');
+    print('Here is ');
+    myEventList.forEach((myEvent) {
+      print(
+          'EventName : ${myEvent.event} StartTime : ${myEvent.start} EndTime : ${myEvent.stop}');
+
+      if (_events[myEvent.start] != null) {
+        _events[myEvent.start].add(
+            Event(event: myEvent.event, start: myEvent.start, stop: myEvent.stop));
+      } else {
+        _events[myEvent.start] = [
+          Event(event: myEvent.event, start: myEvent.start, stop: myEvent.stop),
+        ];
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     BorderRadiusGeometry radius = BorderRadius.only(
       topLeft: Radius.circular(40.0),
       topRight: Radius.circular(40.0),
     ); //for bottom part
+    final myEvents = Provider.of<List<Event>>(context) ?? [];
+    print(myEvents);
+    myEvents.forEach((myEvent) {
+      print(
+          'EventName : ${myEvent.event} StartTime : ${myEvent.start} EndTime : ${myEvent.stop}');
+    });
 
-    var logo = [
-      Text('I',
-          style: GoogleFonts.mali(
-            textStyle: TextStyle(
-              color: Color(0xFFBED4DF),
-              fontWeight: FontWeight.w800,
-              fontSize: 20,
-            ),
-          )),
-      Text('o',
-          style: GoogleFonts.mali(
-            textStyle: TextStyle(
-              color: Color(0xFFCCADA5),
-              fontWeight: FontWeight.w800,
-              fontSize: 20,
-            ),
-          )),
-      Text('T',
-          style: GoogleFonts.mali(
-            textStyle: TextStyle(
-              color: Color(0xFFFFB9A3),
-              fontWeight: FontWeight.w800,
-              fontSize: 20,
-            ),
-          )),
-    ];
     return Scaffold(
       drawer: Hamburgerja(),
       appBar: AppBar(
@@ -119,7 +152,7 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Row(
-              children: logo,
+              children: iotlogo,
             ),
           ],
         ),
@@ -198,10 +231,11 @@ class _HomePageState extends State<HomePage> {
                 onDaySelected: (date, events, event2) {
                   // print(date);
                   print(time.format(_start));
+                  print(_controller.selectedDay);
                   setState(() {
                     _selectedEvents = events;
                     print(events.toString());
-                    print(_userId);
+                    getEvent();
                   });
                 },
                 builders: CalendarBuilders(
@@ -259,7 +293,7 @@ class _HomePageState extends State<HomePage> {
                         child: Padding(
                           padding: const EdgeInsets.only(
                               top: 5, bottom: 5, left: 60, right: 60),
-                          child: Text("Today's tasks",
+                          child: Text("Today's Event",
                               style: GoogleFonts.mali(
                                 textStyle: TextStyle(
                                   color: Colors.black,
@@ -473,17 +507,20 @@ class _HomePageState extends State<HomePage> {
                     }
 
                     if (_events[_controller.selectedDay] != null) {
-                      _events[_controller.selectedDay]
-                          .add(Event(_eventController.text, _start, _stop));
+                      _events[_controller.selectedDay].add(Event(
+                          event: _eventController.text,
+                          start: _start,
+                          stop: _stop));
                     } else {
                       _events[_controller.selectedDay] = [
-                        Event(_eventController.text, _start, _stop),
+                        Event(
+                            event: _eventController.text,
+                            start: _start,
+                            stop: _stop),
                       ];
                       print('Add to db2');
-                      DatabaseService(uid: _userId).addEvent(
-                          _eventController.text,
-                          _start.toString(),
-                          _stop.toString());
+                      DatabaseService(uid: _userId)
+                          .addEvent(_eventController.text, _start, _stop);
                     }
 
                     // _start = new DateTime(_start.year, _start.month, _start.day, 12, 0, _start.second, _start.millisecond, _start.microsecond);

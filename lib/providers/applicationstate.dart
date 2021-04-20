@@ -3,10 +3,23 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 class ApplicationState extends ChangeNotifier {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   String credentials;
   ApplicationState() {
     init();
   }
+
+  TheUser _userFromFirebaseUser(User user) {
+    return user != null ? TheUser(uid: user.uid) : null;
+  }
+
+  Stream<TheUser> get user {
+    return _auth
+        .authStateChanges()
+        // .map((User user) => _userFromFirebaseUser(user));
+        .map(_userFromFirebaseUser);
+  }
+
   Future<void> init() async {
     await Firebase.initializeApp();
     FirebaseAuth.instance.userChanges().listen((user) {
@@ -81,4 +94,9 @@ class UserInfo {
   String email;
   String password;
   UserInfo({this.email, this.password});
+}
+
+class TheUser {
+  final String uid;
+  TheUser({this.uid});
 }
