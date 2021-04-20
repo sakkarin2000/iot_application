@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -55,6 +56,17 @@ class _HomePageState extends State<HomePage> {
     _stopController = TextEditingController();
     _events = {};
     _selectedEvents = [];
+    getUserId();
+  }
+
+  Future<void> getUserId() async {
+    await Firebase.initializeApp().then((value) async {
+      await FirebaseAuth.instance.authStateChanges().listen((event) {
+        setState(() {
+          _userId = event.uid;
+        });
+      });
+    });
   }
 
   @override
@@ -463,22 +475,11 @@ class _HomePageState extends State<HomePage> {
                     if (_events[_controller.selectedDay] != null) {
                       _events[_controller.selectedDay]
                           .add(Event(_eventController.text, _start, _stop));
-                      print(_eventController.text +
-                          '  ' +
-                          _start.toString() +
-                          '  ' +
-                          _stop.toString());
                     } else {
                       _events[_controller.selectedDay] = [
                         Event(_eventController.text, _start, _stop),
                       ];
-                      print(_userId +
-                          '  ' +
-                          _eventController.text +
-                          '  ' +
-                          _start.toString() +
-                          '  ' +
-                          _stop.toString());
+                      print('Add to db2');
                       DatabaseService(uid: _userId).addEvent(
                           _eventController.text,
                           _start.toString(),
