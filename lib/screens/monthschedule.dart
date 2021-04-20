@@ -201,14 +201,14 @@ class _HomePageState extends State<HomePage> {
                     _selectedEvents = events;
 
                     //
-                    // String a="";
-                    // for(Event e in events){
-                    //   print("${e.event} ${time.format(e.start)}-${time.format(e.stop)} : ${e.start.isBefore(e.stop)}");
-                    //   a+=", ${e.event} ${time.format(e.start)}-${time.format(e.stop)}";
-                    // }
-                    // if(a.isNotEmpty){
-                    //   print(a);
-                    // }
+                    String a="";
+                    for(Event e in events){
+                      print("${e.event} ${time.format(e.start)}-${time.format(e.stop)} : ${e.start.isBefore(e.stop)}");
+                      a+=", ${e.event} ${time.format(e.start)}-${time.format(e.stop)}";
+                    }
+                    if(a.isNotEmpty){
+                      print(a);
+                    }
                     //
 
                   });
@@ -450,8 +450,11 @@ class _HomePageState extends State<HomePage> {
                             _events[_controller.selectedDay].add(Event(
                                 _eventController.text,_start,_stop));
 
-                            _events[_controller.selectedDay].sort((a, b) =>
-                                a.start.compareTo(b.start)
+                            _selectedEvents.sort((a, b) {
+                                var sa=a.start.hour*60+a.start.minute;
+                                var sb=b.stop.hour*60+b.stop.minute;
+                                return sa-sb;
+                              }
                             );
                           } else {
                             _events[_controller.selectedDay] = [
