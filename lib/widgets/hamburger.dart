@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:iot_application/providers/applicationstate.dart';
 import 'package:iot_application/screens/monthschedule.dart';
+import 'package:iot_application/screens/categories.dart';
 
 void main() => runApp(MyApp());
 
@@ -84,7 +85,15 @@ class _HamburgerjaState extends State<Hamburgerja> {
                       MaterialPageRoute(builder: (context) => MonthSchedule()),
                     )
                   }),
-          CustomListTile(Icons.category, 'Categories', () => {}),
+          CustomListTile(
+            Icons.category, 
+            'Categories', 
+            () => {
+              Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CatPageKa()),
+                    )
+            }),
           // CustomListTile(Icons.report, 'Report Problem', () => {}),
           CustomListTile(Icons.settings, 'Change password', () => {}),
           CustomListTile(
