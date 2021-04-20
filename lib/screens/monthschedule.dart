@@ -268,7 +268,7 @@ class _HomePageState extends State<HomePage> {
                         child: Padding(
                           padding: const EdgeInsets.only(
                               top: 5, bottom: 5, left: 60, right: 60),
-                          child: Text("Today's Events",
+                          child: Text("Current day's events",
                               style: GoogleFonts.mali(
                                 textStyle: TextStyle(
                                   color: Colors.black,
@@ -438,7 +438,7 @@ class _HomePageState extends State<HomePage> {
 
                                 setState(() {
                                   _timeConflict=true;
-                                  _timeConflictText="Conflict with @${e.event} ${time.format(e.start)}-${time.format(e.stop)}";
+                                  _timeConflictText="Conflict with ${e.event} @${time.format(e.start)}-${time.format(e.stop)}";
                                 });
                                 return;
                               }
@@ -449,6 +449,10 @@ class _HomePageState extends State<HomePage> {
                           if (_events[_controller.selectedDay] != null) {
                             _events[_controller.selectedDay].add(Event(
                                 _eventController.text,_start,_stop));
+
+                            _events[_controller.selectedDay].sort((a, b) =>
+                                a.start.compareTo(b.start)
+                            );
                           } else {
                             _events[_controller.selectedDay] = [
                               Event(_eventController.text, _start, _stop)
