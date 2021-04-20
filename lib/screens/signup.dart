@@ -91,7 +91,7 @@ class _SignupPageState extends State<SignupPage> {
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: StyledInputText(
                         controller: _displayNameController,
-                        hintText: "Name Surname",
+                        hintText: "Name",
                         errorText: "Enter your account name"),
                   ),
                   Padding(
