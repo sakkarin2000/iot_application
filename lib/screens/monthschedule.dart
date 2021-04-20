@@ -43,8 +43,8 @@ class _HomePageState extends State<HomePage> {
   DateTime _start = DateTime.now();
   DateTime _stop = DateTime.now();
   final time = new DateFormat('HH:mm');
-  bool _timeConflict = false;
-  String _timeConflictText = "";
+  bool _eventAlert = false;
+  String _eventAlertText = "";
   String _userId;
 
 
@@ -299,9 +299,10 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Color(0xFF17A489),
         child: Icon(Icons.add),
         onPressed: () {
+          _eventController.clear();
           setState(() {
-            _timeConflict = false;
-            _timeConflictText = "";
+            _eventAlert = false;
+            _eventAlertText = "";
             _start = _controller.selectedDay;
             _stop = _start.add(Duration(hours: 1));
           });
@@ -327,7 +328,28 @@ class _HomePageState extends State<HomePage> {
                                   controller: _eventController,
                                   decoration: InputDecoration(
                                       labelText: "Event",
-                                      hintText: "Enter event name")),
+                                      hintText: "Enter event name"),
+                                  onChanged: (text) {
+                                    if(text.isEmpty){
+                                      print("Please fill event name");
+                                      setState(() {
+                                        _eventAlert=true;
+                                        _eventAlertText="Please fill event name";
+                                      });
+                                    }else if(text.trim().isEmpty){
+                                        print("Event name cannot be blank");
+                                        setState(() {
+                                          _eventAlert=true;
+                                          _eventAlertText="Event name cannot be blank";
+                                        });
+                                    }else {
+                                      setState(() {
+                                        _eventAlert = false;
+                                        _eventAlertText = "";
+                                      });
+                                    }
+                                  },
+                              ),
                               Text("Start Time"),
                               SizedBox(
                                   height: 50,
@@ -339,7 +361,8 @@ class _HomePageState extends State<HomePage> {
                                       onDateTimeChanged: (dateTime){
                                         print(dateTime);
                                         setState(() {
-                                          _timeConflict=false;
+                                          _eventAlert=false;
+                                          _eventAlertText="";
                                           _start=dateTime;
                                         });
                                       })
@@ -355,14 +378,15 @@ class _HomePageState extends State<HomePage> {
                                       onDateTimeChanged: (dateTime){
                                         print(dateTime);
                                         setState(() {
-                                          _timeConflict=false;
+                                          _eventAlert=false;
+                                          _eventAlertText="";
                                           _stop=dateTime;
                                         });
                                       })
                               ),
                               Opacity (
-                                opacity: _timeConflict? 1:0,
-                                child: Text(_timeConflictText,
+                                opacity: _eventAlert? 1:0,
+                                child: Text(_eventAlertText,
                                     style: GoogleFonts.mali(
                                       textStyle: TextStyle(
                                         color: Colors.red,
@@ -392,19 +416,23 @@ class _HomePageState extends State<HomePage> {
                       TextButton(
                         child: Text("Save"),
                         onPressed: () {
-                          setState((){
-                            _start=_start;
-                            _stop=_stop;
-                          });
 
-                          if (_eventController.text.isEmpty){
+                          if(_eventController.text.isEmpty){
                             print("Please fill event name");
                             setState(() {
-                              _timeConflict=true;
-                              _timeConflictText="Please fill event name";
+                              _eventAlert=true;
+                              _eventAlertText="Please fill event name";
+                            });
+                            return;
+                          }else if(_eventController.text.trim().isEmpty){
+                            print("Event name cannot be blank");
+                            setState(() {
+                              _eventAlert=true;
+                              _eventAlertText="Event name cannot be blank";
                             });
                             return;
                           }
+
 
                           var s2=_start.hour*60+_start.minute;
                           var e2=_stop.hour*60+_stop.minute;
@@ -412,8 +440,8 @@ class _HomePageState extends State<HomePage> {
                           if(e2<=s2){
                             print("Stop time must be after Start time");
                             setState(() {
-                              _timeConflict=true;
-                              _timeConflictText="Stop time must be after Start time";
+                              _eventAlert=true;
+                              _eventAlertText="Stop time must be after Start time";
                             });
                             return;
                           }
@@ -436,8 +464,8 @@ class _HomePageState extends State<HomePage> {
                                 print(s1<=s2 && e2<=e1);
 
                                 setState(() {
-                                  _timeConflict=true;
-                                  _timeConflictText="Conflict with ${e.event} @${time.format(e.start)}-${time.format(e.stop)}";
+                                  _eventAlert=true;
+                                  _eventAlertText="Conflict with ${e.event} @${time.format(e.start)}-${time.format(e.stop)}";
                                 });
                                 return;
                               }
@@ -447,7 +475,7 @@ class _HomePageState extends State<HomePage> {
 
                           if (_events[_controller.selectedDay] != null) {
                             _events[_controller.selectedDay].add(Event(
-                                _eventController.text,_start,_stop));
+                                _eventController.text.trim().replaceAll(RegExp(" +")," "),_start,_stop));
 
                             _events[_controller.selectedDay].sort((a, b) {
                                 var sa=a.start.hour*60+a.start.minute;
@@ -457,20 +485,18 @@ class _HomePageState extends State<HomePage> {
                             );
                           } else {
                             _events[_controller.selectedDay] = [
-                              Event(_eventController.text, _start, _stop)
+                              Event(_eventController.text.trim().replaceAll(RegExp(" +")," "), _start, _stop)
                             ];
                           }
+
                           print('Add to db2');
                           DatabaseService(uid: _userId).addEvent(
-                                _eventController.text,
+                                _eventController.text.trim().replaceAll(RegExp(" +")," "),
                                 _start.toString(),
                                 _stop.toString()
                           );
                           // _start = new DateTime(_start.year, _start.month, _start.day, 12, 0, _start.second, _start.millisecond, _start.microsecond);
                           // _stop = new DateTime(_stop.year, _stop.month, _stop.day, 12, 0, _stop.second, _stop.millisecond, _stop.microsecond);
-                          _eventController.clear();
-                          _startController.clear();
-                          _stopController.clear();
                           Navigator.pop(context, true);
                           // Navigator.pop(context);
                         },
