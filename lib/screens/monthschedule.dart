@@ -167,7 +167,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.transparent,
         elevation: 0.0,
       ),
-      body: Stack(children: <Widget>[
+      body: ListView(children: <Widget>[
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -287,9 +287,9 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         SlidingUpPanel(
-          isDraggable: true,
-          minHeight: 210,
-          maxHeight: 400,
+          isDraggable: false,
+          minHeight: (274.0+(_selectedEvents.length>4? (_selectedEvents.length-4)*56.0 : 0.0)),
+          maxHeight: (274.0+(_selectedEvents.length>4? (_selectedEvents.length-4)*56.0 : 0.0)),
           panel: Center(
             child: Text("This is the sliding Widget"),
           ),
