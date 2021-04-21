@@ -72,8 +72,345 @@ class _CatPageState extends State<CatPage> {
         backgroundColor: Colors.transparent,
         elevation: 0.0,
       ),
-      // body: ,
+      body: SingleChildScrollView(
+        child: Container(
+          child: Column(children: <Widget>[
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
+                Widget>[
+              Container(
+                margin: EdgeInsets.only(left: 25),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Categories',
+                        style: GoogleFonts.mali(
+                          textStyle: TextStyle(
+                            color: Color(0xFF30415E),
+                            fontWeight: FontWeight.w800,
+                            fontSize: 30,
+                          ),
+                        )),
+                    Text('Of Events',
+                        style: GoogleFonts.mali(
+                          textStyle: TextStyle(
+                            color: Color(0xFF30415E),
+                            fontWeight: FontWeight.w800,
+                            fontSize: 30,
+                          ),
+                        )),
+                   
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.11,
+                      width: 380,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                            color: Color(0xffFECD4C),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                            elevation: 10,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 10),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Row(
+                                  children: [
+                                    Align(
+                                           alignment: Alignment.centerLeft,
+                                            child: Icon(
+                                                Icons.family_restroom_rounded,size: 30,)),
+                                    Container(
+                                        margin:
+                                            const EdgeInsets.only(left: 10.0),
+                                        child: Padding(
+                                            padding: EdgeInsets.only(left:10),
+                                            child: Text(
+                                              "Family",
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            ))),
+                                    Container(
+                                        child: Padding(
+                                            padding: EdgeInsets.only(left:164),
+                                            child: Text(
+                                              '1',
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            )))
+                                  ],
+                                )
+                              ),
+                            )),
+                      ),
+                    ),
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.11,
+                      width: 380,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          color: Color(0xff58DCE4),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          elevation: 10,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 8),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Row(
+                                  children: [
+                                    Align(
+                                           alignment: Alignment.centerLeft,
+                                            child: Icon(
+                                                Icons.group,size:30)),
+                                    Container(
+                                        margin:
+                                            const EdgeInsets.only(left: 10.0),
+                                        child: Padding(
+                                            padding: EdgeInsets.only(left:10),
+                                            child: Text(
+                                              "Friend",
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            ))),
+                                    Container(
+                                        child: Padding(
+                                            padding: EdgeInsets.only(left:160),
+                                            child: Text(
+                                              '2',
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            )))
+                                  ],
+                                )
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.11,
+                      width: 380,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          color: Color(0xffE17262),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          elevation: 10,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 8),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Row(
+                                  children: [
+                                    Align(
+                                           alignment: Alignment.centerLeft,
+                                            child: Icon(
+                                                Icons.school,size: 30,)),
+                                    Container(
+                                        margin:
+                                            const EdgeInsets.only(left: 10.0),
+                                        child: Padding(
+                                            padding: EdgeInsets.only(left:10),
+                                            child: Text(
+                                              "School",
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            ))),
+                                    Container(
+                                        child: Padding(
+                                            padding: EdgeInsets.only(left:160),
+                                            child: Text(
+                                              '3',
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            )))
+                                  ],
+                                )
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.11,
+                      width: 380,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          color: Color(0xff9776F8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          elevation: 10,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 8),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Row(
+                                  children: [
+                                    Align(
+                                           alignment: Alignment.centerLeft,
+                                            child: Icon(
+                                                Icons.tag_faces_rounded,size:30)),
+                                    Container(
+                                        margin:
+                                            const EdgeInsets.only(left: 10.0),
+                                        child: Padding(
+                                            padding: EdgeInsets.only(left:10),
+                                            child: Text(
+                                              "Personal",
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            ))),
+                                    Container(
+                                        child: Padding(
+                                            padding: EdgeInsets.only(left:135),
+                                            child: Text(
+                                              '4',
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            )))
+                                  ],
+                                )
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.11,
+                      width: 380,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          color: Color(0xffFFB9A3),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          elevation: 10,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 8),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Row(
+                                  children: [
+                                    Align(
+                                           alignment: Alignment.centerLeft,
+                                            child: Icon(
+                                                Icons.favorite_rounded,size: 30,)),
+                                    Container(
+                                        margin:
+                                            const EdgeInsets.only(left: 10.0),
+                                        child: Padding(
+                                            padding: EdgeInsets.only(left:10),
+                                            child: Text(
+                                              "Special",
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            ))),
+                                    Container(
+                                        child: Padding(
+                                            padding: EdgeInsets.only(left:150),
+                                            child: Text(
+                                              '5',
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            )))
+                                  ],
+                                )
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.11,
+                      width: 380,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          color: Color(0xffE5A4ED),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          elevation: 10,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 8),
+                            child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Row(
+                                  children: [
+                                    Align(
+                                           alignment: Alignment.centerLeft,
+                                            child: Icon(
+                                                Icons.all_inclusive_sharp,size:30)),
+                                    Container(
+                                        margin:
+                                            const EdgeInsets.only(left: 10.0),
+                                        child: Padding(
+                                            padding: EdgeInsets.only(left:10),
+                                            child: Text(
+                                              "Other",
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            ))),
+                                    Container(
+                                        child: Padding(
+                                            padding: EdgeInsets.only(left:165),
+                                            child: Text(
+                                              '6',
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            )))
+                                  ],
+                                )
+                                ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ]),
+          ]),
+        ),
+      ),
     );
   }
 }
-
