@@ -67,12 +67,23 @@ class _HamburgerjaState extends State<Hamburgerja> {
                 child: Column(
                   children: <Widget>[
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: Icon(Icons.account_circle,
-                          size: 75.0, color: Colors.white),
+                      padding: const EdgeInsets.only(top: 8, bottom: 12),
+                      child: Container(
+                        width: 70,
+                        height: 70,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: AssetImage("images/profile.png"),
+                            )),
+                      ),
                     ),
                     Text('$displayName',
-                        style: TextStyle(color: Colors.white, fontSize: 20)),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
                   ],
                 ),
               )),
