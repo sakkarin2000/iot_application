@@ -245,17 +245,28 @@ class _HomePageState extends State<HomePage> {
                     _selectedEvents = events;
                   });
 
-                  String a = "";
-                  print(_events.toString());
-                  print(_events.length);
-                  for (Event e in _events[date]) {
-                    print('Date in for loop${e.start}');
-                    a +=
-                        ", ${e.event} ${time.format(e.start)}-${time.format(e.stop)}";
-                  }
-                  if (a.isNotEmpty) {
-                    print(a);
-                  }
+                  // print(_events.toString());
+                  // print(_events.length);
+
+                  ////generate event testing
+                  // for(int i=0;i<50;i++) {
+                  //   events.add(Event(
+                  //       event: "${i}",
+                  //       start: DateTime.now().add(Duration(minutes: i)),
+                  //       stop: DateTime.now().add(Duration(minutes: i+1))));
+                  // }
+
+                  ////events checking
+                  // String a = "";
+                  // for (Event e in _events[date]) {
+                  //   print('Date in for loop${e.start}');
+                  //   a +=
+                  //       ", ${e.event} ${time.format(e.start)}-${time.format(e.stop)}";
+                  // }
+                  // if (a.isNotEmpty) {
+                  //   print(a);
+                  // }
+
                 },
                 builders: CalendarBuilders(
                   selectedDayBuilder: (context, date, events) => Container(
