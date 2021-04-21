@@ -143,6 +143,7 @@ class _HomePageState extends State<HomePage> {
         return sa - sb;
       });
     });
+    
   }
 
   @override
@@ -151,6 +152,59 @@ class _HomePageState extends State<HomePage> {
       topLeft: Radius.circular(40.0),
       topRight: Radius.circular(40.0),
     ); //for bottom part
+    String dateSuffix(int day) {
+      if (day != null) {
+        String suffix;
+        if (day % 10 == 1) {
+          suffix = 'st';
+        } else if (day % 10 == 2) {
+          suffix = 'nd';
+        } else if (day % 10 == 3) {
+          suffix = 'rd';
+        } else {
+          suffix = 'th';
+        }
+        return suffix;
+      }
+      return '';
+    }
+
+    List<String> months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ];
+    String checkWhatDay(DateTime date) {
+      if (date != null) {
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
+        final yesterday = DateTime(now.year, now.month, now.day - 1);
+        final tomorrow = DateTime(now.year, now.month, now.day + 1);
+
+        final dateToCheck = date;
+        final aDate =
+            DateTime(dateToCheck.year, dateToCheck.month, dateToCheck.day);
+        if (aDate == today) {
+          return 'Today';
+        } else if (aDate == yesterday) {
+          return 'Yesterday';
+        } else if (aDate == tomorrow) {
+          return 'Tomorrow';
+        } else {
+          return '${date.day}${dateSuffix(date.day)} ${months[date.month]} ${date.year}';
+        }
+      }
+      return '';
+    }
 
     return Scaffold(
       drawer: Hamburgerja(),
@@ -167,7 +221,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.transparent,
         elevation: 0.0,
       ),
-      body: Stack(children: <Widget>[
+      body: ListView(children: <Widget>[
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -240,22 +294,34 @@ class _HomePageState extends State<HomePage> {
                   // print(date);
                   print(time.format(_start));
                   print('Controller.selectedDay : ${_controller.selectedDay}');
+                  print(
+                      'Controller.selectedDay : ${_controller.selectedDay.day}${dateSuffix(_controller.selectedDay.day)} ${months[_controller.selectedDay.month]} ${_controller.selectedDay.year}');
                   print('_selectedEvents = events which is : ${events}');
                   setState(() {
                     _selectedEvents = events;
                   });
 
-                  String a = "";
-                  print(_events.toString());
-                  print(_events.length);
-                  for (Event e in _events[date]) {
-                    print('Date in for loop${e.start}');
-                    a +=
-                        ", ${e.event} ${time.format(e.start)}-${time.format(e.stop)}";
-                  }
-                  if (a.isNotEmpty) {
-                    print(a);
-                  }
+                  // print(_events.toString());
+                  // print(_events.length);
+
+                  ////generate event testing
+                  // for(int i=0;i<50;i++) {
+                  //   events.add(Event(
+                  //       event: "${i}",
+                  //       start: DateTime.now().add(Duration(minutes: i)),
+                  //       stop: DateTime.now().add(Duration(minutes: i+1))));
+                  // }
+
+                  ////events checking
+                  // String a = "";
+                  // for (Event e in _events[date]) {
+                  //   print('Date in for loop${e.start}');
+                  //   a +=
+                  //       ", ${e.event} ${time.format(e.start)}-${time.format(e.stop)}";
+                  // }
+                  // if (a.isNotEmpty) {
+                  //   print(a);
+                  // }
                 },
                 builders: CalendarBuilders(
                   selectedDayBuilder: (context, date, events) => Container(
@@ -287,9 +353,15 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         SlidingUpPanel(
-          isDraggable: true,
-          minHeight: 210,
-          maxHeight: 400,
+          isDraggable: false,
+          minHeight: (274.0 +
+              (_selectedEvents.length > 4
+                  ? (_selectedEvents.length - 4) * 56.0
+                  : 0.0)),
+          maxHeight: (274.0 +
+              (_selectedEvents.length > 4
+                  ? (_selectedEvents.length - 4) * 56.0
+                  : 0.0)),
           panel: Center(
             child: Text("This is the sliding Widget"),
           ),
@@ -312,7 +384,8 @@ class _HomePageState extends State<HomePage> {
                         child: Padding(
                           padding: const EdgeInsets.only(
                               top: 5, bottom: 5, left: 60, right: 60),
-                          child: Text("Current day's events",
+                          child: Text(
+                              "${checkWhatDay(_controller.selectedDay)}'s Events",
                               style: GoogleFonts.mali(
                                 textStyle: TextStyle(
                                   color: Colors.black,
@@ -325,7 +398,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   ..._selectedEvents.map((value) => ListTile(
-                    
                         title: Text(
                             "${value.event} @${time.format(value.start)}-${time.format(value.stop)}",
                             style: GoogleFonts.mali(
