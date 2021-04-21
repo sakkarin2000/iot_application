@@ -143,6 +143,7 @@ class _HomePageState extends State<HomePage> {
         return sa - sb;
       });
     });
+    
   }
 
   @override
@@ -152,15 +153,20 @@ class _HomePageState extends State<HomePage> {
       topRight: Radius.circular(40.0),
     ); //for bottom part
     String dateSuffix(int day) {
-      if (day % 10 == 1) {
-        return 'st';
-      } else if (day % 10 == 2) {
-        return 'nd';
-      } else if (day % 10 == 3) {
-        return 'rd';
-      } else {
-        return 'th';
+      if (day != null) {
+        String suffix;
+        if (day % 10 == 1) {
+          suffix = 'st';
+        } else if (day % 10 == 2) {
+          suffix = 'nd';
+        } else if (day % 10 == 3) {
+          suffix = 'rd';
+        } else {
+          suffix = 'th';
+        }
+        return suffix;
       }
+      return '';
     }
 
     List<String> months = [
@@ -178,23 +184,26 @@ class _HomePageState extends State<HomePage> {
       'December'
     ];
     String checkWhatDay(DateTime date) {
-      final now = DateTime.now();
-      final today = DateTime(now.year, now.month, now.day);
-      final yesterday = DateTime(now.year, now.month, now.day - 1);
-      final tomorrow = DateTime(now.year, now.month, now.day + 1);
+      if (date != null) {
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
+        final yesterday = DateTime(now.year, now.month, now.day - 1);
+        final tomorrow = DateTime(now.year, now.month, now.day + 1);
 
-      final dateToCheck = date;
-      final aDate =
-          DateTime(dateToCheck.year, dateToCheck.month, dateToCheck.day);
-      if (aDate == today) {
-        return 'Today';
-      } else if (aDate == yesterday) {
-        return 'Yesterday';
-      } else if (aDate == tomorrow) {
-        return 'Tomorrow';
-      } else {
-        return '${date.day}${dateSuffix(date.day)} ${months[date.month]} ${date.year}';
+        final dateToCheck = date;
+        final aDate =
+            DateTime(dateToCheck.year, dateToCheck.month, dateToCheck.day);
+        if (aDate == today) {
+          return 'Today';
+        } else if (aDate == yesterday) {
+          return 'Yesterday';
+        } else if (aDate == tomorrow) {
+          return 'Tomorrow';
+        } else {
+          return '${date.day}${dateSuffix(date.day)} ${months[date.month]} ${date.year}';
+        }
       }
+      return '';
     }
 
     return Scaffold(
