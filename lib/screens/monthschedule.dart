@@ -244,6 +244,18 @@ class _HomePageState extends State<HomePage> {
                   setState(() {
                     _selectedEvents = events;
                   });
+
+                  String a = "";
+                  print(_events.toString());
+                  print(_events.length);
+                  for (Event e in _events[date]) {
+                    print('Date in for loop${e.start}');
+                    a +=
+                        ", ${e.event} ${time.format(e.start)}-${time.format(e.stop)}";
+                  }
+                  if (a.isNotEmpty) {
+                    print(a);
+                  }
                 },
                 builders: CalendarBuilders(
                   selectedDayBuilder: (context, date, events) => Container(
@@ -275,9 +287,9 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         SlidingUpPanel(
-          isDraggable: false,
+          isDraggable: true,
           minHeight: 210,
-          maxHeight: 210,
+          maxHeight: 400,
           panel: Center(
             child: Text("This is the sliding Widget"),
           ),
@@ -313,6 +325,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   ..._selectedEvents.map((value) => ListTile(
+                    
                         title: Text(
                             "${value.event} @${time.format(value.start)}-${time.format(value.stop)}",
                             style: GoogleFonts.mali(
