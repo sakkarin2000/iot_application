@@ -92,6 +92,7 @@ class _SignupPageState extends State<SignupPage> {
                     child: StyledInputText(
                         controller: _displayNameController,
                         hintText: "Name",
+                        isName: true,
                         errorText: "Enter your account name"),
                   ),
                   Padding(
