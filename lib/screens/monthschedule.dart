@@ -119,15 +119,29 @@ class _HomePageState extends State<HomePage> {
     myEventList.forEach((myEvent) {
       print(
           'EventName : ${myEvent.event} StartTime : ${myEvent.start} EndTime : ${myEvent.stop}');
+      DateTime temp = new DateTime(
+          myEvent.start.year,
+          myEvent.start.month,
+          myEvent.start.day,
+          12,
+          0,
+          myEvent.start.second,
+          myEvent.start.millisecond,
+          myEvent.start.microsecond);
 
-      if (_events[myEvent.start] != null) {
-        _events[myEvent.start].add(Event(
+      if (_events[temp] != null) {
+        _events[temp].add(Event(
             event: myEvent.event, start: myEvent.start, stop: myEvent.stop));
       } else {
-        _events[myEvent.start] = [
+        _events[temp] = [
           Event(event: myEvent.event, start: myEvent.start, stop: myEvent.stop),
         ];
       }
+      _events[temp].sort((a, b) {
+        var sa = a.start.hour * 60 + a.start.minute;
+        var sb = b.start.hour * 60 + b.start.minute;
+        return sa - sb;
+      });
     });
   }
 
@@ -224,13 +238,25 @@ class _HomePageState extends State<HomePage> {
                 startingDayOfWeek: StartingDayOfWeek.sunday,
                 onDaySelected: (date, events, event2) {
                   // print(date);
-                  print(time.format(_start));
-                  print(_controller.selectedDay);
+                  // print(time.format(_start));
+                  // print(_controller.selectedDay);
                   setState(() {
                     _selectedEvents = events;
-                    print(events.toString());
-                    getEvent();
+                    print('Current Selected Date: $date');
+                    // getEvent();
                   });
+
+                  String a = "";
+                  print(_events.toString());
+                  print(_events.length);
+                  for (Event e in _events[date]) {
+                    print('Date in for loop${e.start}');
+                    a +=
+                        ", ${e.event} ${time.format(e.start)}-${time.format(e.stop)}";
+                  }
+                  if (a.isNotEmpty) {
+                    print(a);
+                  }
                 },
                 builders: CalendarBuilders(
                   selectedDayBuilder: (context, date, events) => Container(
@@ -262,9 +288,9 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         SlidingUpPanel(
-          isDraggable: false,
+          isDraggable: true,
           minHeight: 210,
-          maxHeight: 210,
+          maxHeight: 400,
           panel: Center(
             child: Text("This is the sliding Widget"),
           ),
@@ -300,6 +326,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   ..._selectedEvents.map((value) => ListTile(
+                    
                         title: Text(
                             "${value.event} @${time.format(value.start)}-${time.format(value.stop)}",
                             style: GoogleFonts.mali(
@@ -488,6 +515,20 @@ class _HomePageState extends State<HomePage> {
                     }
 
                     if (_events[_controller.selectedDay] != null) {
+                      // String a = "";
+                      // print(_events.toString());
+                      // print(_events.length);
+                      // for (Event e in _events[_controller.selectedDay]) {
+                      //   print('Date in for loop${e.start}');
+                      //   a +=
+                      //       ", ${e.event} ${time.format(e.start)}-${time.format(e.stop)}";
+                      // }
+                      // if (a.isNotEmpty) {
+                      //   print(a);
+                      // }
+
+                      print(_events[_controller.selectedDay].length);
+                      print(_eventController.text);
                       _events[_controller.selectedDay].add(Event(
                           event: _eventController.text
                               .trim()
@@ -495,20 +536,12 @@ class _HomePageState extends State<HomePage> {
                           start: _start,
                           stop: _stop));
 
+                      print(_events[_controller.selectedDay].length);
                       _events[_controller.selectedDay].sort((a, b) {
                         var sa = a.start.hour * 60 + a.start.minute;
                         var sb = b.start.hour * 60 + b.start.minute;
                         return sa - sb;
                       });
-                      
-                      DatabaseService(uid: _userId).addEvent(
-                        _eventController.text
-                            .trim()
-                            .replaceAll(RegExp(" +"), " "),
-                        _start,
-                        _stop,
-                      );
-
                       print('[DB] Add new event to the day');
                     } else {
                       _events[_controller.selectedDay] = [
@@ -520,17 +553,15 @@ class _HomePageState extends State<HomePage> {
                             stop: _stop)
                       ];
 
-                      DatabaseService(uid: _userId).addEvent(
-                        _eventController.text
-                            .trim()
-                            .replaceAll(RegExp(" +"), " "),
-                        _start,
-                        _stop,
-                      );
                       print('[DB] Add first event to the day');
                     }
-
-                   
+                    DatabaseService(uid: _userId).addEvent(
+                      _eventController.text
+                          .trim()
+                          .replaceAll(RegExp(" +"), " "),
+                      _start,
+                      _stop,
+                    );
 
                     // _start = new DateTime(_start.year, _start.month, _start.day, 12, 0, _start.second, _start.millisecond, _start.microsecond);
                     // _stop = new DateTime(_stop.year, _stop.month, _stop.day, 12, 0, _stop.second, _stop.millisecond, _stop.microsecond);
