@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> getEvent() async {
     print('event list\n');
-    print(_events);
+    // print(_events);
   }
 
   Future<void> getUserId() async {
@@ -238,12 +238,11 @@ class _HomePageState extends State<HomePage> {
                 startingDayOfWeek: StartingDayOfWeek.sunday,
                 onDaySelected: (date, events, event2) {
                   // print(date);
-                  // print(time.format(_start));
-                  // print(_controller.selectedDay);
+                  print(time.format(_start));
+                  print('Controller.selectedDay : ${_controller.selectedDay}');
+                  print('_selectedEvents = events which is : ${events}');
                   setState(() {
                     _selectedEvents = events;
-                    print('Current Selected Date: $date');
-                    // getEvent();
                   });
 
                   String a = "";
@@ -360,6 +359,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   _showAddDialog() async {
+    print(_selectedEvents);
     await showDialog(
         context: context,
         barrierDismissible: false,
@@ -443,12 +443,12 @@ class _HomePageState extends State<HomePage> {
                 TextButton(
                   child: Text("Cancel"),
                   onPressed: () {
-                    if (_events[_controller.selectedDay] != null) {
-                      _events[_controller.selectedDay].add('temporary fix');
-                      _events[_controller.selectedDay].removeLast();
+                    if (_selectedEvents != null) {
+                      _selectedEvents.add('temporary fix');
+                      _selectedEvents.removeLast();
                     } else {
-                      _events[_controller.selectedDay] = ['temporary fix'];
-                      _events[_controller.selectedDay].removeLast();
+                      _selectedEvents = ['temporary fix'];
+                      _selectedEvents.removeLast();
                     }
                     // _start = new DateTime(_start.year, _start.month, _start.day, 12, 0, _start.second, _start.millisecond, _start.microsecond);
                     // _stop = new DateTime(_stop.year, _stop.month, _stop.day, 12, 0, _stop.second, _stop.millisecond, _stop.microsecond);
@@ -487,8 +487,8 @@ class _HomePageState extends State<HomePage> {
                       return;
                     }
 
-                    if (_events[_controller.selectedDay] != null) {
-                      for (Event e in _events[_controller.selectedDay]) {
+                    if (_selectedEvents != null) {
+                      for (Event e in _selectedEvents) {
                         var s1 = e.start.hour * 60 + e.start.minute;
                         var e1 = e.stop.hour * 60 + e.stop.minute;
 
@@ -514,37 +514,23 @@ class _HomePageState extends State<HomePage> {
                       }
                     }
 
-                    if (_events[_controller.selectedDay] != null) {
-                      // String a = "";
-                      // print(_events.toString());
-                      // print(_events.length);
-                      // for (Event e in _events[_controller.selectedDay]) {
-                      //   print('Date in for loop${e.start}');
-                      //   a +=
-                      //       ", ${e.event} ${time.format(e.start)}-${time.format(e.stop)}";
-                      // }
-                      // if (a.isNotEmpty) {
-                      //   print(a);
-                      // }
-
-                      print(_events[_controller.selectedDay].length);
-                      print(_eventController.text);
-                      _events[_controller.selectedDay].add(Event(
+                    if (_selectedEvents != null) {
+                      _selectedEvents.add(Event(
                           event: _eventController.text
                               .trim()
                               .replaceAll(RegExp(" +"), " "),
                           start: _start,
                           stop: _stop));
 
-                      print(_events[_controller.selectedDay].length);
-                      _events[_controller.selectedDay].sort((a, b) {
+                      _selectedEvents.sort((a, b) {
                         var sa = a.start.hour * 60 + a.start.minute;
                         var sb = b.start.hour * 60 + b.start.minute;
                         return sa - sb;
                       });
+
                       print('[DB] Add new event to the day');
                     } else {
-                      _events[_controller.selectedDay] = [
+                      _selectedEvents = [
                         Event(
                             event: _eventController.text
                                 .trim()
@@ -562,9 +548,9 @@ class _HomePageState extends State<HomePage> {
                       _start,
                       _stop,
                     );
-
+                    _events[_controller.selectedDay] = _selectedEvents;
                     // _start = new DateTime(_start.year, _start.month, _start.day, 12, 0, _start.second, _start.millisecond, _start.microsecond);
-                    // _stop = new DateTime(_stop.year, _stop.month, _stop.day, 12, 0, _stop.second, _stop.millisecond, _stop.microsecond);
+                    // _stop = new DateTime(_stop.pyear, _stop.month, _stop.day, 12, 0, _stop.second, _stop.millisecond, _stop.microsecond);
                     Navigator.pop(context, true);
                     // Navigator.pop(context);
                   },
@@ -578,7 +564,7 @@ class _HomePageState extends State<HomePage> {
       } else {}
     });
     setState(() {
-      _selectedEvents = _events[_controller.selectedDay];
+      _events[_controller.selectedDay] = _selectedEvents;
     });
   }
 }

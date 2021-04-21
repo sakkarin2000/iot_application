@@ -48,8 +48,8 @@ class DatabaseService {
         Event e = new Event(
           event: doc.data()['actName'],
           start:
-              doc.data()['startTime'].toDate(),
-          stop: doc.data()['endTime'].toDate(),
+              doc.data()['startTime'].toDate().toUtc(),
+          stop: doc.data()['endTime'].toDate().toUtc(),
         );
 
         eventList.add(e);
