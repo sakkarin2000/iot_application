@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:iot_application/providers/applicationstate.dart';
 import 'package:iot_application/screens/monthschedule.dart';
 import 'package:iot_application/screens/categories.dart';
+import 'package:iot_application/screens/profile.dart';
 
 void main() => runApp(MyApp());
 
@@ -64,18 +65,25 @@ class _HamburgerjaState extends State<Hamburgerja> {
               child: Container(
                 child: Column(
                   children: <Widget>[
-                    Material(
-                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                      elevation: 10,
-                      child: Padding(padding: EdgeInsets.all(8.0)),
-                      // child: Image.asset('name')
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Icon(Icons.account_circle,
+                          size: 75.0, color: Colors.white),
                     ),
                     Text('$displayName',
-                        style: TextStyle(color: Colors.white, fontSize: 18)),
+                        style: TextStyle(color: Colors.white, fontSize: 20)),
                   ],
                 ),
               )),
-          CustomListTile(Icons.account_box, 'Profile', () => {}),
+          CustomListTile(
+              Icons.account_box,
+              'Profile',
+              () => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Profile()),
+                    )
+                  }),
           CustomListTile(
               Icons.calendar_today,
               'My Schedule',
@@ -86,14 +94,14 @@ class _HamburgerjaState extends State<Hamburgerja> {
                     )
                   }),
           CustomListTile(
-            Icons.category, 
-            'Categories', 
-            () => {
-              Navigator.push(
+              Icons.category,
+              'Categories',
+              () => {
+                    Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => CatPageKa()),
                     )
-            }),
+                  }),
           // CustomListTile(Icons.report, 'Report Problem', () => {}),
           CustomListTile(Icons.settings, 'Change password', () => {}),
           CustomListTile(
