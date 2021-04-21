@@ -1,13 +1,13 @@
 class Event {
-  String event;
+  final String event;
   // String start;
   // String stop;
-  DateTime start;
-  DateTime stop;
+  final DateTime start;
+  final DateTime stop;
 
-  Event(String x, DateTime y, DateTime z) {
-    this.event = x;
-    this.start = y;
-    this.stop = z;
-  }
+  Event( {
+    this.event,
+    this.start,
+    this.stop,
+  });
 }

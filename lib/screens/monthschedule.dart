@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:iot_application/model/event.dart';
 import 'package:iot_application/providers/applicationstate.dart';
+import 'package:iot_application/shared/constant.dart';
 import 'package:iot_application/widgets/hamburger.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -13,17 +14,33 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iot_application/providers/database.dart';
 
 class MonthSchedule extends StatelessWidget {
+  String _userId;
+  Future<void> getUserId() async {
+    await Firebase.initializeApp().then((value) async {
+      await FirebaseAuth.instance.authStateChanges().listen((event) {
+        _userId = event.uid;
+        print('uid of this user: $_userId');
+        print(DateTime.now());
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Calendar',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        textTheme: GoogleFonts.maliTextTheme(
-          Theme.of(context).textTheme,
+    getUserId();
+    return StreamProvider<List<Event>>.value(
+      initialData: null,
+      value: DatabaseService(uid: _userId).myEvent,
+      child: MaterialApp(
+        title: 'Flutter Calendar',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          textTheme: GoogleFonts.maliTextTheme(
+            Theme.of(context).textTheme,
+          ),
         ),
+        home: HomePage(),
       ),
-      home: HomePage(),
     );
   }
 }
@@ -43,9 +60,10 @@ class _HomePageState extends State<HomePage> {
   DateTime _start = DateTime.now();
   DateTime _stop = DateTime.now();
   final time = new DateFormat('HH:mm');
-  bool _timeConflict = false;
-  String _timeConflictText = "";
+  bool _eventAlert = false;
+  String _eventAlertText = "";
   String _userId;
+  List<Event> myEventList;
 
   @override
   void initState() {
@@ -57,6 +75,12 @@ class _HomePageState extends State<HomePage> {
     _events = {};
     _selectedEvents = [];
     getUserId();
+    getEventList();
+  }
+
+  Future<void> getEvent() async {
+    print('event list\n');
+    print(_events);
   }
 
   Future<void> getUserId() async {
@@ -78,6 +102,35 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  Future<void> getEventList() async {
+    await Firebase.initializeApp().then((value) async {
+      await FirebaseAuth.instance.authStateChanges().listen((event) {
+        setState(() {
+          this._userId = event.uid;
+        });
+      });
+    });
+    List<Event> eventlist = await DatabaseService(uid: _userId).myEventNa;
+    setState(() {
+      myEventList = eventlist;
+    });
+    print('_userId $_userId');
+    print('Here is ');
+    myEventList.forEach((myEvent) {
+      print(
+          'EventName : ${myEvent.event} StartTime : ${myEvent.start} EndTime : ${myEvent.stop}');
+
+      if (_events[myEvent.start] != null) {
+        _events[myEvent.start].add(Event(
+            event: myEvent.event, start: myEvent.start, stop: myEvent.stop));
+      } else {
+        _events[myEvent.start] = [
+          Event(event: myEvent.event, start: myEvent.start, stop: myEvent.stop),
+        ];
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     BorderRadiusGeometry radius = BorderRadius.only(
@@ -85,32 +138,6 @@ class _HomePageState extends State<HomePage> {
       topRight: Radius.circular(40.0),
     ); //for bottom part
 
-    var logo = [
-      Text('I',
-          style: GoogleFonts.mali(
-            textStyle: TextStyle(
-              color: Color(0xFFBED4DF),
-              fontWeight: FontWeight.w800,
-              fontSize: 20,
-            ),
-          )),
-      Text('o',
-          style: GoogleFonts.mali(
-            textStyle: TextStyle(
-              color: Color(0xFFCCADA5),
-              fontWeight: FontWeight.w800,
-              fontSize: 20,
-            ),
-          )),
-      Text('T',
-          style: GoogleFonts.mali(
-            textStyle: TextStyle(
-              color: Color(0xFFFFB9A3),
-              fontWeight: FontWeight.w800,
-              fontSize: 20,
-            ),
-          )),
-    ];
     return Scaffold(
       drawer: Hamburgerja(),
       appBar: AppBar(
@@ -119,7 +146,7 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Row(
-              children: logo,
+              children: iotlogo,
             ),
           ],
         ),
@@ -198,10 +225,11 @@ class _HomePageState extends State<HomePage> {
                 onDaySelected: (date, events, event2) {
                   // print(date);
                   print(time.format(_start));
+                  print(_controller.selectedDay);
                   setState(() {
                     _selectedEvents = events;
                     print(events.toString());
-                    print(_userId);
+                    getEvent();
                   });
                 },
                 builders: CalendarBuilders(
@@ -259,7 +287,7 @@ class _HomePageState extends State<HomePage> {
                         child: Padding(
                           padding: const EdgeInsets.only(
                               top: 5, bottom: 5, left: 60, right: 60),
-                          child: Text("Today's tasks",
+                          child: Text("Current day's events",
                               style: GoogleFonts.mali(
                                 textStyle: TextStyle(
                                   color: Colors.black,
@@ -291,9 +319,10 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Color(0xFF17A489),
         child: Icon(Icons.add),
         onPressed: () {
+          _eventController.clear();
           setState(() {
-            _timeConflict = false;
-            _timeConflictText = "";
+            _eventAlert = false;
+            _eventAlertText = "";
             _start = _controller.selectedDay;
             _stop = _start.add(Duration(hours: 1));
           });
@@ -307,26 +336,38 @@ class _HomePageState extends State<HomePage> {
     await showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => AlertDialog(
+        builder: (context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
               content: SingleChildScrollView(
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                     TextField(
-                        controller: _eventController,
-                        decoration: InputDecoration(
-                            labelText: "Activity",
-                            hintText: "Enter activity name")),
-                    // TextField(
-                    //     controller: _startController,
-                    //     decoration: InputDecoration(
-                    //         labelText: "Start time",
-                    //         hintText: "Enter start time")),
-                    // TextField(
-                    //     controller: _stopController,
-                    //     decoration: InputDecoration(
-                    //         labelText: "Stop time",
-                    //         hintText: "Enter stop time")),
+                      controller: _eventController,
+                      decoration: InputDecoration(
+                          labelText: "Event", hintText: "Enter event name"),
+                      onChanged: (text) {
+                        if (text.isEmpty) {
+                          print("Please fill event name");
+                          setState(() {
+                            _eventAlert = true;
+                            _eventAlertText = "Please fill event name";
+                          });
+                        } else if (text.trim().isEmpty) {
+                          print("Event name cannot be blank");
+                          setState(() {
+                            _eventAlert = true;
+                            _eventAlertText = "Event name cannot be blank";
+                          });
+                        } else {
+                          setState(() {
+                            _eventAlert = false;
+                            _eventAlertText = "";
+                          });
+                        }
+                      },
+                    ),
                     Text("Start Time"),
                     SizedBox(
                         height: 50,
@@ -337,16 +378,11 @@ class _HomePageState extends State<HomePage> {
                             use24hFormat: true,
                             onDateTimeChanged: (dateTime) {
                               print(dateTime);
-                              print(dateTime);
                               setState(() {
-                                _timeConflict = false;
+                                _eventAlert = false;
+                                _eventAlertText = "";
                                 _start = dateTime;
                               });
-                              // if(_start.isAtSameMomentAs(_stop) || _start.isAfter(_stop)){
-                              //   setState(() {
-                              //     _stop=_start.add(Duration(hours: 1));
-                              //   });
-                              // }
                             })),
                     Text("Stop Time"),
                     SizedBox(
@@ -359,18 +395,14 @@ class _HomePageState extends State<HomePage> {
                             onDateTimeChanged: (dateTime) {
                               print(dateTime);
                               setState(() {
-                                _timeConflict = false;
+                                _eventAlert = false;
+                                _eventAlertText = "";
                                 _stop = dateTime;
                               });
-                              // if(_start.isAtSameMomentAs(_stop) || _start.isAfter(_stop)){
-                              //   setState(() {
-                              //     _start=_stop.subtract(Duration(hours: 1));
-                              //   });
-                              // }
                             })),
-                    Visibility(
-                      visible: _timeConflict,
-                      child: Text(_timeConflictText,
+                    Opacity(
+                      opacity: _eventAlert ? 1 : 0,
+                      child: Text(_eventAlertText,
                           style: GoogleFonts.mali(
                             textStyle: TextStyle(
                               color: Colors.red,
@@ -379,13 +411,6 @@ class _HomePageState extends State<HomePage> {
                             ),
                           )),
                     )
-                    // CupertinoDatePicker(
-                    //         initialDateTime: _stop,
-                    //         onDateTimeChanged: (dateTime){
-                    //           setState(() {
-                    //             _stop=dateTime;
-                    //           });
-                    //         }),
                   ])),
               actions: <Widget>[
                 TextButton(
@@ -406,97 +431,117 @@ class _HomePageState extends State<HomePage> {
                 ),
                 TextButton(
                   child: Text("Save"),
-                  onPressed: () async {
+                  onPressed: () {
                     if (_eventController.text.isEmpty) {
-                      print("Please fill activity name");
+                      print("Please fill event name");
                       setState(() {
-                        _timeConflict = true;
-                        _timeConflictText = "Please fill activity name";
+                        _eventAlert = true;
+                        _eventAlertText = "Please fill event name";
+                      });
+                      return;
+                    } else if (_eventController.text.trim().isEmpty) {
+                      print("Event name cannot be blank");
+                      setState(() {
+                        _eventAlert = true;
+                        _eventAlertText = "Event name cannot be blank";
                       });
                       return;
                     }
-                    // if (_startController.text.isEmpty)
-                    //   _startController.text = '12.00';
-                    // if (_stopController.text.isEmpty)
-                    //   _stopController.text = '13.00';
 
-                    if (_start.isAtSameMomentAs(_stop) ||
-                        _start.isAfter(_stop)) {
+                    var s2 = _start.hour * 60 + _start.minute;
+                    var e2 = _stop.hour * 60 + _stop.minute;
+
+                    if (e2 <= s2) {
                       print("Stop time must be after Start time");
                       setState(() {
-                        _timeConflict = true;
-                        _timeConflictText =
-                            "Stop time must be after Start time";
+                        _eventAlert = true;
+                        _eventAlertText = "Stop time must be after Start time";
                       });
                       return;
                     }
 
                     if (_events[_controller.selectedDay] != null) {
                       for (Event e in _events[_controller.selectedDay]) {
-                        if ((e.start.isAtSameMomentAs(_start) ||
-                                    e.start.isBefore(_start)) &&
-                                (e.stop.isAtSameMomentAs(_stop) ||
-                                    e.stop.isAfter(_stop)) ||
-                            (_start.isAtSameMomentAs(e.start) ||
-                                    _start.isBefore(e.start)) &&
-                                (_stop.isAtSameMomentAs(e.stop) ||
-                                    _stop.isAfter(e.stop)) ||
-                            e.start.isBefore(_start) &&
-                                _start.isBefore(e.stop) &&
-                                e.stop.isBefore(_stop) ||
-                            _start.isBefore(e.start) &&
-                                e.start.isBefore(_stop) &&
-                                _stop.isBefore(e.stop)) {
-                          //print("(${e.start.isAtSameMomentAs(_start)} || ${e.start.isBefore(_start)}) && (${e.stop.isAtSameMomentAs(_stop)} || ${e.stop.isAfter(_stop)})");
+                        var s1 = e.start.hour * 60 + e.start.minute;
+                        var e1 = e.stop.hour * 60 + e.stop.minute;
 
-                          print(
-                              "Try to enter event with @${time.format(_start)}-${time.format(_stop)}");
-                          print(
-                              "Conflict with ${e.event} @${time.format(e.start)}-${time.format(e.stop)}");
-
-                          // print("${time.format(e.start)}<${time.format(_start)} :${e.start.isBefore(_start)}");
-                          print(
-                              "Old stop time ${time.format(e.stop)}> New stop time ${time.format(_stop)} :${e.stop.isAfter(_stop)}");
-
-                          // print("${time.format(e.start)}-${time.format(_start)} =${e.start.difference(_start)}");
-                          print(
-                              "Old stop time ${time.format(e.stop)}-New stop time ${time.format(_stop)} = ${e.stop.difference(_stop)}");
+                        if ((s2 <= s1 && s1 < e2) ||
+                            (s2 < e1 && e1 <= e2) ||
+                            (s1 <= s2 && e2 <= e1)) {
+                          print("case1");
+                          print(s2 <= s1 && s1 <= e2);
+                          print("case2");
+                          print(s2 < e1 && e1 <= e2);
+                          print("case3");
+                          print(s1 <= s2 && e2 <= e1);
 
                           setState(() {
-                            _timeConflict = true;
-                            _timeConflictText =
-                                "Conflict with @${e.event} ${time.format(e.start)}-${time.format(e.stop)}";
+                            _eventAlert = true;
+                            _eventAlertText =
+                                "Conflict with ${e.event} @${time.format(e.start)}-${time.format(e.stop)}";
                           });
                           return;
                         }
+                        print(
+                            "${e.event} ${time.format(e.start)}-${time.format(e.stop)}");
                       }
                     }
 
                     if (_events[_controller.selectedDay] != null) {
-                      _events[_controller.selectedDay]
-                          .add(Event(_eventController.text, _start, _stop));
+                      _events[_controller.selectedDay].add(Event(
+                          event: _eventController.text
+                              .trim()
+                              .replaceAll(RegExp(" +"), " "),
+                          start: _start,
+                          stop: _stop));
+
+                      _events[_controller.selectedDay].sort((a, b) {
+                        var sa = a.start.hour * 60 + a.start.minute;
+                        var sb = b.start.hour * 60 + b.start.minute;
+                        return sa - sb;
+                      });
+                      
+                      DatabaseService(uid: _userId).addEvent(
+                        _eventController.text
+                            .trim()
+                            .replaceAll(RegExp(" +"), " "),
+                        _start,
+                        _stop,
+                      );
+
+                      print('[DB] Add new event to the day');
                     } else {
                       _events[_controller.selectedDay] = [
-                        Event(_eventController.text, _start, _stop),
+                        Event(
+                            event: _eventController.text
+                                .trim()
+                                .replaceAll(RegExp(" +"), " "),
+                            start: _start,
+                            stop: _stop)
                       ];
-                      print('Add to db2');
+
                       DatabaseService(uid: _userId).addEvent(
-                          _eventController.text,
-                          _start.toString(),
-                          _stop.toString());
+                        _eventController.text
+                            .trim()
+                            .replaceAll(RegExp(" +"), " "),
+                        _start,
+                        _stop,
+                      );
+                      print('[DB] Add first event to the day');
                     }
+
+                   
 
                     // _start = new DateTime(_start.year, _start.month, _start.day, 12, 0, _start.second, _start.millisecond, _start.microsecond);
                     // _stop = new DateTime(_stop.year, _stop.month, _stop.day, 12, 0, _stop.second, _stop.millisecond, _stop.microsecond);
-                    _eventController.clear();
-                    _startController.clear();
-                    _stopController.clear();
                     Navigator.pop(context, true);
                     // Navigator.pop(context);
                   },
                 )
               ],
-            )).then((event) {
+            );
+          });
+        }).then((event) {
       if (event == null) return;
       if (event) {
       } else {}

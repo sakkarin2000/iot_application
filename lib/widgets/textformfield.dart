@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 class StyledInputText extends StatelessWidget {
   final controller;
   final hintText;
+  final isName;
   final isPassword;
   final errorText;
   StyledInputText(
       {@required this.controller,
       @required this.hintText,
       this.isPassword = false,
+      this.isName = false,
       @required this.errorText});
 
   @override
@@ -37,6 +39,16 @@ class StyledInputText extends StatelessWidget {
         validator: (value) {
           if (value.isEmpty) {
             return errorText;
+          }
+          if (isName) {
+            if ((value.length > 14) && value.isNotEmpty) {
+              return "Name must not more than 14 characters";
+            }
+          }
+          if (isPassword) {
+            if((value.length < 6) && value.isNotEmpty) {
+              return "Password contains at least 6 characters";
+            }
           }
           return null;
         },
