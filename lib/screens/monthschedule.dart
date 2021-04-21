@@ -137,12 +137,6 @@ class _HomePageState extends State<HomePage> {
       topLeft: Radius.circular(40.0),
       topRight: Radius.circular(40.0),
     ); //for bottom part
-    final myEvents = Provider.of<List<Event>>(context) ?? [];
-    print(myEvents);
-    myEvents.forEach((myEvent) {
-      print(
-          'EventName : ${myEvent.event} StartTime : ${myEvent.start} EndTime : ${myEvent.stop}');
-    });
 
     return Scaffold(
       drawer: Hamburgerja(),
@@ -506,6 +500,16 @@ class _HomePageState extends State<HomePage> {
                         var sb = b.start.hour * 60 + b.start.minute;
                         return sa - sb;
                       });
+                      
+                      DatabaseService(uid: _userId).addEvent(
+                        _eventController.text
+                            .trim()
+                            .replaceAll(RegExp(" +"), " "),
+                        _start,
+                        _stop,
+                      );
+
+                      print('[DB] Add new event to the day');
                     } else {
                       _events[_controller.selectedDay] = [
                         Event(
@@ -515,16 +519,19 @@ class _HomePageState extends State<HomePage> {
                             start: _start,
                             stop: _stop)
                       ];
+
+                      DatabaseService(uid: _userId).addEvent(
+                        _eventController.text
+                            .trim()
+                            .replaceAll(RegExp(" +"), " "),
+                        _start,
+                        _stop,
+                      );
+                      print('[DB] Add first event to the day');
                     }
 
-                    print('Add to db2');
-                    DatabaseService(uid: _userId).addEvent(
-                      _eventController.text
-                          .trim()
-                          .replaceAll(RegExp(" +"), " "),
-                      _start,
-                      _stop,
-                    );
+                   
+
                     // _start = new DateTime(_start.year, _start.month, _start.day, 12, 0, _start.second, _start.millisecond, _start.microsecond);
                     // _stop = new DateTime(_stop.year, _stop.month, _stop.day, 12, 0, _stop.second, _stop.millisecond, _stop.microsecond);
                     Navigator.pop(context, true);
