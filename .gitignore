@@ -33,3 +33,5 @@ lib/generated_plugin_registrant.dart
 pubspec.lock
 
 ios/
+
+.DS_Store
