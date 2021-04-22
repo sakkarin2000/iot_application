@@ -238,7 +238,7 @@ class _HomePageState extends State<HomePage> {
                           fontSize: 30,
                         ),
                       )),
-                  Text('Your Event',
+                  Text('Your Events',
                       style: GoogleFonts.mali(
                         textStyle: TextStyle(
                           color: Color(0xFF30415E),
