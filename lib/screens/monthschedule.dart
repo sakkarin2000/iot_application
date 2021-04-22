@@ -522,17 +522,7 @@ class _HomePageState extends State<HomePage> {
                 TextButton(
                   child: Text("Cancel"),
                   onPressed: () {
-                    if (_selectedEvents != null) {
-                      _selectedEvents.add('temporary fix');
-                      _selectedEvents.removeLast();
-                    } else {
-                      _selectedEvents = ['temporary fix'];
-                      _selectedEvents.removeLast();
-                    }
-                    // _start = new DateTime(_start.year, _start.month, _start.day, 12, 0, _start.second, _start.millisecond, _start.microsecond);
-                    // _stop = new DateTime(_stop.year, _stop.month, _stop.day, 12, 0, _stop.second, _stop.millisecond, _stop.microsecond);
                     Navigator.pop(context, false);
-                    // Navigator.pop(null);
                   },
                 ),
                 TextButton(
