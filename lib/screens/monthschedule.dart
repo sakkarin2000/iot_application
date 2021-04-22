@@ -304,10 +304,15 @@ class _HomePageState extends State<HomePage> {
                   // print(_events.toString());
                   // print(_events.length);
 
-                  ////generate event testing
-                  // for(int i=0;i<50;i++) {
+                  // String nme="";
+                  // for(int i=0;i<70;i++){
+                  //   nme+="Z";
+                  // }
+                  //
+                  // //generate event testing
+                  // for(int i=0;i<100;i++) {
                   //   events.add(Event(
-                  //       event: "${i}",
+                  //       event: "${i}${nme}",
                   //       start: DateTime.now().add(Duration(minutes: i)),
                   //       stop: DateTime.now().add(Duration(minutes: i+1))));
                   // }
@@ -354,12 +359,12 @@ class _HomePageState extends State<HomePage> {
         ),
         SlidingUpPanel(
           isDraggable: false,
-          minHeight: (274.0 +
-              (_selectedEvents.length > 4
+          minHeight: (274.0
+              +(_selectedEvents.length > 4
                   ? (_selectedEvents.length - 4) * 56.0
                   : 0.0)),
-          maxHeight: (274.0 +
-              (_selectedEvents.length > 4
+          maxHeight: (274.0
+              +(_selectedEvents.length > 4
                   ? (_selectedEvents.length - 4) * 56.0
                   : 0.0)),
           panel: Center(
@@ -444,8 +449,10 @@ class _HomePageState extends State<HomePage> {
                       children: <Widget>[
                     TextField(
                       controller: _eventController,
+                      maxLength: 50,
                       decoration: InputDecoration(
-                          labelText: "Event", hintText: "Enter event name"),
+                          labelText: "Event", hintText: "Enter event name",
+                          counterText: ''),
                       onChanged: (text) {
                         if (text.isEmpty) {
                           print("Please fill event name");
