@@ -53,6 +53,94 @@ class _HamburgerjaState extends State<Hamburgerja> {
     });
   }
 
+  void openDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: ListTile(
+          title: Center(
+            child: Text(
+              'Change password',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+        children: [
+          Padding(
+              padding: const EdgeInsets.only(left: 30, right: 30, bottom: 10),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: InputText(
+                          labelText: "Old password",
+                          errorText: 'Input old password'),
+                    ),
+                    InputText(
+                        labelText: "New password",
+                        errorText: 'Input new password')
+                  ],
+                ),
+              )),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                        fixedSize: Size(103, 30),
+                        primary: Colors.grey,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 8,
+                        ),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: new BorderRadius.circular(5.0))),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )),
+                Padding(
+                  padding: EdgeInsets.all(5.0),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState.validate()) {}
+                  },
+                  style: ElevatedButton.styleFrom(
+                      fixedSize: Size(103, 30),
+                      primary: Color(0xFFE17262),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 30,
+                        vertical: 8,
+                      ),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(5.0))),
+                  child: Text(
+                    'Save',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -116,140 +204,7 @@ class _HamburgerjaState extends State<Hamburgerja> {
                   }),
           // CustomListTile(Icons.report, 'Report Problem', () => {}),
           CustomListTile(
-              Icons.settings,
-              'Change password',
-              () => {
-                    showDialog(
-                      context: context,
-                      builder: (context) => SimpleDialog(
-                        title: ListTile(
-                          title: Center(
-                            child: Text(
-                              'Change password',
-                              style: TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                        children: [
-                          Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 30, right: 30, bottom: 10),
-                              child: Form(
-                                key: _formKey,
-                                child: Column(
-                                  children: [
-                                    TextFormField(
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'Old password',
-                                        contentPadding: EdgeInsets.all(10),
-                                      ),
-                                      validator: (value) {
-                                        if (value.isEmpty) {
-                                          return "Please input your old password";
-                                        }
-                                        if ((value.length < 6) &&
-                                            value.isNotEmpty) {
-                                          return "Password contains at least 6 characters";
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                    ),
-                                    TextFormField(
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'New password',
-                                        contentPadding: EdgeInsets.all(8),
-                                      ),
-                                      validator: (value) {
-                                        if (value.isEmpty) {
-                                          return "Please input your new password";
-                                        }
-                                        if ((value.length < 6) &&
-                                            value.isNotEmpty) {
-                                          return "Password contains at least 6 characters";
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              )),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                ElevatedButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    style: ElevatedButton.styleFrom(
-                                        primary: Color(0xFFE17262),
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 40,
-                                          vertical: 8,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                new BorderRadius.circular(
-                                                    5.0))),
-                                    child: Text(
-                                      'Cancel',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    )),
-                                Padding(
-                                  padding: EdgeInsets.all(5.0),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    // if (_formKey.currentState.validate()) {
-                                    //   await Firebase.initializeApp()
-                                    //       .then((value) async {
-                                    //     await FirebaseAuth.instance
-                                    //         .authStateChanges()
-                                    //         .listen((event) async {
-                                    //       event
-                                    //           .updatePassword(password: password)
-                                    //           .then((value) {
-                                    //         findDisplayName();
-                                    //         Navigator.pop(context);
-                                    //       });
-                                    //     });
-                                    //   });
-                                    // }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                      primary: Color(0xFFE17262),
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 40,
-                                        vertical: 8,
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              new BorderRadius.circular(5.0))),
-                                  child: Text(
-                                    'Save',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  }),
+              Icons.settings, 'Change password', () => {openDialog()}),
           CustomListTile(
               Icons.logout,
               'Logout',
@@ -295,4 +250,29 @@ class CustomListTile extends StatelessWidget {
       ),
     );
   }
+}
+
+class InputText extends StatelessWidget {
+  final labelText;
+  final errorText;
+  InputText({@required this.labelText, @required this.errorText});
+
+  @override
+  Widget build(BuildContext context) => TextFormField(
+        obscureText: true,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: labelText,
+          contentPadding: EdgeInsets.all(10),
+        ),
+        validator: (value) {
+          if (value.isEmpty) {
+            return errorText;
+          }
+          if ((value.length < 6) && value.isNotEmpty) {
+            return "At least 6 characters";
+          }
+          return null;
+        },
+      );
 }

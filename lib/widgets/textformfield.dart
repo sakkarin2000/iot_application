@@ -18,7 +18,6 @@ class StyledInputText extends StatelessWidget {
         controller: controller,
         obscureText: isPassword,
         style: TextStyle(fontSize: 18, fontFamily: 'mali'),
-        autofocus: true,
         keyboardType: TextInputType.emailAddress,
         decoration: InputDecoration(
           hintText: hintText,
