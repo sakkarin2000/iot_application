@@ -92,7 +92,7 @@ class _HamburgerjaState extends State<Hamburgerja> {
                 ElevatedButton(
                     onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
-                        fixedSize: Size(103, 30),
+                        minimumSize: Size(103, 30),
                         primary: Colors.grey,
                         padding: EdgeInsets.symmetric(
                           horizontal: 20,
@@ -116,7 +116,7 @@ class _HamburgerjaState extends State<Hamburgerja> {
                     if (_formKey.currentState.validate()) {}
                   },
                   style: ElevatedButton.styleFrom(
-                      fixedSize: Size(103, 30),
+                      minimumSize: Size(103, 30),
                       primary: Color(0xFFE17262),
                       padding: EdgeInsets.symmetric(
                         horizontal: 30,
