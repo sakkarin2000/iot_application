@@ -1,3 +1,5 @@
+
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +8,7 @@ import 'package:iot_application/providers/applicationstate.dart';
 import 'package:iot_application/screens/monthschedule.dart';
 import 'package:iot_application/screens/categories.dart';
 import 'package:iot_application/screens/profile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() => runApp(MyApp());
 
@@ -13,6 +16,7 @@ const primaryColor = Color(0xFF6CAF97);
 
 class MyApp extends StatelessWidget {
   final appTitle = 'Hamburger Bar';
+  
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +36,14 @@ class Hamburgerja extends StatefulWidget {
   _HamburgerjaState createState() => _HamburgerjaState();
 }
 
+
 class _HamburgerjaState extends State<Hamburgerja> {
   get isSelected => null;
   String displayName;
-  final _formKey = GlobalKey<FormState>();
+  String _email;
+  final auth = FirebaseAuth.instance;
+
+  bool checkCurrentPasswordValid = true;
 
   @override
   void initState() {
@@ -67,23 +75,17 @@ class _HamburgerjaState extends State<Hamburgerja> {
         ),
         children: [
           Padding(
-              padding: const EdgeInsets.only(left: 30, right: 30, bottom: 10),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: InputText(
-                          labelText: "Old password",
-                          errorText: 'Input old password'),
-                    ),
-                    InputText(
-                        labelText: "New password",
-                        errorText: 'Input new password')
-                  ],
-                ),
-              )),
+              padding: const EdgeInsets.only(left: 30, right: 30),
+               child: TextField(
+                 keyboardType: TextInputType.emailAddress,
+                 decoration: InputDecoration(hintText: ('Email')),
+                 onChanged: (value) {
+                   setState(() {
+                     _email = value;
+                   });
+                 },    
+               )
+              ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 8),
             child: Row(
@@ -112,8 +114,10 @@ class _HamburgerjaState extends State<Hamburgerja> {
                   padding: EdgeInsets.all(5.0),
                 ),
                 ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState.validate()) {}
+                  onPressed: () {
+                    auth.sendPasswordResetEmail(email: _email);
+                    Navigator.of(context).pop();
+                    print("Password for reset is sent");
                   },
                   style: ElevatedButton.styleFrom(
                       minimumSize: Size(103, 30),
@@ -125,7 +129,7 @@ class _HamburgerjaState extends State<Hamburgerja> {
                       shape: RoundedRectangleBorder(
                           borderRadius: new BorderRadius.circular(5.0))),
                   child: Text(
-                    'Save',
+                    'Request',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,

@@ -3,6 +3,7 @@ import 'package:iot_application/widgets/textformfield.dart';
 import 'package:iot_application/widgets/button.dart';
 import 'package:provider/provider.dart';
 import 'package:iot_application/providers/applicationstate.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
   final onChange;
@@ -13,10 +14,96 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
-
+String _email;
+  final auth = FirebaseAuth.instance;
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   @override
+
+void openDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: ListTile(
+          title: Center(
+            child: Text(
+              'Forgot password',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+        children: [
+          Padding(
+              padding: const EdgeInsets.only(left: 30, right: 30),
+               child: TextField(
+                 keyboardType: TextInputType.emailAddress,
+                 decoration: InputDecoration(hintText: ('Email')),
+                 onChanged: (value) {
+                   setState(() {
+                     _email = value;
+                   });
+                 },    
+               )
+              ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                        minimumSize: Size(103, 30),
+                        primary: Colors.grey,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 8,
+                        ),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: new BorderRadius.circular(5.0))),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )),
+                Padding(
+                  padding: EdgeInsets.all(5.0),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    auth.sendPasswordResetEmail(email: _email);
+                    Navigator.of(context).pop();
+                    print("Password for reset is sent");
+                  },
+                  style: ElevatedButton.styleFrom(
+                      minimumSize: Size(103, 30),
+                      primary: Color(0xFFE17262),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 30,
+                        vertical: 8,
+                      ),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(5.0))),
+                  child: Text(
+                    'Request',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -89,6 +176,30 @@ class _LoginPageState extends State<LoginPage> {
                         onTap: () => widget.onChange(),
                         child: Text(
                           'Sign up',
+                          style: TextStyle(
+                            color: Color(0xFFF3DCD7),
+                            fontFamily: 'mali',
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Forgot password? ',
+                        style: TextStyle(
+                            color: Color(0xFFF3DCD7),
+                            fontFamily: 'mali',
+                            fontWeight: FontWeight.w500),
+                      ),
+                      GestureDetector(
+                        onTap: () => openDialog(),
+                        child: Text(
+                          'Request here',
                           style: TextStyle(
                             color: Color(0xFFF3DCD7),
                             fontFamily: 'mali',
