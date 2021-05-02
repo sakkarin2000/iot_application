@@ -12,6 +12,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iot_application/providers/database.dart';
+import 'package:uuid/uuid.dart';
 
 class MonthSchedule extends StatelessWidget {
   String _userId;
@@ -64,6 +65,7 @@ class _HomePageState extends State<HomePage> {
   String _eventAlertText = "";
   String _userId;
   List<Event> myEventList;
+  var uuid = Uuid();
 
   @override
   void initState() {
@@ -403,16 +405,36 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   ..._selectedEvents.map((value) => ListTile(
-                        title: Text(
-                            "${value.event} @${time.format(value.start)}-${time.format(value.stop)}",
-                            style: GoogleFonts.mali(
-                              textStyle: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14,
-                              ),
-                            )),
-                      )),
+                        title: Row(
+                          children: <Widget>[
+                            Text(
+                                "${value.event} @${time.format(value.start)}-${time.format(value.stop)}",
+                                style: GoogleFonts.mali(
+                                  textStyle: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14,
+                                  ),
+                                )
+                            ),
+                            IconButton(
+                              icon:
+                              Icon(Icons.edit, color: Colors.white),
+                              onPressed: () {
+                                print('click edit');
+                                setState(() {
+                                  _eventController.text = value.event;
+                                  _eventAlert = false;
+                                  _eventAlertText = "";
+                                  _start = value.start;
+                                  _stop = value.stop;
+                                });
+                                _showAddDialog(1,value);
+                              },
+                            ),
+                          ],
+                        ),
+                  )),
                 ],
               )),
           borderRadius: radius,
@@ -429,13 +451,13 @@ class _HomePageState extends State<HomePage> {
             _start = _controller.selectedDay;
             _stop = _start.add(Duration(hours: 1));
           });
-          _showAddDialog();
+          _showAddDialog(0,null);
         },
       ),
     );
   }
 
-  _showAddDialog() async {
+  _showAddDialog(int type, Event argEvent) async {
     print(_selectedEvents);
     await showDialog(
         context: context,
@@ -449,7 +471,7 @@ class _HomePageState extends State<HomePage> {
                       children: <Widget>[
                     TextField(
                       controller: _eventController,
-                      maxLength: 50,
+                      maxLength: 25,
                       decoration: InputDecoration(
                           labelText: "Event", hintText: "Enter event name",
                           counterText: ''),
@@ -525,6 +547,18 @@ class _HomePageState extends State<HomePage> {
                     Navigator.pop(context, false);
                   },
                 ),
+                Opacity(
+                  opacity: type==1 ? 1 : 0,
+                  child: TextButton(
+                    child: Text("Delete"),
+                    onPressed: () {
+                      String id=argEvent.id;
+                      _selectedEvents.remove(argEvent);
+                      DatabaseService(uid: _userId).removeEvent(id);
+                      Navigator.pop(context, false);
+                    },
+                  ),
+                ),
                 TextButton(
                   child: Text("Save"),
                   onPressed: () {
@@ -558,6 +592,11 @@ class _HomePageState extends State<HomePage> {
 
                     if (_selectedEvents != null) {
                       for (Event e in _selectedEvents) {
+                        if(type==1){
+                          if(e.start==argEvent.start){
+                            continue;
+                          }
+                        }
                         var s1 = e.start.hour * 60 + e.start.minute;
                         var e1 = e.stop.hour * 60 + e.stop.minute;
 
@@ -583,40 +622,88 @@ class _HomePageState extends State<HomePage> {
                       }
                     }
 
-                    if (_selectedEvents != null) {
-                      _selectedEvents.add(Event(
-                          event: _eventController.text
-                              .trim()
-                              .replaceAll(RegExp(" +"), " "),
-                          start: _start,
-                          stop: _stop));
-
-                      _selectedEvents.sort((a, b) {
-                        var sa = a.start.hour * 60 + a.start.minute;
-                        var sb = b.start.hour * 60 + b.start.minute;
-                        return sa - sb;
-                      });
-
-                      print('[DB] Add new event to the day');
-                    } else {
-                      _selectedEvents = [
-                        Event(
+                    if(type==0) {
+                      String id = uuid.v1();
+                      if (_selectedEvents != null) {
+                        _selectedEvents.add(Event(
+                            id: id,
                             event: _eventController.text
                                 .trim()
                                 .replaceAll(RegExp(" +"), " "),
                             start: _start,
-                            stop: _stop)
-                      ];
+                            stop: _stop));
 
-                      print('[DB] Add first event to the day');
+                        _selectedEvents.sort((a, b) {
+                          var sa = a.start.hour * 60 + a.start.minute;
+                          var sb = b.start.hour * 60 + b.start.minute;
+                          return sa - sb;
+                        });
+
+                        print('[DB] Add new event to the day');
+                      } else {
+                        _selectedEvents = [
+                          Event(
+                              id: id,
+                              event: _eventController.text
+                                  .trim()
+                                  .replaceAll(RegExp(" +"), " "),
+                              start: _start,
+                              stop: _stop)
+                        ];
+
+                        print('[DB] Add first event to the day');
+                      }
+
+                      DatabaseService(uid: _userId).addEvent(
+                        id,
+                        _eventController.text
+                            .trim()
+                            .replaceAll(RegExp(" +"), " "),
+                        _start,
+                        _stop,
+                      );
                     }
-                    DatabaseService(uid: _userId).addEvent(
-                      _eventController.text
-                          .trim()
-                          .replaceAll(RegExp(" +"), " "),
-                      _start,
-                      _stop,
-                    );
+                    if(type==1) {
+                      String id = argEvent.id;
+                      _selectedEvents.remove(argEvent);
+
+                      if (_selectedEvents != null) {
+                        _selectedEvents.add(Event(
+                            id: id,
+                            event: _eventController.text
+                                .trim()
+                                .replaceAll(RegExp(" +"), " "),
+                            start: _start,
+                            stop: _stop));
+
+                        _selectedEvents.sort((a, b) {
+                          var sa = a.start.hour * 60 + a.start.minute;
+                          var sb = b.start.hour * 60 + b.start.minute;
+                          return sa - sb;
+                        });
+                      } else {
+                        _selectedEvents = [
+                          Event(
+                              id: id,
+                              event: _eventController.text
+                                  .trim()
+                                  .replaceAll(RegExp(" +"), " "),
+                              start: _start,
+                              stop: _stop)
+                        ];
+                      }
+
+                      print('[DB] Update event');
+                      DatabaseService(uid: _userId).updateEvent(
+                        id,
+                        _eventController.text
+                            .trim()
+                            .replaceAll(RegExp(" +"), " "),
+                        _start,
+                        _stop,
+                      );
+                    }
+
                     _events[_controller.selectedDay] = _selectedEvents;
                     // _start = new DateTime(_start.year, _start.month, _start.day, 12, 0, _start.second, _start.millisecond, _start.microsecond);
                     // _stop = new DateTime(_stop.pyear, _stop.month, _stop.day, 12, 0, _stop.second, _stop.millisecond, _stop.microsecond);
