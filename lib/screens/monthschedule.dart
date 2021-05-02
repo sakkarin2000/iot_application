@@ -66,6 +66,16 @@ class _HomePageState extends State<HomePage> {
   String _userId;
   List<Event> myEventList;
   var uuid = Uuid();
+  String _catValue =null;
+  int catColor=null;
+  final Map<String, int> catMap = {
+    "Family": 0xffFECD4C,
+    "Friend": 0xff58DCE4,
+    "School": 0xffE17262,
+    "Personal": 0xff9776F8,
+    "Special": 0xffFFB9A3,
+    "Other": 0xffE5A4ED,
+  };
 
   @override
   void initState() {
@@ -133,10 +143,10 @@ class _HomePageState extends State<HomePage> {
 
       if (_events[temp] != null) {
         _events[temp].add(Event(
-            event: myEvent.event, start: myEvent.start, stop: myEvent.stop));
+            id: myEvent.id, event: myEvent.event, start: myEvent.start, stop: myEvent.stop, cat: myEvent.cat));
       } else {
         _events[temp] = [
-          Event(event: myEvent.event, start: myEvent.start, stop: myEvent.stop),
+          Event(id: myEvent.id, event: myEvent.event, start: myEvent.start, stop: myEvent.stop, cat: myEvent.cat),
         ];
       }
       _events[temp].sort((a, b) {
@@ -405,7 +415,10 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   ..._selectedEvents.map((value) => ListTile(
-                        title: Row(
+                        title:
+                        Container(
+                        color: Color(catMap[value.cat]),
+                        child: Row(
                           children: <Widget>[
                             Text(
                                 "${value.event} @${time.format(value.start)}-${time.format(value.stop)}",
@@ -428,12 +441,14 @@ class _HomePageState extends State<HomePage> {
                                   _eventAlertText = "";
                                   _start = value.start;
                                   _stop = value.stop;
+                                  _catValue = value.cat;
                                 });
                                 _showAddDialog(1,value);
                               },
                             ),
                           ],
                         ),
+                      ),
                   )),
                 ],
               )),
@@ -450,6 +465,7 @@ class _HomePageState extends State<HomePage> {
             _eventAlertText = "";
             _start = _controller.selectedDay;
             _stop = _start.add(Duration(hours: 1));
+            _catValue = 'Family';
           });
           _showAddDialog(0,null);
         },
@@ -528,6 +544,41 @@ class _HomePageState extends State<HomePage> {
                                 _stop = dateTime;
                               });
                             })),
+                    DropdownButton<String>(
+                          value: _catValue,
+                          icon: const Icon(Icons.arrow_downward),
+                          iconSize: 24,
+                          elevation: 16,
+                          style: const TextStyle(color: Colors.deepPurple),
+                          underline: Container(
+                            height: 2,
+                            color: Color(catMap[_catValue]),
+                          ),
+                          onChanged: (newValue) {
+                            setState(() {
+                              _catValue = newValue;
+                            });
+                          },
+                          items: [
+                            'Family',
+                            'Friend',
+                            'School',
+                            'Personal',
+                            'Special',
+                            'Other'].map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value,
+                                  style: GoogleFonts.mali(
+                                    textStyle: TextStyle(
+                                      color: Color(catMap[value]),
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14,
+                                    ),
+                                  )),
+                            );
+                          }).toList(),
+                    ),
                     Opacity(
                       opacity: _eventAlert ? 1 : 0,
                       child: Text(_eventAlertText,
@@ -547,8 +598,8 @@ class _HomePageState extends State<HomePage> {
                     Navigator.pop(context, false);
                   },
                 ),
-                Opacity(
-                  opacity: type==1 ? 1 : 0,
+                Visibility (
+                  visible: type==1 ? true : false,
                   child: TextButton(
                     child: Text("Delete"),
                     onPressed: () {
@@ -631,7 +682,9 @@ class _HomePageState extends State<HomePage> {
                                 .trim()
                                 .replaceAll(RegExp(" +"), " "),
                             start: _start,
-                            stop: _stop));
+                            stop: _stop,
+                            cat: _catValue,
+                        ));
 
                         _selectedEvents.sort((a, b) {
                           var sa = a.start.hour * 60 + a.start.minute;
@@ -648,7 +701,9 @@ class _HomePageState extends State<HomePage> {
                                   .trim()
                                   .replaceAll(RegExp(" +"), " "),
                               start: _start,
-                              stop: _stop)
+                              stop: _stop,
+                              cat: _catValue,
+                          )
                         ];
 
                         print('[DB] Add first event to the day');
@@ -661,9 +716,10 @@ class _HomePageState extends State<HomePage> {
                             .replaceAll(RegExp(" +"), " "),
                         _start,
                         _stop,
+                        _catValue,
                       );
                     }
-                    if(type==1) {
+                    else if(type==1) {
                       String id = argEvent.id;
                       _selectedEvents.remove(argEvent);
 
@@ -674,7 +730,9 @@ class _HomePageState extends State<HomePage> {
                                 .trim()
                                 .replaceAll(RegExp(" +"), " "),
                             start: _start,
-                            stop: _stop));
+                            stop: _stop,
+                            cat: _catValue,
+                        ));
 
                         _selectedEvents.sort((a, b) {
                           var sa = a.start.hour * 60 + a.start.minute;
@@ -689,7 +747,9 @@ class _HomePageState extends State<HomePage> {
                                   .trim()
                                   .replaceAll(RegExp(" +"), " "),
                               start: _start,
-                              stop: _stop)
+                              stop: _stop,
+                              cat: _catValue,
+                          )
                         ];
                       }
 
@@ -701,6 +761,7 @@ class _HomePageState extends State<HomePage> {
                             .replaceAll(RegExp(" +"), " "),
                         _start,
                         _stop,
+                        _catValue,
                       );
                     }
 
