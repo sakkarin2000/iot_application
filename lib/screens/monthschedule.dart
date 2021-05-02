@@ -66,8 +66,8 @@ class _HomePageState extends State<HomePage> {
   String _userId;
   List<Event> myEventList;
   var uuid = Uuid();
-  String _catValue =null;
-  int catColor=null;
+  String _catValue = null;
+  int catColor = null;
   final Map<String, int> catMap = {
     "Family": 0xffFECD4C,
     "Friend": 0xff58DCE4,
@@ -115,47 +115,61 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> getEventList() async {
+    print('getEventList has been called');
     await Firebase.initializeApp().then((value) async {
-      await FirebaseAuth.instance.authStateChanges().listen((event) {
+      FirebaseAuth.instance.authStateChanges().listen((event) async {
         setState(() {
           this._userId = event.uid;
         });
+        List<Event> eventlist = await DatabaseService(uid: event.uid).myEventNa;
+        setState(() {
+          myEventList = eventlist;
+        });
+        print('Here iss ');
+        myEventList.forEach((myEvent) {
+          print(
+              'EventName : ${myEvent.event} StartTime : ${myEvent.start} EndTime : ${myEvent.stop}');
+          DateTime temp = new DateTime(
+              myEvent.start.year,
+              myEvent.start.month,
+              myEvent.start.day,
+              12,
+              0,
+              myEvent.start.second,
+              myEvent.start.millisecond,
+              myEvent.start.microsecond);
+
+          if (_events[temp] != null) {
+            _events[temp].add(Event(
+                id: myEvent.id,
+                event: myEvent.event,
+                start: myEvent.start,
+                stop: myEvent.stop,
+                cat: myEvent.cat));
+          } else {
+            _events[temp] = [
+              Event(
+                  id: myEvent.id,
+                  event: myEvent.event,
+                  start: myEvent.start,
+                  stop: myEvent.stop,
+                  cat: myEvent.cat),
+            ];
+          }
+          _events[temp].sort((a, b) {
+            var sa = a.start.hour * 60 + a.start.minute;
+            var sb = b.start.hour * 60 + b.start.minute;
+            return sa - sb;
+          });
+        });
       });
-    });
-    List<Event> eventlist = await DatabaseService(uid: _userId).myEventNa;
-    setState(() {
-      myEventList = eventlist;
     });
     print('_userId $_userId');
-    print('Here is ');
-    myEventList.forEach((myEvent) {
-      print(
-          'EventName : ${myEvent.event} StartTime : ${myEvent.start} EndTime : ${myEvent.stop}');
-      DateTime temp = new DateTime(
-          myEvent.start.year,
-          myEvent.start.month,
-          myEvent.start.day,
-          12,
-          0,
-          myEvent.start.second,
-          myEvent.start.millisecond,
-          myEvent.start.microsecond);
-
-      if (_events[temp] != null) {
-        _events[temp].add(Event(
-            id: myEvent.id, event: myEvent.event, start: myEvent.start, stop: myEvent.stop, cat: myEvent.cat));
-      } else {
-        _events[temp] = [
-          Event(id: myEvent.id, event: myEvent.event, start: myEvent.start, stop: myEvent.stop, cat: myEvent.cat),
-        ];
-      }
-      _events[temp].sort((a, b) {
-        var sa = a.start.hour * 60 + a.start.minute;
-        var sb = b.start.hour * 60 + b.start.minute;
-        return sa - sb;
-      });
-    });
-    
+    // List<Event> eventlist = await DatabaseService(uid: _userId).myEventNa;
+    // setState(() {
+    //   myEventList = eventlist;
+    // });
+    print('_userId $_userId');
   }
 
   @override
@@ -371,12 +385,12 @@ class _HomePageState extends State<HomePage> {
         ),
         SlidingUpPanel(
           isDraggable: false,
-          minHeight: (274.0
-              +(_selectedEvents.length > 4
+          minHeight: (274.0 +
+              (_selectedEvents.length > 4
                   ? (_selectedEvents.length - 4) * 56.0
                   : 0.0)),
-          maxHeight: (274.0
-              +(_selectedEvents.length > 4
+          maxHeight: (274.0 +
+              (_selectedEvents.length > 4
                   ? (_selectedEvents.length - 4) * 56.0
                   : 0.0)),
           panel: Center(
@@ -415,41 +429,38 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   ..._selectedEvents.map((value) => ListTile(
-                        title:
-                        Container(
-                        color: Color(catMap[value.cat]),
-                        child: Row(
-                          children: <Widget>[
-                            Text(
-                                "${value.event} @${time.format(value.start)}-${time.format(value.stop)}",
-                                style: GoogleFonts.mali(
-                                  textStyle: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 14,
-                                  ),
-                                )
-                            ),
-                            IconButton(
-                              icon:
-                              Icon(Icons.edit, color: Colors.white),
-                              onPressed: () {
-                                print('click edit');
-                                setState(() {
-                                  _eventController.text = value.event;
-                                  _eventAlert = false;
-                                  _eventAlertText = "";
-                                  _start = value.start;
-                                  _stop = value.stop;
-                                  _catValue = value.cat;
-                                });
-                                _showAddDialog(1,value);
-                              },
-                            ),
-                          ],
+                        title: Container(
+                          color: Color(catMap[value.cat]),
+                          child: Row(
+                            children: <Widget>[
+                              Text(
+                                  "${value.event} @${time.format(value.start)}-${time.format(value.stop)}",
+                                  style: GoogleFonts.mali(
+                                    textStyle: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14,
+                                    ),
+                                  )),
+                              IconButton(
+                                icon: Icon(Icons.edit, color: Colors.white),
+                                onPressed: () {
+                                  print('click edit');
+                                  setState(() {
+                                    _eventController.text = value.event;
+                                    _eventAlert = false;
+                                    _eventAlertText = "";
+                                    _start = value.start;
+                                    _stop = value.stop;
+                                    _catValue = value.cat;
+                                  });
+                                  _showAddDialog(1, value);
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                  )),
+                      )),
                 ],
               )),
           borderRadius: radius,
@@ -467,7 +478,7 @@ class _HomePageState extends State<HomePage> {
             _stop = _start.add(Duration(hours: 1));
             _catValue = 'Family';
           });
-          _showAddDialog(0,null);
+          _showAddDialog(0, null);
         },
       ),
     );
@@ -489,7 +500,8 @@ class _HomePageState extends State<HomePage> {
                       controller: _eventController,
                       maxLength: 25,
                       decoration: InputDecoration(
-                          labelText: "Event", hintText: "Enter event name",
+                          labelText: "Event",
+                          hintText: "Enter event name",
                           counterText: ''),
                       onChanged: (text) {
                         if (text.isEmpty) {
@@ -545,39 +557,40 @@ class _HomePageState extends State<HomePage> {
                               });
                             })),
                     DropdownButton<String>(
-                          value: _catValue,
-                          icon: const Icon(Icons.arrow_downward),
-                          iconSize: 24,
-                          elevation: 16,
-                          style: const TextStyle(color: Colors.deepPurple),
-                          underline: Container(
-                            height: 2,
-                            color: Color(catMap[_catValue]),
-                          ),
-                          onChanged: (newValue) {
-                            setState(() {
-                              _catValue = newValue;
-                            });
-                          },
-                          items: [
-                            'Family',
-                            'Friend',
-                            'School',
-                            'Personal',
-                            'Special',
-                            'Other'].map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value,
-                                  style: GoogleFonts.mali(
-                                    textStyle: TextStyle(
-                                      color: Color(catMap[value]),
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 14,
-                                    ),
-                                  )),
-                            );
-                          }).toList(),
+                      value: _catValue,
+                      icon: const Icon(Icons.arrow_downward),
+                      iconSize: 24,
+                      elevation: 16,
+                      style: const TextStyle(color: Colors.deepPurple),
+                      underline: Container(
+                        height: 2,
+                        color: Color(catMap[_catValue]),
+                      ),
+                      onChanged: (newValue) {
+                        setState(() {
+                          _catValue = newValue;
+                        });
+                      },
+                      items: [
+                        'Family',
+                        'Friend',
+                        'School',
+                        'Personal',
+                        'Special',
+                        'Other'
+                      ].map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value,
+                              style: GoogleFonts.mali(
+                                textStyle: TextStyle(
+                                  color: Color(catMap[value]),
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                ),
+                              )),
+                        );
+                      }).toList(),
                     ),
                     Opacity(
                       opacity: _eventAlert ? 1 : 0,
@@ -598,12 +611,12 @@ class _HomePageState extends State<HomePage> {
                     Navigator.pop(context, false);
                   },
                 ),
-                Visibility (
-                  visible: type==1 ? true : false,
+                Visibility(
+                  visible: type == 1 ? true : false,
                   child: TextButton(
                     child: Text("Delete"),
                     onPressed: () {
-                      String id=argEvent.id;
+                      String id = argEvent.id;
                       _selectedEvents.remove(argEvent);
                       DatabaseService(uid: _userId).removeEvent(id);
                       Navigator.pop(context, false);
@@ -643,8 +656,8 @@ class _HomePageState extends State<HomePage> {
 
                     if (_selectedEvents != null) {
                       for (Event e in _selectedEvents) {
-                        if(type==1){
-                          if(e.start==argEvent.start){
+                        if (type == 1) {
+                          if (e.start == argEvent.start) {
                             continue;
                           }
                         }
@@ -673,17 +686,17 @@ class _HomePageState extends State<HomePage> {
                       }
                     }
 
-                    if(type==0) {
+                    if (type == 0) {
                       String id = uuid.v1();
                       if (_selectedEvents != null) {
                         _selectedEvents.add(Event(
-                            id: id,
-                            event: _eventController.text
-                                .trim()
-                                .replaceAll(RegExp(" +"), " "),
-                            start: _start,
-                            stop: _stop,
-                            cat: _catValue,
+                          id: id,
+                          event: _eventController.text
+                              .trim()
+                              .replaceAll(RegExp(" +"), " "),
+                          start: _start,
+                          stop: _stop,
+                          cat: _catValue,
                         ));
 
                         _selectedEvents.sort((a, b) {
@@ -696,13 +709,13 @@ class _HomePageState extends State<HomePage> {
                       } else {
                         _selectedEvents = [
                           Event(
-                              id: id,
-                              event: _eventController.text
-                                  .trim()
-                                  .replaceAll(RegExp(" +"), " "),
-                              start: _start,
-                              stop: _stop,
-                              cat: _catValue,
+                            id: id,
+                            event: _eventController.text
+                                .trim()
+                                .replaceAll(RegExp(" +"), " "),
+                            start: _start,
+                            stop: _stop,
+                            cat: _catValue,
                           )
                         ];
 
@@ -718,20 +731,19 @@ class _HomePageState extends State<HomePage> {
                         _stop,
                         _catValue,
                       );
-                    }
-                    else if(type==1) {
+                    } else if (type == 1) {
                       String id = argEvent.id;
                       _selectedEvents.remove(argEvent);
 
                       if (_selectedEvents != null) {
                         _selectedEvents.add(Event(
-                            id: id,
-                            event: _eventController.text
-                                .trim()
-                                .replaceAll(RegExp(" +"), " "),
-                            start: _start,
-                            stop: _stop,
-                            cat: _catValue,
+                          id: id,
+                          event: _eventController.text
+                              .trim()
+                              .replaceAll(RegExp(" +"), " "),
+                          start: _start,
+                          stop: _stop,
+                          cat: _catValue,
                         ));
 
                         _selectedEvents.sort((a, b) {
@@ -742,13 +754,13 @@ class _HomePageState extends State<HomePage> {
                       } else {
                         _selectedEvents = [
                           Event(
-                              id: id,
-                              event: _eventController.text
-                                  .trim()
-                                  .replaceAll(RegExp(" +"), " "),
-                              start: _start,
-                              stop: _stop,
-                              cat: _catValue,
+                            id: id,
+                            event: _eventController.text
+                                .trim()
+                                .replaceAll(RegExp(" +"), " "),
+                            start: _start,
+                            stop: _stop,
+                            cat: _catValue,
                           )
                         ];
                       }
