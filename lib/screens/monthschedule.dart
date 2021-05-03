@@ -67,8 +67,8 @@ class _HomePageState extends State<HomePage> {
   String _userId;
   List<Event> myEventList;
   var uuid = Uuid();
-  String _catValue =null;
-  int catColor=null;
+  String _catValue;
+  int catColor;
   final Map<String, int> catMap = {
     "Family": 0xffFECD4C,
     "Friend": 0xff58DCE4,
@@ -129,48 +129,56 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> getEventList() async {
+    print('getEventList has been called');
     await Firebase.initializeApp().then((value) async {
-      await FirebaseAuth.instance.authStateChanges().listen((event) {
+      FirebaseAuth.instance.authStateChanges().listen((event) async {
         setState(() {
           this._userId = event.uid;
         });
+        List<Event> eventlist = await DatabaseService(uid: event.uid).myEventNa;
+        setState(() {
+          myEventList = eventlist;
+        });
+        print('Here iss ');
+        myEventList.forEach((myEvent) {
+          print(
+              'EventName : ${myEvent.event} StartTime : ${myEvent.start} EndTime : ${myEvent.stop}');
+          DateTime temp = new DateTime(
+              myEvent.start.year,
+              myEvent.start.month,
+              myEvent.start.day,
+              12,
+              0,
+              myEvent.start.second,
+              myEvent.start.millisecond,
+              myEvent.start.microsecond);
+
+          if (_events[temp] != null) {
+            _events[temp].add(Event(
+                id: myEvent.id,
+                event: myEvent.event,
+                start: myEvent.start,
+                stop: myEvent.stop,
+                cat: myEvent.cat));
+          } else {
+            _events[temp] = [
+              Event(
+                  id: myEvent.id,
+                  event: myEvent.event,
+                  start: myEvent.start,
+                  stop: myEvent.stop,
+                  cat: myEvent.cat),
+            ];
+          }
+          _events[temp].sort((a, b) {
+            var sa = a.start.hour * 60 + a.start.minute;
+            var sb = b.start.hour * 60 + b.start.minute;
+            return sa - sb;
+          });
+        });
       });
-    });
-    List<Event> eventlist = await DatabaseService(uid: _userId).myEventNa;
-    setState(() {
-      myEventList = eventlist;
     });
     print('_userId $_userId');
-    print('Here is ');
-    myEventList.forEach((myEvent) {
-      print(
-          'EventName : ${myEvent.event} StartTime : ${myEvent.start} EndTime : ${myEvent.stop}');
-      DateTime temp = new DateTime(
-          myEvent.start.year,
-          myEvent.start.month,
-          myEvent.start.day,
-          12,
-          0,
-          myEvent.start.second,
-          myEvent.start.millisecond,
-          myEvent.start.microsecond,
-      );
-
-      if (_events[temp] != null) {
-        _events[temp].add(Event(
-            id: myEvent.id, event: myEvent.event, start: myEvent.start, stop: myEvent.stop, cat: myEvent.cat));
-      } else {
-        _events[temp] = [
-          Event(id: myEvent.id, event: myEvent.event, start: myEvent.start, stop: myEvent.stop, cat: myEvent.cat),
-        ];
-      }
-      _events[temp].sort((a, b) {
-        var sa = a.start.hour * 60 + a.start.minute;
-        var sb = b.start.hour * 60 + b.start.minute;
-        return sa - sb;
-      });
-    });
-    
   }
 
   @override
@@ -506,6 +514,7 @@ class _HomePageState extends State<HomePage> {
           borderRadius: radius,
         )
       ]),
+
       floatingActionButton:
 
       Column(
@@ -586,9 +595,6 @@ class _HomePageState extends State<HomePage> {
 
           ]
       )
-
-
-
     );
   }
 

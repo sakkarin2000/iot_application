@@ -8,7 +8,7 @@ class DatabaseService {
   DatabaseService({this.uid});
 
   final CollectionReference eventCollection =
-  FirebaseFirestore.instance.collection('event');
+      FirebaseFirestore.instance.collection('event');
 
   Future addEvent(String id, String actName, DateTime startTime,
       DateTime endTime, String cat) async {
@@ -17,21 +17,19 @@ class DatabaseService {
         .collection('myevent')
         .doc(id)
         .set({
-      'id': id,
-      'actName': actName,
-      'startTime': startTime,
-      'endTime': endTime,
-      'cat': cat,
-    })
-        .then((e) =>
-    {
-      print('Document Added $startTime'),
-      print(startTime),
-    })
-        .catchError((e) =>
-    {
-      print('Error adding document: ' + e),
-    });
+          'id': id,
+          'actName': actName,
+          'startTime': startTime,
+          'endTime': endTime,
+          'cat': cat,
+        })
+        .then((e) => {
+              print('Document Added $startTime'),
+              print(startTime),
+            })
+        .catchError((e) => {
+              print('Error adding document: ' + e),
+            });
   }
 
   Future updateEvent(String id, String actName, DateTime startTime,
@@ -41,35 +39,33 @@ class DatabaseService {
         .collection('myevent')
         .doc(id)
         .update({
-      'actName': actName,
-      'startTime': startTime,
-      'endTime': endTime,
-      'cat': cat,
-    })
-        .then((e) =>
-    {
-      print('Document Updated $startTime'),
-      print(startTime),
-    })
-        .catchError((e) =>
-    {
-      print('Error updating document: ' + e),
-    });
+          'actName': actName,
+          'startTime': startTime,
+          'endTime': endTime,
+          'cat': cat,
+        })
+        .then((e) => {
+              print('Document Updated $startTime'),
+              print(startTime),
+            })
+        .catchError((e) => {
+              print('Error updating document: ' + e),
+            });
   }
 
   Future removeEvent(String id) async {
     return await eventCollection
         .doc(uid)
         .collection('myevent')
-        .doc(id).delete()
-        .then((e) =>
-    {
-      print('Document Removed $id'),
-      print(id),
-    }).catchError((e) =>
-    {
-      print('Error removing document: ' + e),
-    });
+        .doc(id)
+        .delete()
+        .then((e) => {
+              print('Document Removed $id'),
+              print(id),
+            })
+        .catchError((e) => {
+              print('Error removing document: ' + e),
+            });
   }
 
   List<Event> _eventListFromSnapshot(QuerySnapshot snapshot) {
@@ -86,6 +82,9 @@ class DatabaseService {
 
   Future<List<Event>> get myEventNa {
     var eventList = List<Event>.empty(growable: true);
+    print(uid);
+    print('getEventNAAAAHasbeencalled');
+    print(uid);
     return eventCollection
         .doc(uid)
         .collection('myevent')
@@ -107,6 +106,8 @@ class DatabaseService {
   }
 
   Stream<List<Event>> get myEvent {
+    print('getEventHasbeencalled');
+    print(uid);
     return eventCollection
         .doc(uid)
         .collection('myevent')
