@@ -151,7 +151,7 @@ class _HomePageState extends State<HomePage> {
               0,
               myEvent.start.second,
               myEvent.start.millisecond,
-              myEvent.start.microsecond);
+              myEvent.start.microsecond).toUtc();
 
           if (_events[temp] != null) {
             _events[temp].add(Event(
@@ -353,10 +353,10 @@ class _HomePageState extends State<HomePage> {
                   // }
                   ////events checking
                   // String a = "";
-                  // for (Event e in _events[date]) {
+                  // for (Event e in _selectedEvents) {
                   //   print('Date in for loop${e.start}');
-                  //   a +=
-                  //       ", ${e.event} ${time.format(e.start)}-${time.format(e.stop)}";
+                  //   // a +=
+                  //   //     ", ${e.event} ${time.format(e.start)}-${time.format(e.stop)}";
                   // }
                   // if (a.isNotEmpty) {
                   //   print(a);
@@ -530,8 +530,8 @@ class _HomePageState extends State<HomePage> {
                   setState(() {
                     _eventAlert = false;
                     _eventAlertText = "";
-                    _start = _controller.selectedDay;
-                    _stop = _start.add(Duration(hours: 1));
+                    _start = _controller.selectedDay.toLocal().subtract(Duration(hours:7));
+                    _stop = _controller.selectedDay.toLocal().subtract(Duration(hours:6));
                     _catValue = 'Family';
                     _addMore=false;
                     _addList=[];
@@ -565,8 +565,8 @@ class _HomePageState extends State<HomePage> {
                 setState(() {
                   _eventAlert = false;
                   _eventAlertText = "";
-                  _start = _controller.selectedDay;
-                  _stop = _start.add(Duration(hours: 1));
+                  _start = _controller.selectedDay.toLocal().subtract(Duration(hours:7));
+                  _stop = _controller.selectedDay.toLocal().subtract(Duration(hours:6));
                   _catValue = 'Family';
                   _addMore=false;
                   _addList=[];
@@ -1079,7 +1079,7 @@ class _HomePageState extends State<HomePage> {
                                     i.start.second,
                                     i.start.millisecond,
                                     i.start.microsecond,
-                                  );
+                                  ).toUtc();
                                   DateTime Lstop = new DateTime(
                                     i.start.year,
                                     i.start.month,
@@ -1235,7 +1235,7 @@ class _HomePageState extends State<HomePage> {
                                   _start.second,
                                   _start.millisecond,
                                   _start.microsecond,
-                                );
+                                ).toUtc();
                                 DateTime temp = new DateTime(
                                   _start.year,
                                   _start.month,
@@ -1926,7 +1926,7 @@ class _HomePageState extends State<HomePage> {
                                           i.start.second,
                                           i.start.millisecond,
                                           i.start.microsecond,
-                                        );
+                                        ).toUtc();
                                         DateTime Lstop = new DateTime(
                                           i.start.year,
                                           i.start.month,
