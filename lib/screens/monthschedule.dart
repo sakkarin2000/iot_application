@@ -170,7 +170,9 @@ class _HomePageState extends State<HomePage> {
                 event: myEvent.event,
                 start: myEvent.start,
                 stop: myEvent.stop,
-                cat: myEvent.cat));
+                cat: myEvent.cat,
+                isTimeTable: myEvent.isTimeTable
+            ));
           } else {
             _events[temp] = [
               Event(
@@ -178,7 +180,9 @@ class _HomePageState extends State<HomePage> {
                   event: myEvent.event,
                   start: myEvent.start,
                   stop: myEvent.stop,
-                  cat: myEvent.cat),
+                  cat: myEvent.cat,
+                  isTimeTable: myEvent.isTimeTable
+              ),
             ];
           }
           _events[temp].sort((a, b) {
@@ -1054,6 +1058,7 @@ class _HomePageState extends State<HomePage> {
                                     start: _start,
                                     stop: _stop,
                                     cat: _catValue,
+                                    isTimeTable: false,
                                   ));
                                 });
 
@@ -1082,6 +1087,7 @@ class _HomePageState extends State<HomePage> {
                                       start: _start,
                                       stop: _stop,
                                       cat: _catValue,
+                                      isTimeTable: false,
                                     )
                                   ];
                                 });
@@ -1207,6 +1213,7 @@ class _HomePageState extends State<HomePage> {
                                         start: i.start,
                                         stop: Lstop,
                                         cat: i.cat,
+                                        isTimeTable: i.isTimeTable,
                                       ));
 
                                       _events[index].sort((a, b) {
@@ -1226,6 +1233,7 @@ class _HomePageState extends State<HomePage> {
                                           start: i.start,
                                           stop: Lstop,
                                           cat: i.cat,
+                                          isTimeTable: i.isTimeTable,
                                         )
                                       ];
 
@@ -1240,6 +1248,7 @@ class _HomePageState extends State<HomePage> {
                                       i.start,
                                       Lstop,
                                       i.cat,
+                                      i.isTimeTable,
                                     );
                                   }
                                   else if(type==1) {
@@ -1255,6 +1264,7 @@ class _HomePageState extends State<HomePage> {
                                         start: i.start,
                                         stop: Lstop,
                                         cat: i.cat,
+                                        isTimeTable: i.isTimeTable,
                                       ));
 
                                       _events[index].sort((a, b) {
@@ -1272,6 +1282,7 @@ class _HomePageState extends State<HomePage> {
                                           start: i.start,
                                           stop: Lstop,
                                           cat: i.cat,
+                                          isTimeTable: i.isTimeTable,
                                         )
                                       ];
                                     }
@@ -1285,6 +1296,7 @@ class _HomePageState extends State<HomePage> {
                                       i.start,
                                       Lstop,
                                       i.cat,
+                                      i.isTimeTable,
                                     );
                                   }
 
@@ -1391,6 +1403,7 @@ class _HomePageState extends State<HomePage> {
                                       start: _start,
                                       stop: _stop,
                                       cat: _catValue,
+                                      isTimeTable: false,
                                     ));
 
                                     _events[index].sort((a, b) {
@@ -1410,6 +1423,7 @@ class _HomePageState extends State<HomePage> {
                                         start: _start,
                                         stop: _stop,
                                         cat: _catValue,
+                                        isTimeTable: false,
                                       )
                                     ];
 
@@ -1424,6 +1438,7 @@ class _HomePageState extends State<HomePage> {
                                     _start,
                                     _stop,
                                     _catValue,
+                                    false,
                                   );
                                 }
                                 else if(type==1) {
@@ -1439,6 +1454,7 @@ class _HomePageState extends State<HomePage> {
                                       start: _start,
                                       stop: _stop,
                                       cat: _catValue,
+                                      isTimeTable: false,
                                     ));
 
                                     _events[index].sort((a, b) {
@@ -1456,6 +1472,7 @@ class _HomePageState extends State<HomePage> {
                                         start: _start,
                                         stop: _stop,
                                         cat: _catValue,
+                                        isTimeTable: false,
                                       )
                                     ];
                                   }
@@ -1469,6 +1486,7 @@ class _HomePageState extends State<HomePage> {
                                     _start,
                                     _stop,
                                     _catValue,
+                                    false,
                                   );
                                 }
 
@@ -1924,6 +1942,7 @@ class _HomePageState extends State<HomePage> {
                                           start: _start,
                                           stop: _stop,
                                           cat: _catValue,
+                                          isTimeTable: false,
                                         ));
                                       });
 
@@ -1952,6 +1971,7 @@ class _HomePageState extends State<HomePage> {
                                             start: _start,
                                             stop: _stop,
                                             cat: _catValue,
+                                            isTimeTable: false,
                                           )
                                         ];
                                       });
@@ -2083,6 +2103,7 @@ class _HomePageState extends State<HomePage> {
                                               start: Lstart,
                                               stop: Lstop,
                                               cat: i.cat,
+                                              isTimeTable: i.isTimeTable,
                                             ));
 
                                             _events[index].sort((a, b) {
@@ -2106,6 +2127,7 @@ class _HomePageState extends State<HomePage> {
                                                 start: Lstart,
                                                 stop: Lstop,
                                                 cat: i.cat,
+                                                isTimeTable: i.isTimeTable,
                                               )
                                             ];
 
@@ -2121,6 +2143,7 @@ class _HomePageState extends State<HomePage> {
                                             Lstart,
                                             Lstop,
                                             i.cat,
+                                            i.isTimeTable,
                                           );
                                         }
                                       }

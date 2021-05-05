@@ -11,7 +11,7 @@ class DatabaseService {
       FirebaseFirestore.instance.collection('event');
 
   Future addEvent(String id, String actName, DateTime startTime,
-      DateTime endTime, String cat) async {
+      DateTime endTime, String cat, bool isTimeTable) async {
     return await eventCollection
         .doc(uid)
         .collection('myevent')
@@ -22,6 +22,7 @@ class DatabaseService {
           'startTime': startTime,
           'endTime': endTime,
           'cat': cat,
+          'isTimeTable': isTimeTable,
         })
         .then((e) => {
               print('Document Added $startTime'),
@@ -33,7 +34,7 @@ class DatabaseService {
   }
 
   Future updateEvent(String id, String actName, DateTime startTime,
-      DateTime endTime, String cat) async {
+      DateTime endTime, String cat, bool isTimeTable) async {
     return await eventCollection
         .doc(uid)
         .collection('myevent')
@@ -43,6 +44,7 @@ class DatabaseService {
           'startTime': startTime,
           'endTime': endTime,
           'cat': cat,
+          'isTimeTable': isTimeTable,
         })
         .then((e) => {
               print('Document Updated $startTime'),
@@ -76,6 +78,7 @@ class DatabaseService {
         start: doc.data()['startTime'],
         stop: doc.data()['endTime'],
         cat: doc.data()['cat'],
+        isTimeTable: doc.data()['isTimeTable'],
       );
     }).toList();
   }
@@ -97,6 +100,7 @@ class DatabaseService {
           start: doc.data()['startTime'].toDate(),
           stop: doc.data()['endTime'].toDate(),
           cat: doc.data()['cat'],
+          isTimeTable: doc.data()['isTimeTable'],
         );
 
         eventList.add(e);

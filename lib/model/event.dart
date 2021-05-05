@@ -4,6 +4,7 @@ class Event {
   final DateTime start;
   final DateTime stop;
   final String cat;
+  final bool isTimeTable;
 
   Event( {
     this.id,
@@ -11,5 +12,6 @@ class Event {
     this.start,
     this.stop,
     this.cat,
+    this.isTimeTable,
   });
 }

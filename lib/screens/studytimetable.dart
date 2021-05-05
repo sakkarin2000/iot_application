@@ -562,6 +562,7 @@ class _StudyTimetableState extends State<StudyTimetable> {
                                         start: Lstart,
                                         stop: Lstop,
                                         cat: cat,
+                                        isTimeTable: true,
                                       );
                                       if (weekMap[day] != null) {
                                         weekMap[day].add(temp);
