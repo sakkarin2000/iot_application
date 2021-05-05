@@ -39,6 +39,7 @@ class _HamburgerjaState extends State<Hamburgerja> {
   String displayName;
   String _email;
   final auth = FirebaseAuth.instance;
+  final _formKey = GlobalKey<FormState>();
 
   bool checkCurrentPasswordValid = true;
 
@@ -72,18 +73,24 @@ class _HamburgerjaState extends State<Hamburgerja> {
         ),
         children: [
           Padding(
-              padding: const EdgeInsets.only(left: 30, right: 30),
-              child: TextField(
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(hintText: ('Email')),
-                onChanged: (value) {
-                  setState(() {
-                    _email = value;
-                  });
-                },
-              )),
+              padding: const EdgeInsets.symmetric(horizontal: 33),
+              child: Form(
+                  key: _formKey,
+                  child: TextFormField(
+                    keyboardType: TextInputType.emailAddress,
+                    decoration:
+                        InputDecoration(labelText: ('Enter your email')),
+                    validator: (value) {
+                      return "Please input an email";
+                    },
+                    onChanged: (value) {
+                      setState(() {
+                        _email = value;
+                      });
+                    },
+                  ))),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -111,15 +118,17 @@ class _HamburgerjaState extends State<Hamburgerja> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    auth.sendPasswordResetEmail(email: _email);
-                    Navigator.of(context).pop();
-                    print("Password for reset is sent");
+                    if (_formKey.currentState.validate()) {
+                      auth.sendPasswordResetEmail(email: _email);
+                      Navigator.of(context).pop();
+                      print("Password was sent");
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                       minimumSize: Size(103, 30),
                       primary: Color(0xFFE17262),
                       padding: EdgeInsets.symmetric(
-                        horizontal: 30,
+                        horizontal: 25,
                         vertical: 8,
                       ),
                       shape: RoundedRectangleBorder(
