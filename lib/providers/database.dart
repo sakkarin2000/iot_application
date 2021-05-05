@@ -33,6 +33,24 @@ class DatabaseService {
             });
   }
 
+  Future setSemesterPeriod(DateTime startSemester, DateTime endSemester) async {
+    return await eventCollection
+        .doc(uid)
+        .collection('mysemester')
+        .doc('period')
+        .set({
+          'startSemester': startSemester,
+          'endSemester': endSemester,
+        })
+        .then((e) => {
+              print('Start/end semester is set: $startSemester'
+                  'and $startSemester'),
+            })
+        .catchError((e) => {
+              print('Error adding document: ' + e),
+            });
+  }
+
   Future addSubject(String id, String subject, DateTime startTime,
       DateTime endTime, String cat) async {
     print('add subject has been called');
@@ -154,6 +172,22 @@ class DatabaseService {
         eventList.add(e);
       });
       return eventList;
+    });
+  }
+
+  Future<dynamic> get getSemesterPeriod {
+    print(uid);
+    print('getSemesterPeriodHasbeencalled');
+    print(uid);
+    return eventCollection
+        .doc(uid)
+        .collection('mysemester')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      return {
+        "startSemester": querySnapshot.docs[0].data()['startSemester'].toDate(),
+        "endSemester": querySnapshot.docs[0].data()['endSemester'].toDate(),
+      };
     });
   }
 
