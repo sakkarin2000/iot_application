@@ -33,6 +33,29 @@ class DatabaseService {
             });
   }
 
+  Future addSubject(String id, String subject, DateTime startTime,
+      DateTime endTime, String cat) async {
+    print('add subject has been called');
+    return await eventCollection
+        .doc(uid)
+        .collection('mysubject')
+        .doc(id)
+        .set({
+          'id': id,
+          'subject': subject,
+          'startTime': startTime,
+          'endTime': endTime,
+          'cat': cat,
+        })
+        .then((e) => {
+              print('Document Added $startTime' '$subject'),
+              print(startTime),
+            })
+        .catchError((e) => {
+              print('Error adding document: ' + e),
+            });
+  }
+
   Future updateEvent(String id, String actName, DateTime startTime,
       DateTime endTime, String cat, bool isTimeTable) async {
     return await eventCollection
@@ -109,6 +132,31 @@ class DatabaseService {
     });
   }
 
+  Future<List<Event>> get mySubject {
+    var eventList = List<Event>.empty(growable: true);
+    print(uid);
+    print('getEventNAAAAHasbeencalled');
+    print(uid);
+    return eventCollection
+        .doc(uid)
+        .collection('mysubject')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        Event e = new Event(
+          id: doc.data()['id'],
+          event: doc.data()['subject'],
+          start: doc.data()['startTime'].toDate(),
+          stop: doc.data()['endTime'].toDate(),
+          cat: doc.data()['cat'],
+        );
+
+        eventList.add(e);
+      });
+      return eventList;
+    });
+  }
+
   Stream<List<Event>> get myEvent {
     print('getEventHasbeencalled');
     print(uid);
@@ -119,10 +167,9 @@ class DatabaseService {
         .map(_eventListFromSnapshot);
   }
 
-  Stream<Map<String, int>> get categories{
+  Stream<Map<String, int>> get categories {
     print('get');
-    return
-    eventCollection
+    return eventCollection
         .doc(uid)
         .collection('myevent')
         .snapshots()
@@ -131,7 +178,7 @@ class DatabaseService {
 
   Map<String, int> _categoriesFromSnapshot(QuerySnapshot snapshot) {
     Map<String, int> map = {};
-    
+
     snapshot.docs.forEach((doc) {
       if (!map.containsKey(doc.data()['cat'])) {
         map[doc.data()['cat']] = 0;

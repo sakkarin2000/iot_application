@@ -14,13 +14,12 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
-String _email;
+  String _email;
   final auth = FirebaseAuth.instance;
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   @override
-
-void openDialog() {
+  void openDialog() {
     showDialog(
       context: context,
       builder: (context) => SimpleDialog(
@@ -34,17 +33,16 @@ void openDialog() {
         ),
         children: [
           Padding(
-              padding: const EdgeInsets.only(left: 30, right: 30),
-               child: TextField(
-                 keyboardType: TextInputType.emailAddress,
-                 decoration: InputDecoration(hintText: ('Email')),
-                 onChanged: (value) {
-                   setState(() {
-                     _email = value;
-                   });
-                 },    
-               )
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 35),
+              child: TextField(
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(hintText: ('Email')),
+                onChanged: (value) {
+                  setState(() {
+                    _email = value;
+                  });
+                },
+              )),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 8),
             child: Row(
@@ -77,6 +75,7 @@ void openDialog() {
                     auth.sendPasswordResetEmail(email: _email);
                     Navigator.of(context).pop();
                     print("Password for reset is sent");
+                    openCheckEmail();
                   },
                   style: ElevatedButton.styleFrom(
                       minimumSize: Size(103, 30),
@@ -100,6 +99,26 @@ void openDialog() {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void openCheckEmail() {
+    showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: ListTile(
+          title: Center(
+            child: Text(
+              'Request Successful',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+        children: [Padding(
+          padding: const EdgeInsets.only(bottom: 20.0),
+          child: Center(child: Text("Please check the link in your email", style: TextStyle(fontSize: 15))),
+        )],
       ),
     );
   }
@@ -162,11 +181,9 @@ void openDialog() {
                         isPassword: true,
                         errorText: "Enter your password"),
                   ),
-                  
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      
                       GestureDetector(
                         onTap: () => openDialog(),
                         child: Text(
@@ -201,11 +218,9 @@ void openDialog() {
                       Text(
                         'Create new account ',
                         style: TextStyle(
-                          
                             color: Color(0xFFF3DCD7),
                             fontFamily: 'mali',
                             fontWeight: FontWeight.w500),
-                            
                       ),
                       GestureDetector(
                         onTap: () => widget.onChange(),
