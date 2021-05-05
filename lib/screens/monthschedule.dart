@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:iot_application/model/event.dart';
-import 'package:iot_application/providers/applicationstate.dart';
 import 'package:iot_application/shared/constant.dart';
 import 'package:iot_application/widgets/hamburger.dart';
 import 'package:provider/provider.dart';
@@ -89,6 +88,7 @@ class _HomePageState extends State<HomePage> {
     "Other": 0xffE5A4ED,
   };
   List<dynamic> _addList=[];
+  List<dynamic> _removeList=[];
   bool _addMore=false;
   final Map<String, int> weekColor = {
     "Sunday": 0xffff0000,
@@ -114,6 +114,7 @@ class _HomePageState extends State<HomePage> {
     getEventList();
     _addMore=false;
     _addList=[];
+    _removeList=[];
     _repeat=0;
     _replaceList={};
   }
@@ -496,15 +497,6 @@ class _HomePageState extends State<HomePage> {
                   Container(
                     width: 700.0,
                     height: 224.0,
-                    // decoration: BoxDecoration(
-                    //   shape: BoxShape.rectangle,
-                    //   color: const Color(0xFFFFFF),
-                    //   borderRadius: new BorderRadius.all(new Radius.circular(25.0)),
-                    //   border: Border.all(
-                    //     color: Colors.black,
-                    //     width: 1.0,
-                    //   ),
-                    // ),
                     child:  ListView(
                           shrinkWrap: true,
                           padding: const EdgeInsets.all(20.0),
@@ -1170,9 +1162,7 @@ class _HomePageState extends State<HomePage> {
                         ElevatedButton(
                             onPressed: () {
                               if(_addMore) {
-                                int listIndex=0;
                                 for(Event i in _addList){
-                                  listIndex++;
                                   DateTime index = new DateTime(
                                     i.start.year,
                                     i.start.month,
@@ -1229,30 +1219,11 @@ class _HomePageState extends State<HomePage> {
                                     }
                                   }
 
-                                  if(type==0) {
                                     String id = uuid.v1();
                                     if (_events[index] != null) {
-                                      _events[index].add(Event(
-                                        id: id,
-                                        event: i.event
-                                            .trim()
-                                            .replaceAll(RegExp(" +"), " "),
-                                        start: i.start,
-                                        stop: Lstop,
-                                        cat: i.cat,
-                                        isTimeTable: i.isTimeTable,
-                                      ));
 
-                                      _events[index].sort((a, b) {
-                                        var sa = a.start.hour * 60 + a.start.minute;
-                                        var sb = b.start.hour * 60 + b.start.minute;
-                                        return sa - sb;
-                                      });
-
-                                      print('[DB] Add new event to the day');
-                                    } else {
-                                      _events[index] = [
-                                        Event(
+                                      setState(() {
+                                        _events[index].add(Event(
                                           id: id,
                                           event: i.event
                                               .trim()
@@ -1261,8 +1232,32 @@ class _HomePageState extends State<HomePage> {
                                           stop: Lstop,
                                           cat: i.cat,
                                           isTimeTable: i.isTimeTable,
-                                        )
-                                      ];
+                                        ));
+
+                                        _events[index].sort((a, b) {
+                                          var sa = a.start.hour * 60 + a.start.minute;
+                                          var sb = b.start.hour * 60 + b.start.minute;
+                                          return sa - sb;
+                                        });
+                                      });
+
+                                      print('[DB] Add new event to the day');
+                                    } else {
+
+                                      setState(() {
+                                        _events[index] = [
+                                          Event(
+                                            id: id,
+                                            event: i.event
+                                                .trim()
+                                                .replaceAll(RegExp(" +"), " "),
+                                            start: i.start,
+                                            stop: Lstop,
+                                            cat: i.cat,
+                                            isTimeTable: i.isTimeTable,
+                                          )
+                                        ];
+                                      });
 
                                       print('[DB] Add first event to the day');
                                     }
@@ -1277,57 +1272,8 @@ class _HomePageState extends State<HomePage> {
                                       i.cat,
                                       i.isTimeTable,
                                     );
-                                  }
-                                  else if(type==1) {
-                                    String id = argEvent.id;
-                                    _events[index].remove(argEvent);
 
-                                    if (_events[index] != null) {
-                                      _events[index].add(Event(
-                                        id: id,
-                                        event: i.event
-                                            .trim()
-                                            .replaceAll(RegExp(" +"), " "),
-                                        start: i.start,
-                                        stop: Lstop,
-                                        cat: i.cat,
-                                        isTimeTable: i.isTimeTable,
-                                      ));
-
-                                      _events[index].sort((a, b) {
-                                        var sa = a.start.hour * 60 + a.start.minute;
-                                        var sb = b.start.hour * 60 + b.start.minute;
-                                        return sa - sb;
-                                      });
-                                    } else {
-                                      _events[index] = [
-                                        Event(
-                                          id: id,
-                                          event: i.event
-                                              .trim()
-                                              .replaceAll(RegExp(" +"), " "),
-                                          start: i.start,
-                                          stop: Lstop,
-                                          cat: i.cat,
-                                          isTimeTable: i.isTimeTable,
-                                        )
-                                      ];
-                                    }
-
-                                    print('[DB] Update event');
-                                    DatabaseService(uid: _userId).updateEvent(
-                                      id,
-                                      i.event
-                                          .trim()
-                                          .replaceAll(RegExp(" +"), " "),
-                                      i.start,
-                                      Lstop,
-                                      i.cat,
-                                      i.isTimeTable,
-                                    );
-                                  }
-
-                                  if("${index.toString()}Z"=="${_controller.selectedDay}"){
+                                  if("${index.add(Duration(hours: 7)).toString()}"=="${_controller.selectedDay.toString()}"){
                                     setState(() {
                                       _selectedEvents=_events[index];
                                     });
@@ -1517,17 +1463,14 @@ class _HomePageState extends State<HomePage> {
                                   );
                                 }
 
-                                if("${index.toString()}Z"=="${_controller.selectedDay}"){
+                                if("${index.add(Duration(hours: 7)).toString()}"=="${_controller.selectedDay.toString()}"){
                                   setState(() {
                                     _selectedEvents=_events[index];
                                   });
                                 }
                               }
 
-                              // _start = new DateTime(_start.year, _start.month, _start.day, 12, 0, _start.second, _start.millisecond, _start.microsecond);
-                              // _stop = new DateTime(_stop.pyear, _stop.month, _stop.day, 12, 0, _stop.second, _stop.millisecond, _stop.microsecond);
                               Navigator.pop(context, true);
-                              // Navigator.pop(context);
                             },
                             style: ElevatedButton.styleFrom(
                                 minimumSize: Size(103, 30),
@@ -1908,16 +1851,58 @@ class _HomePageState extends State<HomePage> {
                                       return;
                                     }
 
-                                    DateTime index = new DateTime(
-                                      _start.year,
-                                      _start.month,
-                                      _start.day,
-                                      12,
-                                      0,
-                                      _start.second,
-                                      _start.millisecond,
-                                      _start.microsecond,
-                                    ).toUtc();
+                                    for(int j=0;j<_repeat+1;j++){
+                                      DateTime Lstart = _start.add(
+                                          Duration(days: (j * 7)));
+                                      DateTime index = new DateTime(
+                                        _start.year,
+                                        _start.month,
+                                        _start.day+(j*7),
+                                        12,
+                                        0,
+                                        _start.second,
+                                        _start.millisecond,
+                                        _start.microsecond,
+                                      ).toUtc();
+                                      DateTime Lstop = new DateTime(
+                                        _start.year,
+                                        _start.month,
+                                        _start.day+(j*7),
+                                        _stop.hour,
+                                        _stop.minute,
+                                        _start.second,
+                                        _start.millisecond,
+                                        _start.microsecond,
+                                      );
+
+                                      if (_events[index] != null) {
+                                        for (Event e in _events[index]) {
+
+                                          var s1 = e.start.hour * 60 +
+                                              e.start.minute;
+                                          var e1 = e.stop.hour * 60 +
+                                              e.stop.minute;
+
+                                          var s2 = Lstart.hour * 60 +
+                                              Lstart.minute;
+                                          var e2 = Lstop.hour * 60 +
+                                              Lstop.minute;
+
+                                          if ((s2 <= s1 && s1 < e2) ||
+                                              (s2 < e1 && e1 <= e2) ||
+                                              (s1 <= s2 && e2 <= e1)) {
+
+                                            if(_replaceList[e]==null) {
+
+                                              _showMyDialog(e,"Conflict with ${e.event} ${datetime.format(
+                                                  e.start)}-${time.format(
+                                                  e.stop)}");
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+
                                     DateTime temp = new DateTime(
                                       _start.year,
                                       _start.month,
@@ -1966,25 +1951,6 @@ class _HomePageState extends State<HomePage> {
                                             _eventAlert = true;
                                             _eventAlertText =
                                             "Conflict in list: ${e.event} @${datetime.format(e.start)}-${time.format(e.stop)}";
-                                          });
-                                          return;
-                                        }
-                                      }
-                                    }
-                                    if (_events[index] != null) {
-                                      for (Event e in _events[index]) {
-
-                                        var s1 = e.start.hour * 60 + e.start.minute;
-                                        var e1 = e.stop.hour * 60 + e.stop.minute;
-
-                                        if ((s2 <= s1 && s1 < e2) ||
-                                            (s2 < e1 && e1 <= e2) ||
-                                            (s1 <= s2 && e2 <= e1)) {
-
-                                          setState(() {
-                                            _eventAlert = true;
-                                            _eventAlertText =
-                                            "Conflict with ${e.event} @${datetime.format(e.start)}-${time.format(e.stop)}";
                                           });
                                           return;
                                         }
@@ -2087,6 +2053,8 @@ class _HomePageState extends State<HomePage> {
                                     onPressed: () {
                                       for(int j=0;j<_repeat+1;j++){
                                         for(Event i in _addList) {
+                                          bool skip=false;
+
                                           DateTime Lstart = i.start.add(
                                               Duration(days: (j * 7)));
                                           DateTime index = new DateTime(
@@ -2129,28 +2097,34 @@ class _HomePageState extends State<HomePage> {
                                               if ((s2 <= s1 && s1 < e2) ||
                                                   (s2 < e1 && e1 <= e2) ||
                                                   (s1 <= s2 && e2 <= e1)) {
-                                                print("case1");
-                                                print(s2 <= s1 && s1 <= e2);
-                                                print("case2");
-                                                print(s2 < e1 && e1 <= e2);
-                                                print("case3");
-                                                print(s1 <= s2 && e2 <= e1);
 
-                                                setState(() {
-                                                  _eventAlert = true;
-                                                  _eventAlertText =
-                                                  "Conflict with ${e
-                                                      .event} @${datetime.format(
-                                                      e.start)}-${time.format(
-                                                      e.stop)}";
-                                                });
-                                                return;
+                                                // setState(() {
+                                                //   _eventAlert = true;
+                                                //   _eventAlertText =
+                                                //   "Conflict with ${e
+                                                //       .event} @${datetime.format(
+                                                //       e.start)}-${time.format(
+                                                //       e.stop)}";
+                                                // });
+                                                // return;
+
+                                                if(_replaceList!=null){
+                                                  if(_replaceList[e]){
+                                                    _removeList.add(e);
+                                                  }else if(!_replaceList[e]){
+                                                    skip=true;
+                                                  }
+                                                }
+
                                               }
-                                              print(
-                                                  "${e.event} ${datetime.format(
-                                                      e.start)}-${time.format(
-                                                      e.stop)}");
+                                              // print(
+                                              //     "${e.event} ${datetime.format(
+                                              //         e.start)}-${time.format(
+                                              //         e.stop)}");
                                             }
+                                          }
+                                          if(skip){
+                                            continue;
                                           }
 
                                           String id = uuid.v1();
@@ -2205,6 +2179,15 @@ class _HomePageState extends State<HomePage> {
                                             i.cat,
                                             i.isTimeTable,
                                           );
+
+                                          if(_removeList!=null){
+                                            for(Event e in _removeList){
+                                              setState(() {
+                                                _events[index].remove(e);
+                                              });
+                                            }
+                                          }
+
                                         }
                                       }
                                       Navigator.pop(context, true);
@@ -2333,20 +2316,6 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          // actions: <Widget>[
-          //   TextButton(
-          //     child: Text('Cancel'),
-          //     onPressed: () {
-          //       Navigator.pop(context, false);
-          //     },
-          //   ),
-          //   TextButton(
-          //     child: Text('Approve'),
-          //     onPressed: () {
-          //       Navigator.pop(context, true);
-          //     },
-          //   ),
-          // ],
         );
       },
     );
