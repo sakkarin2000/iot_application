@@ -35,6 +35,7 @@ class _StudyTimetableState extends State<StudyTimetable> {
     "Friday": [],
     "Saturday": [],
   };
+  Map<Event, String> modifyMap={};
 
   int _repeat=0;
   DateTime _startDate=DateTime.now();
@@ -189,10 +190,17 @@ class _StudyTimetableState extends State<StudyTimetable> {
                                                     icon:
                                                     Icon(Icons.delete, color: Colors.black),
                                                     onPressed: () {
-
                                                       setState(() {
                                                         weekMap[DateFormat('EEEE').format(value.start)].remove(value);
                                                       });
+                                                      if(modifyMap[value]!=null){
+                                                        if(modifyMap[value]=="add"){
+                                                          modifyMap.remove(value);
+                                                        }else{
+                                                        }
+                                                      }else{
+                                                        modifyMap[value]="remove";
+                                                      }
                                                       print('click delete');
                                                       // setState(() {
                                                       //   _eventController.text = value.event;
@@ -546,16 +554,20 @@ class _StudyTimetableState extends State<StudyTimetable> {
                                       }
 
                                       String id = uuid.v1();
+                                      Event temp=new Event(
+                                        id: id,
+                                        event: _eventController.text
+                                            .trim()
+                                            .replaceAll(RegExp(" +"), " "),
+                                        start: Lstart,
+                                        stop: Lstop,
+                                        cat: cat,
+                                      );
                                       if (weekMap[day] != null) {
-                                        weekMap[day].add(Event(
-                                          id: id,
-                                          event: _eventController.text
-                                              .trim()
-                                              .replaceAll(RegExp(" +"), " "),
-                                          start: Lstart,
-                                          stop: Lstop,
-                                          cat: cat,
-                                        ));
+                                        weekMap[day].add(temp);
+                                        if(modifyMap[temp]!=null){
+                                          modifyMap[temp]="add";
+                                        }
                                         weekMap[day].sort((a, b) {
                                           var sa = a.start.hour * 60 +
                                               a.start.minute;
@@ -564,26 +576,13 @@ class _StudyTimetableState extends State<StudyTimetable> {
                                           return sa - sb;
                                         });
                                       } else {
-                                        weekMap[day] = [
-                                          Event(
-                                            id: id,
-                                            event: _eventController.text
-                                                .trim()
-                                                .replaceAll(RegExp(" +"), " "),
-                                            start: Lstart,
-                                            stop: Lstop,
-                                            cat: cat,
-                                          )
-                                        ];
+                                        weekMap[day]=[temp];
+                                        if(modifyMap[temp]!=null){
+                                          modifyMap[temp]="add";
+                                        }
                                       }
-                                      setState(() {
-                                        weekMap[day].add("remove");
-                                        weekMap[day].removeLast();
-                                      });
 
-
-
-                                      //////////////////////////////////////////////////////////////////////////////////Add to MyEvent
+                                      //////////////////////////////////////////////////////////////////////////////////Add event
 
                                       // for(int j=0;j<_repeat+1;j++){
                                       //
