@@ -608,8 +608,33 @@ class _StudyTimetableState extends State<StudyTimetable> {
                                 _start.microsecond,
                               );
 
+                              if (_eventController.text.isEmpty) {
+                                print("Please fill subject name");
+                                setState(() {
+                                  _eventAlert = true;
+                                  _eventAlertText = "Please fill subject name";
+                                });
+                                return;
+                              } else if (_eventController.text.trim().isEmpty) {
+                                print("Subject name cannot be blank");
+                                setState(() {
+                                  _eventAlert = true;
+                                  _eventAlertText = "Subject name cannot be blank";
+                                });
+                                return;
+                              }
+
                               var s2 = Lstart.hour * 60 + Lstart.minute;
                               var e2 = Lstop.hour * 60 + Lstop.minute;
+
+                              if (e2 <= s2) {
+                                print("Stop time must be after Start time");
+                                setState(() {
+                                  _eventAlert = true;
+                                  _eventAlertText = "Stop time must be after Start time";
+                                });
+                                return;
+                              }
 
                               if (weekMap[day] != null) {
                                 for (Event e in weekMap[day]) {
@@ -667,25 +692,6 @@ class _StudyTimetableState extends State<StudyTimetable> {
                                 }
                               }
 
-                              //////////////////////////////////////////////////////////////////////////////////Add event
-
-                              if (weekMap[day] != null) {
-                                weekMap[day].add(temp);
-                                if (modifyMap[temp] != null) {
-                                  modifyMap[temp] = "add";
-                                }
-                                weekMap[day].sort((a, b) {
-                                  var sa = a.start.hour * 60 + a.start.minute;
-                                  var sb = b.start.hour * 60 + b.start.minute;
-                                  return sa - sb;
-                                });
-                              } else {
-                                weekMap[day] = [temp];
-                                if (modifyMap[temp] != null) {
-                                  modifyMap[temp] = "add";
-                                }
-                              }
-                              _days[weekIndex[day]].isExpanded = true;
                               //////////////////////////////////////////////////////////////////////////////////Add event
 
                               // for(int j=0;j<_repeat+1;j++){

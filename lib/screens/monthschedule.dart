@@ -193,6 +193,13 @@ class _HomePageState extends State<HomePage> {
             var sb = b.start.hour * 60 + b.start.minute;
             return sa - sb;
           });
+
+          if("${temp.add(Duration(hours: 7)).toString()}"=="${_controller.selectedDay.toString()}"){
+            setState(() {
+              _selectedEvents=_events[temp];
+            });
+          }
+
         });
       });
     });
@@ -529,21 +536,38 @@ class _HomePageState extends State<HomePage> {
                                               ),
                                             )
                                         ),
-                                        IconButton(
-                                          icon:
-                                          Icon(Icons.edit, color: Colors.white, size: 19),
-                                          onPressed: () {
-                                            print('click edit');
-                                            setState(() {
-                                              _eventController.text = value.event;
-                                              _eventAlert = false;
-                                              _eventAlertText = "";
-                                              _start = value.start;
-                                              _stop = value.stop;
-                                              _catValue = value.cat;
-                                            });
-                                            _showAddDialog(1,value);
-                                          },
+
+                                        Visibility(
+                                            visible: !value.isTimeTable,
+                                            child: IconButton(
+                                              icon:
+                                              Icon(Icons.edit, color: Colors.white, size: 19),
+                                              onPressed: () {
+                                                print('click edit');
+                                                setState(() {
+                                                  _eventController.text = value.event;
+                                                  _eventAlert = false;
+                                                  _eventAlertText = "";
+                                                  _start = value.start;
+                                                  _stop = value.stop;
+                                                  _catValue = value.cat;
+                                                });
+                                                _showAddDialog(1,value);
+                                              },
+                                            ),
+                                        ),
+                                        Visibility(
+                                          visible: value.isTimeTable,
+                                          child: IconButton(
+                                            icon:
+                                            Icon(Icons.delete, color: Colors.white, size: 19),
+                                            onPressed: () {
+                                              _events[_controller.selectedDay].remove(value);
+                                              setState(() {
+                                                _selectedEvents=_events[_controller.selectedDay];
+                                              });
+                                            },
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -2185,7 +2209,14 @@ class _HomePageState extends State<HomePage> {
                                               setState(() {
                                                 _events[index].remove(e);
                                               });
+                                              DatabaseService(uid: _userId).removeEvent(e.id);
                                             }
+                                          }
+
+                                          if("${index.add(Duration(hours: 7)).toString()}"=="${_controller.selectedDay.toString()}"){
+                                            setState(() {
+                                              _selectedEvents=_events[index];
+                                            });
                                           }
 
                                         }
