@@ -36,6 +36,17 @@ class _StudyTimetableState extends State<StudyTimetable> {
     "Friday": [],
     "Saturday": [],
   };
+
+  Map<String, int> weekIndex = {
+    "Monday": 0,
+    "Tuesday": 1,
+    "Wednesday": 2,
+    "Thursday": 3,
+    "Friday": 4,
+    "Saturday": 5,
+    "Sunday": 6,
+  };
+
   Map<Event, String> modifyMap={};
 
   int _repeat=0;
@@ -141,6 +152,7 @@ class _StudyTimetableState extends State<StudyTimetable> {
                         width: 310,
                         child: ExpansionPanelList(
                           expansionCallback: (int index, bool isExpanded) {
+                            print(index);
                             setState(() {
                               _days[index].isExpanded = !isExpanded;
                             });
@@ -583,7 +595,7 @@ class _StudyTimetableState extends State<StudyTimetable> {
                                           modifyMap[temp]="add";
                                         }
                                       }
-
+                                      _days[weekIndex[day]].isExpanded = true;
                                       //////////////////////////////////////////////////////////////////////////////////Add event
 
                                       // for(int j=0;j<_repeat+1;j++){
