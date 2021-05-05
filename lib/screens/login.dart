@@ -162,44 +162,15 @@ void openDialog() {
                         isPassword: true,
                         errorText: "Enter your password"),
                   ),
+                  
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text(
-                        'Create new account ',
-                        style: TextStyle(
-                            color: Color(0xFFF3DCD7),
-                            fontFamily: 'mali',
-                            fontWeight: FontWeight.w500),
-                      ),
-                      GestureDetector(
-                        onTap: () => widget.onChange(),
-                        child: Text(
-                          'Sign up',
-                          style: TextStyle(
-                            color: Color(0xFFF3DCD7),
-                            fontFamily: 'mali',
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Forgot password? ',
-                        style: TextStyle(
-                            color: Color(0xFFF3DCD7),
-                            fontFamily: 'mali',
-                            fontWeight: FontWeight.w500),
-                      ),
+                      
                       GestureDetector(
                         onTap: () => openDialog(),
                         child: Text(
-                          'Request here',
+                          'Forgot password?',
                           style: TextStyle(
                             color: Color(0xFFF3DCD7),
                             fontFamily: 'mali',
@@ -211,7 +182,7 @@ void openDialog() {
                     ],
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 40),
+                    padding: const EdgeInsets.only(top: 30, bottom: 30),
                     child: StyledButton(
                         child: Text('Log in'),
                         onPressed: () {
@@ -223,6 +194,33 @@ void openDialog() {
                                 .login(email, password, context);
                           }
                         }),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Create new account ',
+                        style: TextStyle(
+                          
+                            color: Color(0xFFF3DCD7),
+                            fontFamily: 'mali',
+                            fontWeight: FontWeight.w500),
+                            
+                      ),
+                      GestureDetector(
+                        onTap: () => widget.onChange(),
+                        child: Text(
+                          'Sign up',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Color(0xFFF3DCD7),
+                            fontFamily: 'mali',
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
