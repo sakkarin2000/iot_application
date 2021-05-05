@@ -33,3 +33,5 @@ lib/generated_plugin_registrant.dart
 pubspec.lock
 
 .DS_Store
+
+.idea/libraries/Dart_SDK.xml
