@@ -369,10 +369,10 @@ class _StudyTimetableState extends State<StudyTimetable> {
                                 );
                               },
                               body: ListTile(
-                                title: ListView(
-                                    shrinkWrap: true,
-                                    padding: const EdgeInsets.all(20.0),
-                                    children: [
+                                title: Column(
+                                    // shrinkWrap: true,
+                                    // padding: const EdgeInsets.all(20.0),
+                                    children: <Widget>[
                                       ...weekMap[item.headerValue]
                                           .map((value) => ListTile(
                                                 title: Container(
