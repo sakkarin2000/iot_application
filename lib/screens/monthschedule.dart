@@ -703,7 +703,7 @@ class _HomePageState extends State<HomePage> {
                               },
                               style: ElevatedButton.styleFrom(
                                   minimumSize: Size(103, 30),
-                                  primary: Colors.grey,
+                                  primary: Colors.blue,
                                   padding: EdgeInsets.symmetric(
                                     horizontal: 30,
                                     vertical: 8,
