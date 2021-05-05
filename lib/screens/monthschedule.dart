@@ -100,6 +100,7 @@ class _HomePageState extends State<HomePage> {
     "Saturday": 0xff800080,
   };
   int _repeat=0;
+  Map<Event,bool> _replaceList={};
 
   @override
   void initState() {
@@ -114,6 +115,7 @@ class _HomePageState extends State<HomePage> {
     _addMore=false;
     _addList=[];
     _repeat=0;
+    _replaceList={};
   }
 
   Future<void> getEvent() async {
@@ -1882,6 +1884,30 @@ class _HomePageState extends State<HomePage> {
                                 child: MaterialButton(
                                   onPressed: () {
                                     FocusScope.of(context).unfocus();
+
+                                    if (_eventController.text.isEmpty) {
+                                      print("Please fill event name");
+                                      setState(() {
+                                        _eventAlert = true;
+                                        _eventAlertText = "Please fill event name";
+                                      });
+                                      return;
+                                    } else if (_eventController.text.trim().isEmpty) {
+                                      print("Event name cannot be blank");
+                                      setState(() {
+                                        _eventAlert = true;
+                                        _eventAlertText = "Event name cannot be blank";
+                                      });
+                                      return;
+                                    } else if (_repeatController.text.trim().isEmpty) {
+                                      print("Repeat cannot be blank");
+                                      setState(() {
+                                        _eventAlert = true;
+                                        _eventAlertText = "Repeat cannot be blank";
+                                      });
+                                      return;
+                                    }
+
                                     DateTime index = new DateTime(
                                       _start.year,
                                       _start.month,
@@ -1905,22 +1931,6 @@ class _HomePageState extends State<HomePage> {
                                     setState(() {
                                       _stop=temp;
                                     });
-
-                                    if (_eventController.text.isEmpty) {
-                                      print("Please fill event name");
-                                      setState(() {
-                                        _eventAlert = true;
-                                        _eventAlertText = "Please fill event name";
-                                      });
-                                      return;
-                                    } else if (_eventController.text.trim().isEmpty) {
-                                      print("Event name cannot be blank");
-                                      setState(() {
-                                        _eventAlert = true;
-                                        _eventAlertText = "Event name cannot be blank";
-                                      });
-                                      return;
-                                    }
 
                                     var md2 = _start.month * 31 + _start.day;
 
@@ -2233,4 +2243,113 @@ class _HomePageState extends State<HomePage> {
       _events[_controller.selectedDay] = _selectedEvents;
     });
   }
+
+  Future<void> _showMyDialog(Event e,String alert) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('AlertDialog Title'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                // Opacity(
+                //   opacity: _eventAlert ? 1 : 0,
+                //   child:
+                Text(alert,
+                    style: GoogleFonts.mali(
+                      textStyle: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
+                    )),
+                // ),
+                ElevatedButton(
+                    onPressed: () {
+
+                      // _replaceList[e]=false;
+                      _replaceList.putIfAbsent(e, () => false);
+
+                      _eventController.clear();
+                      setState(() {
+                        _eventAlert = false;
+                        _eventAlertText = "";
+                      });
+
+                      Navigator.of(context).pop(false);
+                    },
+                    style: ElevatedButton.styleFrom(
+                        minimumSize: Size(103, 30),
+                        primary: Colors.grey,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 30,
+                          vertical: 8,
+                        ),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: new BorderRadius.circular(5.0))),
+                    child: Text(
+                      'Skip',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                ),
+                ElevatedButton(
+                    onPressed: () {
+
+                      // _replaceList[e]=true;
+                      _replaceList.putIfAbsent(e, () => true);
+
+                      _eventController.clear();
+                      setState(() {
+                        _eventAlert = false;
+                        _eventAlertText = "";
+                      });
+
+                      Navigator.of(context).pop(true);
+                    },
+                    style: ElevatedButton.styleFrom(
+                        minimumSize: Size(103, 30),
+                        primary: Color(0xFFE17262),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 30,
+                          vertical: 8,
+                        ),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: new BorderRadius.circular(5.0))),
+                    child: Text(
+                      'Replace',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                ),
+              ],
+            ),
+          ),
+          // actions: <Widget>[
+          //   TextButton(
+          //     child: Text('Cancel'),
+          //     onPressed: () {
+          //       Navigator.pop(context, false);
+          //     },
+          //   ),
+          //   TextButton(
+          //     child: Text('Approve'),
+          //     onPressed: () {
+          //       Navigator.pop(context, true);
+          //     },
+          //   ),
+          // ],
+        );
+      },
+    );
+  }
+
 }
