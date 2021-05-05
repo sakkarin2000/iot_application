@@ -389,7 +389,6 @@ class _HomePageState extends State<HomePage> {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                           color: Theme.of(context).primaryColor,
-                          // borderRadius: BorderRadius.circular(10.0),
                           shape: BoxShape.circle),
                       child: Text(
                         date.day.toString(),
@@ -420,11 +419,9 @@ class _HomePageState extends State<HomePage> {
                               width: 20.0+(events.length>99? 5.0:0),
                               height: 20.0+(events.length>99? 5.0:0),
                                   // +(events.length>99? 6.0*(('${events.length}').length-2):0),
-                              // margin: const EdgeInsets.all(4.0),
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                   color: _controller.isSelected(date)? Colors.lightBlue : _controller.isToday(date)? Colors.orangeAccent: Colors.green,
-                                  // borderRadius: BorderRadius.circular(20.0),
                                   shape: BoxShape.circle),
                               child:Text('${events.length>99? '99+':events.length}',
                                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
