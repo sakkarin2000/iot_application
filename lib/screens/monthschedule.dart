@@ -356,18 +356,21 @@ class _HomePageState extends State<HomePage> {
                   // print(_events.toString());
                   // print(_events.length);
 
+                  //generate event testing
                   // String nme="";
-                  // for(int i=0;i<70;i++){
+                  // for(int i=0;i<10;i++){
                   //   nme+="Z";
                   // }
-                  //
-                  // //generate event testing
                   // for(int i=0;i<100;i++) {
                   //   events.add(Event(
-                  //       event: "${i}${nme}",
+                  //       id: "1",
+                  //       event: "${i} ${nme}",
                   //       start: DateTime.now().add(Duration(minutes: i)),
-                  //       stop: DateTime.now().add(Duration(minutes: i+1))));
+                  //       stop: DateTime.now().add(Duration(minutes: i+1)),
+                  //       cat: "Family"
+                  //   ));
                   // }
+
                   ////events checking
                   // String a = "";
                   // for (Event e in _selectedEvents) {
@@ -386,7 +389,6 @@ class _HomePageState extends State<HomePage> {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                           color: Theme.of(context).primaryColor,
-                          // borderRadius: BorderRadius.circular(10.0),
                           shape: BoxShape.circle),
                       child: Text(
                         date.day.toString(),
@@ -410,20 +412,19 @@ class _HomePageState extends State<HomePage> {
                     if (events.isNotEmpty) {
                       children.add(
                         Positioned(
-                          bottom: 1.0,
-                          right: -3.0,
+                          bottom: 1.0-(events.length>99? 5.0:0),
+                          right: -3.0-(events.length>99? 5.0:0),
                           child:
                           Container(
-                              width: 16.0,
-                              height: 16.0,
-                              // margin: const EdgeInsets.all(4.0),
+                              width: 16.0+(events.length>99? 5.0:0),
+                              height: 16.0+(events.length>99? 5.0:0),
+                                  // +(events.length>99? 6.0*(('${events.length}').length-2):0),
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                   color: _controller.isSelected(date)? Colors.lightBlue : _controller.isToday(date)? Colors.orangeAccent: Colors.green,
-                                  // borderRadius: BorderRadius.circular(20.0),
                                   shape: BoxShape.circle),
-                              child:Text('${events.length}',
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12)
+                              child:Text('${events.length>99? '99+':events.length}',
+                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
                               )
                           ),
                         ),
@@ -2210,4 +2211,3 @@ class _HomePageState extends State<HomePage> {
     });
   }
 }
-
