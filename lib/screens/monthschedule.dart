@@ -430,20 +430,6 @@ class _HomePageState extends State<HomePage> {
                       );
                     }
                     return children;
-
-                    // return <Widget>[
-                    //   Container(
-                    //     width: 10.0,
-                    //     height: 10.0,
-                    //     margin: EdgeInsets.all(100.0),
-                    //     decoration: BoxDecoration(
-                    //         color: Colors.orange,
-                    //         shape: BoxShape.circle
-                    //     ),
-                    //     child: Text('${events.length}'),
-                    //   )
-                    // ];
-
                   },
                 ),
                 calendarController: _controller,
