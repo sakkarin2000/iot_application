@@ -1,5 +1,3 @@
-
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +7,7 @@ import 'package:iot_application/screens/monthschedule.dart';
 import 'package:iot_application/screens/categories.dart';
 import 'package:iot_application/screens/profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:iot_application/screens/studytimetable.dart';
 
 void main() => runApp(MyApp());
 
@@ -16,7 +15,6 @@ const primaryColor = Color(0xFF6CAF97);
 
 class MyApp extends StatelessWidget {
   final appTitle = 'Hamburger Bar';
-  
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +33,6 @@ class Hamburgerja extends StatefulWidget {
   @override
   _HamburgerjaState createState() => _HamburgerjaState();
 }
-
 
 class _HamburgerjaState extends State<Hamburgerja> {
   get isSelected => null;
@@ -76,16 +73,15 @@ class _HamburgerjaState extends State<Hamburgerja> {
         children: [
           Padding(
               padding: const EdgeInsets.only(left: 30, right: 30),
-               child: TextField(
-                 keyboardType: TextInputType.emailAddress,
-                 decoration: InputDecoration(hintText: ('Email')),
-                 onChanged: (value) {
-                   setState(() {
-                     _email = value;
-                   });
-                 },    
-               )
-              ),
+              child: TextField(
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(hintText: ('Email')),
+                onChanged: (value) {
+                  setState(() {
+                    _email = value;
+                  });
+                },
+              )),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 8),
             child: Row(
@@ -195,6 +191,15 @@ class _HamburgerjaState extends State<Hamburgerja> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => MonthSchedule()),
+                    )
+                  }),
+          CustomListTile(
+              Icons.local_library_outlined,
+              'Study Timetable',
+              () => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => StudyTimetable()),
                     )
                   }),
           CustomListTile(

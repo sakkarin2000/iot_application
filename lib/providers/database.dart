@@ -114,4 +114,27 @@ class DatabaseService {
         .snapshots()
         .map(_eventListFromSnapshot);
   }
+
+  Stream<Map<String, int>> get categories{
+    print('get');
+    return
+    eventCollection
+        .doc(uid)
+        .collection('myevent')
+        .snapshots()
+        .map(_categoriesFromSnapshot);
+  }
+
+  Map<String, int> _categoriesFromSnapshot(QuerySnapshot snapshot) {
+    Map<String, int> map = {};
+    
+    snapshot.docs.forEach((doc) {
+      if (!map.containsKey(doc.data()['cat'])) {
+        map[doc.data()['cat']] = 0;
+      }
+      map[doc.data()['cat']] += 1;
+    });
+    print(map);
+    return map;
+  }
 }

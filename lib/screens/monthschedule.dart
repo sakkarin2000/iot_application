@@ -33,16 +33,27 @@ class MonthSchedule extends StatelessWidget {
     return StreamProvider<List<Event>>.value(
       initialData: null,
       value: DatabaseService(uid: _userId).myEvent,
-      child: MaterialApp(
-        title: 'Flutter Calendar',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          textTheme: GoogleFonts.maliTextTheme(
-            Theme.of(context).textTheme,
+      child:
+    // GestureDetector(
+    //     onTap: () {
+    //       FocusScopeNode currentFocus = FocusScope.of(context);
+    //
+    //       if (!currentFocus.hasPrimaryFocus) {
+    //         currentFocus.unfocus();
+    //       }
+    //     },
+    //     child:
+    MaterialApp(
+          title: 'Flutter Calendar',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+            textTheme: GoogleFonts.maliTextTheme(
+              Theme.of(context).textTheme,
+            ),
           ),
+          home: HomePage(),
         ),
-        home: HomePage(),
-      ),
+      // ),
     );
   }
 }
@@ -302,16 +313,23 @@ class _HomePageState extends State<HomePage> {
                   CalendarFormat.month: '',
                 },
                 calendarStyle: CalendarStyle(
-                    unavailableStyle: TextStyle(fontWeight: FontWeight.w700),
+                    unavailableStyle: TextStyle(
+                        color: Color(0xFF153970), fontWeight: FontWeight.w700),
                     weekdayStyle: TextStyle(
+                        color: Color(0xFF153970), fontWeight: FontWeight.w700),
+                    selectedStyle: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w700
+                    ),
+                    eventDayStyle: TextStyle(
                         color: Color(0xFF153970), fontWeight: FontWeight.w700),
                     canEventMarkersOverflow: true,
                     todayColor: Colors.orange,
                     selectedColor: Theme.of(context).primaryColor,
                     todayStyle: TextStyle(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w700,
                         fontSize: 18.0,
-                        color: Colors.white)),
+                        color: Colors.white),
+                ),
                 headerStyle: HeaderStyle(
                   titleTextStyle: TextStyle(
                       color: Color(0xFF153970),
@@ -326,7 +344,6 @@ class _HomePageState extends State<HomePage> {
                 ),
                 startingDayOfWeek: StartingDayOfWeek.sunday,
                 onDaySelected: (date, events, event2) {
-                  // print(date);
                   print(time.format(_start));
                   print('Controller.selectedDay : ${_controller.selectedDay}');
                   print(
@@ -385,7 +402,35 @@ class _HomePageState extends State<HomePage> {
                       child: Text(
                         date.day.toString(),
                         style: TextStyle(color: Colors.white),
-                      )),
+                      )
+                  ),
+                  markersBuilder: (context, date, events, holidays) {
+                    final children = <Widget>[
+                    ];
+                    if (events.isNotEmpty) {
+                      children.add(
+                        Positioned(
+                          bottom: 1.0,
+                          right: -3.0,
+                          child:
+                          Container(
+                              width: 20.0,
+                              height: 20.0,
+                              // margin: const EdgeInsets.all(4.0),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  color: _controller.isSelected(date)? Colors.lightBlue : _controller.isToday(date)? Colors.orangeAccent: Colors.green,
+                                  // borderRadius: BorderRadius.circular(20.0),
+                                  shape: BoxShape.circle),
+                              child:Text('${events.length}',
+                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                              )
+                          ),
+                        ),
+                      );
+                    }
+                    return children;
+                  },
                 ),
                 calendarController: _controller,
               ),
@@ -658,7 +703,7 @@ class _HomePageState extends State<HomePage> {
                               },
                               style: ElevatedButton.styleFrom(
                                   minimumSize: Size(103, 30),
-                                  primary: Colors.grey,
+                                  primary: Colors.blue,
                                   padding: EdgeInsets.symmetric(
                                     horizontal: 30,
                                     vertical: 8,
@@ -789,6 +834,7 @@ class _HomePageState extends State<HomePage> {
                             setState(() {
                               _catValue = newValue;
                             });
+                            FocusScope.of(context).unfocus();
                           },
                           items: [
                             'Family',
@@ -896,6 +942,17 @@ class _HomePageState extends State<HomePage> {
                       child: Center(
                           child: MaterialButton(
                             onPressed: () {
+                              FocusScope.of(context).unfocus();
+                              DateTime index = new DateTime(
+                                _start.year,
+                                _start.month,
+                                _start.day,
+                                12,
+                                0,
+                                _start.second,
+                                _start.millisecond,
+                                _start.microsecond,
+                              ).toUtc();
                               DateTime temp = new DateTime(
                                 _start.year,
                                 _start.month,
@@ -948,7 +1005,6 @@ class _HomePageState extends State<HomePage> {
                                   if(md1!=md2){
                                     continue;
                                   }
-                                  print("${md1} ${md2}");
 
                                   var s1 = e.start.hour * 60 + e.start.minute;
                                   var e1 = e.stop.hour * 60 + e.stop.minute;
@@ -956,12 +1012,25 @@ class _HomePageState extends State<HomePage> {
                                   if ((s2 <= s1 && s1 < e2) ||
                                       (s2 < e1 && e1 <= e2) ||
                                       (s1 <= s2 && e2 <= e1)) {
-                                    print("case1");
-                                    print(s2 <= s1 && s1 <= e2);
-                                    print("case2");
-                                    print(s2 < e1 && e1 <= e2);
-                                    print("case3");
-                                    print(s1 <= s2 && e2 <= e1);
+
+                                    setState(() {
+                                      _eventAlert = true;
+                                      _eventAlertText =
+                                      "Conflict in list: ${e.event} @${datetime.format(e.start)}-${time.format(e.stop)}";
+                                    });
+                                    return;
+                                  }
+                                }
+                              }
+                              if (_events[index] != null) {
+                                for (Event e in _events[index]) {
+
+                                  var s1 = e.start.hour * 60 + e.start.minute;
+                                  var e1 = e.stop.hour * 60 + e.stop.minute;
+
+                                  if ((s2 <= s1 && s1 < e2) ||
+                                      (s2 < e1 && e1 <= e2) ||
+                                      (s1 <= s2 && e2 <= e1)) {
 
                                     setState(() {
                                       _eventAlert = true;
@@ -1598,6 +1667,7 @@ class _HomePageState extends State<HomePage> {
                                     setState(() {
                                       _catValue = newValue;
                                     });
+                                    FocusScope.of(context).unfocus();
                                   },
                                   items: [
                                     'Family',
@@ -1742,15 +1812,26 @@ class _HomePageState extends State<HomePage> {
                             Center(
                                 child: MaterialButton(
                                   onPressed: () {
+                                    FocusScope.of(context).unfocus();
+                                    DateTime index = new DateTime(
+                                      _start.year,
+                                      _start.month,
+                                      _start.day,
+                                      12,
+                                      0,
+                                      _start.second,
+                                      _start.millisecond,
+                                      _start.microsecond,
+                                    ).toUtc();
                                     DateTime temp = new DateTime(
-                                        _start.year,
-                                        _start.month,
-                                        _start.day,
-                                        _stop.hour,
-                                        _stop.minute,
-                                        _start.second,
-                                        _start.millisecond,
-                                        _start.microsecond,
+                                      _start.year,
+                                      _start.month,
+                                      _start.day,
+                                      _stop.hour,
+                                      _stop.minute,
+                                      _start.second,
+                                      _start.millisecond,
+                                      _start.microsecond,
                                     );
                                     setState(() {
                                       _stop=temp;
@@ -1794,7 +1875,6 @@ class _HomePageState extends State<HomePage> {
                                         if(md1!=md2){
                                           continue;
                                         }
-                                        print("${md1} ${md2}");
 
                                         var s1 = e.start.hour * 60 + e.start.minute;
                                         var e1 = e.stop.hour * 60 + e.stop.minute;
@@ -1802,17 +1882,30 @@ class _HomePageState extends State<HomePage> {
                                         if ((s2 <= s1 && s1 < e2) ||
                                             (s2 < e1 && e1 <= e2) ||
                                             (s1 <= s2 && e2 <= e1)) {
-                                          print("case1");
-                                          print(s2 <= s1 && s1 <= e2);
-                                          print("case2");
-                                          print(s2 < e1 && e1 <= e2);
-                                          print("case3");
-                                          print(s1 <= s2 && e2 <= e1);
 
                                           setState(() {
                                             _eventAlert = true;
                                             _eventAlertText =
-                                            "Conflict with ${e.event} @${time.format(e.start)}-${time.format(e.stop)}";
+                                            "Conflict in list: ${e.event} @${datetime.format(e.start)}-${time.format(e.stop)}";
+                                          });
+                                          return;
+                                        }
+                                      }
+                                    }
+                                    if (_events[index] != null) {
+                                      for (Event e in _events[index]) {
+
+                                        var s1 = e.start.hour * 60 + e.start.minute;
+                                        var e1 = e.stop.hour * 60 + e.stop.minute;
+
+                                        if ((s2 <= s1 && s1 < e2) ||
+                                            (s2 < e1 && e1 <= e2) ||
+                                            (s1 <= s2 && e2 <= e1)) {
+
+                                          setState(() {
+                                            _eventAlert = true;
+                                            _eventAlertText =
+                                            "Conflict with ${e.event} @${datetime.format(e.start)}-${time.format(e.stop)}";
                                           });
                                           return;
                                         }
@@ -1911,140 +2004,126 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 ElevatedButton(
                                     onPressed: () {
-                                      for(int j=0;j<_repeat;j++){
-                                      int listIndex=0;
-                                      for(Event i in _addList) {
-                                        listIndex++;
-                                        DateTime Lstart = i.start.add(
-                                            Duration(days: (j * 7)));
-                                        DateTime index = new DateTime(
-                                          i.start.year,
-                                          i.start.month,
-                                          (i.start.day + (j * 7)),
-                                          12,
-                                          0,
-                                          i.start.second,
-                                          i.start.millisecond,
-                                          i.start.microsecond,
-                                        ).toUtc();
-                                        DateTime Lstop = new DateTime(
-                                          i.start.year,
-                                          i.start.month,
-                                          (i.start.day + (j * 7)),
-                                          i.stop.hour,
-                                          i.stop.minute,
-                                          i.start.second,
-                                          i.start.millisecond,
-                                          i.start.microsecond,
-                                        );
+                                      for(int j=0;j<_repeat+1;j++){
+                                        for(Event i in _addList) {
+                                          DateTime Lstart = i.start.add(
+                                              Duration(days: (j * 7)));
+                                          DateTime index = new DateTime(
+                                            i.start.year,
+                                            i.start.month,
+                                            (i.start.day + (j * 7)),
+                                            12,
+                                            0,
+                                            i.start.second,
+                                            i.start.millisecond,
+                                            i.start.microsecond,
+                                          ).toUtc();
+                                          DateTime Lstop = new DateTime(
+                                            i.start.year,
+                                            i.start.month,
+                                            (i.start.day + (j * 7)),
+                                            i.stop.hour,
+                                            i.stop.minute,
+                                            i.start.second,
+                                            i.start.millisecond,
+                                            i.start.microsecond,
+                                          );
 
-                                        print("repeat ${j + 1}: ${Lstart
-                                            .toString()} - ${Lstop
-                                            .toString()}");
-                                      // }}
+                                          print("repeat ${j + 1}: ${Lstart
+                                              .toString()} - ${Lstop
+                                              .toString()}");
 
-                                        // return;
+                                          var s2 = Lstart.hour * 60 +
+                                              Lstart.minute;
+                                          var e2 = Lstop.hour * 60 +
+                                              Lstop.minute;
 
-                                        ///*
+                                          if (_events[index] != null) {
+                                            for (Event e in _events[index]) {
+                                              var s1 = e.start.hour * 60 +
+                                                  e.start.minute;
+                                              var e1 = e.stop.hour * 60 +
+                                                  e.stop.minute;
 
-                                        var s2 = Lstart.hour * 60 +
-                                            Lstart.minute;
-                                        var e2 = Lstop.hour * 60 +
-                                            Lstop.minute;
+                                              if ((s2 <= s1 && s1 < e2) ||
+                                                  (s2 < e1 && e1 <= e2) ||
+                                                  (s1 <= s2 && e2 <= e1)) {
+                                                print("case1");
+                                                print(s2 <= s1 && s1 <= e2);
+                                                print("case2");
+                                                print(s2 < e1 && e1 <= e2);
+                                                print("case3");
+                                                print(s1 <= s2 && e2 <= e1);
 
-                                        if (_events[index] != null) {
-                                          for (Event e in _events[index]) {
-                                            var s1 = e.start.hour * 60 +
-                                                e.start.minute;
-                                            var e1 = e.stop.hour * 60 +
-                                                e.stop.minute;
-
-                                            if ((s2 <= s1 && s1 < e2) ||
-                                                (s2 < e1 && e1 <= e2) ||
-                                                (s1 <= s2 && e2 <= e1)) {
-                                              print("case1");
-                                              print(s2 <= s1 && s1 <= e2);
-                                              print("case2");
-                                              print(s2 < e1 && e1 <= e2);
-                                              print("case3");
-                                              print(s1 <= s2 && e2 <= e1);
-
-                                              setState(() {
-                                                _eventAlert = true;
-                                                _eventAlertText =
-                                                "Conflict with ${e
-                                                    .event} @${datetime.format(
-                                                    e.start)}-${time.format(
-                                                    e.stop)}";
-                                              });
-                                              return;
+                                                setState(() {
+                                                  _eventAlert = true;
+                                                  _eventAlertText =
+                                                  "Conflict with ${e
+                                                      .event} @${datetime.format(
+                                                      e.start)}-${time.format(
+                                                      e.stop)}";
+                                                });
+                                                return;
+                                              }
+                                              print(
+                                                  "${e.event} ${datetime.format(
+                                                      e.start)}-${time.format(
+                                                      e.stop)}");
                                             }
-                                            print(
-                                                "${e.event} ${datetime.format(
-                                                    e.start)}-${time.format(
-                                                    e.stop)}");
                                           }
-                                        }
 
-                                        String id = uuid.v1();
-                                        if (_events[index] != null) {
-                                          _events[index].add(Event(
-                                            id: id,
-                                            event: i.event
-                                                .trim()
-                                                .replaceAll(RegExp(" +"), " "),
-                                            start: Lstart,
-                                            stop: Lstop,
-                                            cat: i.cat,
-                                          ));
-
-                                          _events[index].sort((a, b) {
-                                            var sa = a.start.hour * 60 +
-                                                a.start.minute;
-                                            var sb = b.start.hour * 60 +
-                                                b.start.minute;
-                                            return sa - sb;
-                                          });
-
-                                          print(
-                                              '[DB] Add new event to the day');
-                                        } else {
-                                          _events[index] = [
-                                            Event(
+                                          String id = uuid.v1();
+                                          if (_events[index] != null) {
+                                            _events[index].add(Event(
                                               id: id,
                                               event: i.event
                                                   .trim()
-                                                  .replaceAll(
-                                                  RegExp(" +"), " "),
+                                                  .replaceAll(RegExp(" +"), " "),
                                               start: Lstart,
                                               stop: Lstop,
                                               cat: i.cat,
-                                            )
-                                          ];
+                                            ));
 
-                                          print(
-                                              '[DB] Add first event to the day');
+                                            _events[index].sort((a, b) {
+                                              var sa = a.start.hour * 60 +
+                                                  a.start.minute;
+                                              var sb = b.start.hour * 60 +
+                                                  b.start.minute;
+                                              return sa - sb;
+                                            });
+
+                                            print(
+                                                '[DB] Add new event to the day');
+                                          } else {
+                                            _events[index] = [
+                                              Event(
+                                                id: id,
+                                                event: i.event
+                                                    .trim()
+                                                    .replaceAll(
+                                                    RegExp(" +"), " "),
+                                                start: Lstart,
+                                                stop: Lstop,
+                                                cat: i.cat,
+                                              )
+                                            ];
+
+                                            print(
+                                                '[DB] Add first event to the day');
+                                          }
+
+                                          DatabaseService(uid: _userId).addEvent(
+                                            id,
+                                            i.event
+                                                .trim()
+                                                .replaceAll(RegExp(" +"), " "),
+                                            Lstart,
+                                            Lstop,
+                                            i.cat,
+                                          );
                                         }
-
-                                        DatabaseService(uid: _userId).addEvent(
-                                          id,
-                                          i.event
-                                              .trim()
-                                              .replaceAll(RegExp(" +"), " "),
-                                          Lstart,
-                                          Lstop,
-                                          i.cat,
-                                        );
                                       }
-                                        // _start = new DateTime(_start.year, _start.month, _start.day, 12, 0, _start.second, _start.millisecond, _start.microsecond);
-                                        // _stop = new DateTime(_stop.pyear, _stop.month, _stop.day, 12, 0, _stop.second, _stop.millisecond, _stop.microsecond);
-                                        Navigator.pop(context, true);
-                                        // Navigator.pop(context);
-
-
-                                       }
-
-                                         //*/
+                                      Navigator.pop(context, true);
                                     },
                                     style: ElevatedButton.styleFrom(
                                         minimumSize: Size(103, 30),
@@ -2081,3 +2160,4 @@ class _HomePageState extends State<HomePage> {
     });
   }
 }
+
