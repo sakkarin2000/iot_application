@@ -2004,7 +2004,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 ElevatedButton(
                                     onPressed: () {
-                                      for(int j=0;j<_repeat;j++){
+                                      for(int j=0;j<_repeat+1;j++){
                                         for(Event i in _addList) {
                                           DateTime Lstart = i.start.add(
                                               Duration(days: (j * 7)));
