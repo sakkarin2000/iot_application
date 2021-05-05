@@ -420,15 +420,15 @@ class _HomePageState extends State<HomePage> {
                           right: -3.0-(events.length>99? 5.0:0),
                           child:
                           Container(
-                              width: 20.0+(events.length>99? 5.0:0),
-                              height: 20.0+(events.length>99? 5.0:0),
+                              width: 16.0+(events.length>99? 5.0:0),
+                              height: 16.0+(events.length>99? 5.0:0),
                                   // +(events.length>99? 6.0*(('${events.length}').length-2):0),
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                   color: _controller.isSelected(date)? Colors.lightBlue : _controller.isToday(date)? Colors.orangeAccent: Colors.green,
                                   shape: BoxShape.circle),
                               child:Text('${events.length>99? '99+':events.length}',
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
                               )
                           ),
                         ),
@@ -494,17 +494,16 @@ class _HomePageState extends State<HomePage> {
                   Container(
                     width: 700.0,
                     height: 224.0,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.rectangle,
-                      color: const Color(0xFFFFFF),
-                      borderRadius: new BorderRadius.all(new Radius.circular(32.0)),
-                      border: Border.all(
-                        color: Colors.black,
-                        width: 1.0,
-                      ),
-                    ),
-                    child: Center(
-                      child: ListView(
+                    // decoration: BoxDecoration(
+                    //   shape: BoxShape.rectangle,
+                    //   color: const Color(0xFFFFFF),
+                    //   borderRadius: new BorderRadius.all(new Radius.circular(25.0)),
+                    //   border: Border.all(
+                    //     color: Colors.black,
+                    //     width: 1.0,
+                    //   ),
+                    // ),
+                    child:  ListView(
                           shrinkWrap: true,
                           padding: const EdgeInsets.all(20.0),
                           children: [
@@ -520,21 +519,25 @@ class _HomePageState extends State<HomePage> {
                                   children: [
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
                                       children: <Widget>[
-                                        Icon(Icons.circle, color: Color(catMap[value.cat])),
+                                        Padding(
+                                          padding: const EdgeInsets.only(right: 8, top: 3),
+                                          child: Icon(Icons.circle, color: Color(catMap[value.cat]), size: 16),
+                                        ),
                                         Text(
                                             "${value.event} @${time.format(value.start)}-${time.format(value.stop)}",
                                             style: GoogleFonts.mali(
                                               textStyle: TextStyle(
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.w700,
-                                                fontSize: 14,
+                                                fontSize: 16,
                                               ),
                                             )
                                         ),
                                         IconButton(
                                           icon:
-                                          Icon(Icons.edit, color: Colors.white),
+                                          Icon(Icons.edit, color: Colors.white, size: 19),
                                           onPressed: () {
                                             print('click edit');
                                             setState(() {
@@ -557,7 +560,7 @@ class _HomePageState extends State<HomePage> {
                           ]
                       ),
                     ),
-                  ),
+                  
                 ],
 
               )),
@@ -708,17 +711,17 @@ class _HomePageState extends State<HomePage> {
                               },
                               style: ElevatedButton.styleFrom(
                                   minimumSize: Size(103, 30),
-                                  primary: Colors.blue,
+                                  side: BorderSide(color: Colors.blueGrey[300], width: 1 ),
+                                  primary: Colors.white,
                                   padding: EdgeInsets.symmetric(
-                                    horizontal: 30,
-                                    vertical: 8,
+                                    horizontal: 20
                                   ),
                                   shape: RoundedRectangleBorder(
-                                      borderRadius: new BorderRadius.circular(5.0))),
+                                      borderRadius: new BorderRadius.circular(15))),
                               child: Text(
-                                _addMore? 'Add More' : 'Add One',
+                                _addMore? 'Back' : 'Add More Events',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: Colors.grey[800],
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -726,35 +729,38 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                     ),
-                    TextField(
-                      controller: _eventController,
-                      maxLength: 50,
-                      decoration: InputDecoration(
-                          labelText: "Event", hintText: "Enter event name",
-                          counterText: '',
-                          isDense: true,
-                          contentPadding: EdgeInsets.all(8),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 15, left: 12, right: 12),
+                      child: TextField(
+                        controller: _eventController,
+                        maxLength: 50,
+                        decoration: InputDecoration(
+                            labelText: "Event", hintText: "Enter event name",
+                            counterText: '',
+                            isDense: true,
+                            contentPadding: EdgeInsets.all(8),
+                        ),
+                        onChanged: (text) {
+                          if (text.isEmpty) {
+                            print("Please fill event name");
+                            setState(() {
+                              _eventAlert = true;
+                              _eventAlertText = "Please fill event name";
+                            });
+                          } else if (text.trim().isEmpty) {
+                            print("Event name cannot be blank");
+                            setState(() {
+                              _eventAlert = true;
+                              _eventAlertText = "Event name cannot be blank";
+                            });
+                          } else {
+                            setState(() {
+                              _eventAlert = false;
+                              _eventAlertText = "";
+                            });
+                          }
+                        },
                       ),
-                      onChanged: (text) {
-                        if (text.isEmpty) {
-                          print("Please fill event name");
-                          setState(() {
-                            _eventAlert = true;
-                            _eventAlertText = "Please fill event name";
-                          });
-                        } else if (text.trim().isEmpty) {
-                          print("Event name cannot be blank");
-                          setState(() {
-                            _eventAlert = true;
-                            _eventAlertText = "Event name cannot be blank";
-                          });
-                        } else {
-                          setState(() {
-                            _eventAlert = false;
-                            _eventAlertText = "";
-                          });
-                        }
-                      },
                     ),
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -825,119 +831,136 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ]
                     ),
-                    DropdownButton<String>(
-                          value: _catValue,
-                          icon: const Icon(Icons.arrow_downward),
-                          iconSize: 24,
-                          elevation: 16,
-                          style: const TextStyle(color: Colors.grey),
-                          underline: Container(
-                            height: 2,
-                            color: Colors.black26,
-                          ),
-                          onChanged: (newValue) {
-                            setState(() {
-                              _catValue = newValue;
-                            });
-                            FocusScope.of(context).unfocus();
-                          },
-                          items: [
-                            'Family',
-                            'Friend',
-                            'School',
-                            'Personal',
-                            'Special',
-                            'Other'].map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child:Row(
-                                children: <Widget>[
-                                Icon(Icons.circle, color: Color(catMap[value])),
-                                Text(value,
-                                    style: GoogleFonts.mali(
-                                      textStyle: TextStyle(
-                                        // color: Color(catMap[value]),
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 14,
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: DropdownButton<String>(
+                              value: _catValue,
+                              icon: const Icon(Icons.arrow_drop_down),
+                              iconSize: 30,
+                              elevation: 16,
+                              style: const TextStyle(color: Colors.grey),
+                              underline: Container(
+                                height: 2,
+                                color: Colors.black26,
+                              ),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  _catValue = newValue;
+                                });
+                                FocusScope.of(context).unfocus();
+                              },
+                              items: [
+                                'Family',
+                                'Friend',
+                                'School',
+                                'Personal',
+                                'Special',
+                                'Other'].map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child:Padding(
+                                    padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
+                                    child: Row(
+                                      children: <Widget>[
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 8.0),
+                                        child: Icon(Icons.circle, color: Color(catMap[value]), size: 20),
                                       ),
-                                    )),
-                              ]),
-                            );
-                          }).toList(),
+                                      Text(value,
+                                          style: GoogleFonts.mali(
+                                            textStyle: TextStyle(
+                                              // color: Color(catMap[value]),
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 16,
+                                            ),
+                                          )),
+                                    ]),
+                                  ),
+                                );
+                              }).toList(),
+                        ),
+                      ),
                     ),
                     Visibility (
                       visible: (_addMore && type==0) ? true : false,
-                      child: Container(
-                        width: 700.0,
-                        height: 100.0,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          color: const Color(0xFFFFFF),
-                          borderRadius: new BorderRadius.all(new Radius.circular(32.0)),
-                          border: Border.all(
-                            color: Colors.black,
-                            width: 1.0,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Container(
+                          width: 700.0,
+                          height: 100.0,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            color: const Color(0xFFFFFF),
+                            borderRadius: new BorderRadius.all(new Radius.circular(5.0)),
+                            border: Border.all(
+                              color: Colors.grey,
+                              width: 1.0,
+                            ),
                           ),
-                        ),
-                        child: Center(
-                          child: ListView(
-                              shrinkWrap: true,
-                              padding: const EdgeInsets.all(20.0),
-                              children: [
-                                ..._addList.map((value) => ListTile(
-                                  title:
-                                  Container(
-                                    width: 700.0,
-                                    height: 30.0,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.rectangle,
-                                      color: const Color(0xFFFFFF),
-                                      borderRadius: new BorderRadius.all(new Radius.circular(32.0)),
-                                      border: Border.all(
-                                        color: Color(weekColor[DateFormat('EEEE').format(value.start)]),
-                                        width: 3.0,
+                          child: Center(
+                            child: ListView(
+                                shrinkWrap: true,
+                                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                                children: [
+                                  ..._addList.map((value) => ListTile(
+                                    title:
+                                    Container(
+                                      width: 700.0,
+                                      height: 28.0,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.rectangle,
+                                        color: const Color(0xFFFFFF),
+                                        borderRadius: new BorderRadius.all(new Radius.circular(32.0)),
+                                        border: Border.all(
+                                          color: Color(weekColor[DateFormat('EEEE').format(value.start)]),
+                                          width: 2.0,
+                                        ),
+                                      ),
+                                      child: ListView(
+                                        shrinkWrap: true,
+                                        // padding: const EdgeInsets.all(20.0),
+                                        scrollDirection: Axis.horizontal,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              Padding(
+                                                padding: const EdgeInsets.only(right: 6.0, left: 6, top: 2),
+                                                child: Icon(Icons.circle, color: Color(catMap[value.cat]),size: 18,),
+                                              ),
+                                              Text(
+                                                  "${value.event} @${datetime.format(value.start)}-${time.format(value.stop)}",
+                                                  style: GoogleFonts.mali(
+                                                    textStyle: TextStyle(
+                                                      color: Colors.black,
+                                                      fontWeight: FontWeight.w700,
+                                                      fontSize: 14,
+                                                    ),
+                                                  )
+                                              ),
+                                              SizedBox(
+                                                height: 18.0,
+                                                width: 18.0,
+                                                child: IconButton(
+                                                  icon:
+                                                  Icon(Icons.delete, color: Colors.black, size: 18.0),
+                                                  padding: const EdgeInsets.only(bottom: 50.0),
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      _addList.remove(value);
+                                                    });
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    child: ListView(
-                                      shrinkWrap: true,
-                                      // padding: const EdgeInsets.all(20.0),
-                                      scrollDirection: Axis.horizontal,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: <Widget>[
-                                            Icon(Icons.circle, color: Color(catMap[value.cat])),
-                                            Text(
-                                                "${value.event} @${datetime.format(value.start)}-${time.format(value.stop)}",
-                                                style: GoogleFonts.mali(
-                                                  textStyle: TextStyle(
-                                                    color: Colors.black,
-                                                    fontWeight: FontWeight.w700,
-                                                    fontSize: 14,
-                                                  ),
-                                                )
-                                            ),
-                                            SizedBox(
-                                              height: 18.0,
-                                              width: 18.0,
-                                              child: IconButton(
-                                                icon:
-                                                Icon(Icons.delete, color: Colors.black, size: 18.0),
-                                                padding: const EdgeInsets.only(bottom: 50.0),
-                                                onPressed: () {
-                                                  setState(() {
-                                                    _addList.remove(value);
-                                                  });
-                                                },
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                )),
-                              ]
+                                  )),
+                                ]
+                            ),
                           ),
                         ),
                       ),
@@ -1097,23 +1120,25 @@ class _HomePageState extends State<HomePage> {
                             textColor: Colors.white,
                             child: Icon(
                               Icons.add,
-                              size: 24,
+                              size: 22,
                             ),
-                            padding: EdgeInsets.all(16),
+                            padding: EdgeInsets.all(12),
                             shape: CircleBorder(),
                           )
                       ),
                     ),
                     Opacity(
                         opacity: _eventAlert ? 1 : 0,
-                        child: Text(_eventAlertText,
-                            style: GoogleFonts.mali(
-                              textStyle: TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14,
-                              ),
-                            )),
+                        child: Center(
+                          child: Text(_eventAlertText,
+                              style: GoogleFonts.mali(
+                                textStyle: TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                ),
+                              )),
+                        ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -1559,44 +1584,50 @@ class _HomePageState extends State<HomePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Center(child:
-                            Text("Add Routine Events",
-                                style: GoogleFonts.mali(
-                                  textStyle: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 20,
-                                  ),
-                                ))
+                            Padding(
+                              padding: const EdgeInsets.only(top: 13.0),
+                              child: Text("Add Routine Events",
+                                  style: GoogleFonts.mali(
+                                    textStyle: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 20,
+                                    ),
+                                  )),
+                            )
                             ),
-                            TextField(
-                              controller: _eventController,
-                              maxLength: 25,
-                              decoration: InputDecoration(
-                                  labelText: "Event", hintText: "Enter event name",
-                                  counterText: '',
-                                  isDense: true,
-                                  contentPadding: EdgeInsets.all(8),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 15, left: 12, right: 12),
+                              child: TextField(
+                                controller: _eventController,
+                                maxLength: 25,
+                                decoration: InputDecoration(
+                                    labelText: "Event", hintText: "Enter event name",
+                                    counterText: '',
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.all(8),
+                                ),
+                                onChanged: (text) {
+                                  if (text.isEmpty) {
+                                    print("Please fill event name");
+                                    setState(() {
+                                      _eventAlert = true;
+                                      _eventAlertText = "Please fill event name";
+                                    });
+                                  } else if (text.trim().isEmpty) {
+                                    print("Event name cannot be blank");
+                                    setState(() {
+                                      _eventAlert = true;
+                                      _eventAlertText = "Event name cannot be blank";
+                                    });
+                                  } else {
+                                    setState(() {
+                                      _eventAlert = false;
+                                      _eventAlertText = "";
+                                    });
+                                  }
+                                },
                               ),
-                              onChanged: (text) {
-                                if (text.isEmpty) {
-                                  print("Please fill event name");
-                                  setState(() {
-                                    _eventAlert = true;
-                                    _eventAlertText = "Please fill event name";
-                                  });
-                                } else if (text.trim().isEmpty) {
-                                  print("Event name cannot be blank");
-                                  setState(() {
-                                    _eventAlert = true;
-                                    _eventAlertText = "Event name cannot be blank";
-                                  });
-                                } else {
-                                  setState(() {
-                                    _eventAlert = false;
-                                    _eventAlertText = "";
-                                  });
-                                }
-                              },
                             ),
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -1669,163 +1700,182 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ]
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: <Widget>[
-                                DropdownButton<String>(
-                                  value: _catValue,
-                                  icon: const Icon(Icons.arrow_downward),
-                                  iconSize: 24,
-                                  elevation: 16,
-                                  style: const TextStyle(color: Colors.grey),
-                                  underline: Container(
-                                    height: 2,
-                                    color: Colors.black26,
+                           Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 16.0),
+                                    child: DropdownButton<String>(
+                                        value: _catValue,
+                                        icon: const Icon(Icons.arrow_drop_down),
+                                        iconSize: 30,
+                                        elevation: 16,
+                                        style: const TextStyle(color: Colors.grey),
+                                        underline: Container(
+                                          height: 2,
+                                          color: Colors.black26,
+                                        ),
+                                        onChanged: (newValue) {
+                                          setState(() {
+                                            _catValue = newValue;
+                                          });
+                                          FocusScope.of(context).unfocus();
+                                        },
+                                        items: [
+                                          'Family',
+                                          'Friend',
+                                          'School',
+                                          'Personal',
+                                          'Special',
+                                          'Other'].map<DropdownMenuItem<String>>((String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(bottom: 8.0),
+                                              child: Row(
+                                                    children: <Widget>[
+                                                      Padding(
+                                                        padding: const EdgeInsets.only(right: 8),
+                                                        child: Icon(Icons.circle, color: Color(catMap[value]), size: 20),
+                                                      ),
+                                                      Text(value,
+                                                            style: GoogleFonts.mali(
+                                                              textStyle: TextStyle(
+                                                                // color: Color(catMap[value]),
+                                                                fontWeight: FontWeight.w500,
+                                                                fontSize: 17,
+                                                              ),
+                                                            )),
+                                                      
+                                                    ]),
+                                            ),
+                                            
+                                          );
+                                        }).toList(),
+                                      ),
                                   ),
-                                  onChanged: (newValue) {
-                                    setState(() {
-                                      _catValue = newValue;
-                                    });
-                                    FocusScope.of(context).unfocus();
-                                  },
-                                  items: [
-                                    'Family',
-                                    'Friend',
-                                    'School',
-                                    'Personal',
-                                    'Special',
-                                    'Other'].map<DropdownMenuItem<String>>((String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child:Row(
-                                          children: <Widget>[
-                                            Icon(Icons.circle, color: Color(catMap[value])),
-                                            Text(value,
-                                                style: GoogleFonts.mali(
-                                                  textStyle: TextStyle(
-                                                    // color: Color(catMap[value]),
-                                                    fontWeight: FontWeight.w700,
-                                                    fontSize: 14,
-                                                  ),
-                                                )),
-                                          ]),
-                                    );
-                                  }).toList(),
+                                  
+                                  Container(
+                                      width: 100.0,
+                                      child: TextField(
+                                        controller: _repeatController,
+                                        maxLength: 2,
+                                        style: TextStyle(
+                                            fontSize: 16.0,
+                                            height: 1.6,
+                                            color: Colors.black
+                                        ),
+                                        decoration: InputDecoration(
+                                            labelText: "Repeat", hintText: "In weeks",
+                                            counterText: '',
+                                            isDense: true,
+                                            contentPadding: EdgeInsets.all(2),
+                                        ),
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: <TextInputFormatter>[
+                                          FilteringTextInputFormatter.digitsOnly
+                                        ],
+                                        onChanged: (text) {
+                                          if (text.isEmpty) {
+                                            print("Please fill Repeat number");
+                                            setState(() {
+                                              _eventAlert = true;
+                                              _eventAlertText = "Please fill Repeat number";
+                                            });
+                                          } else {
+                                            setState(() {
+                                              _repeat=int.parse(text);
+                                              _eventAlert = false;
+                                              _eventAlertText = "";
+                                            });
+                                          }
+                                        },
+                                      ),
+                                  ),
+
+                                ],
+                              ),
+                            
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                              child: Container(
+                                width: 700.0,
+                                height: 100.0,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.rectangle,
+                                  color: const Color(0xFFFFFF),
+                                  borderRadius: new BorderRadius.all(new Radius.circular(5.0)),
+                                  border: Border.all(
+                                    color: Colors.grey,
+                                    width: 1.0,
+                                  ),
                                 ),
-                                Container(
-                                    width: 100.0,
-                                    child: TextField(
-                                      controller: _repeatController,
-                                      maxLength: 2,
-                                      style: TextStyle(
-                                          fontSize: 14.0,
-                                          height: 2.0,
-                                          color: Colors.black
-                                      ),
-                                      decoration: InputDecoration(
-                                          labelText: "Repeat", hintText: "In weeks",
-                                          counterText: '',
-                                          isDense: true,
-                                          contentPadding: EdgeInsets.all(8),
-                                      ),
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter.digitsOnly
-                                      ],
-                                      onChanged: (text) {
-                                        if (text.isEmpty) {
-                                          print("Please fill Repeat number");
-                                          setState(() {
-                                            _eventAlert = true;
-                                            _eventAlertText = "Please fill Repeat number";
-                                          });
-                                        } else {
-                                          setState(() {
-                                            _repeat=int.parse(text);
-                                            _eventAlert = false;
-                                            _eventAlertText = "";
-                                          });
-                                        }
-                                      },
+                                child: Center(
+                                    child: ListView(
+                                        shrinkWrap: true,
+                                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                                        children: [
+                                          ..._addList.map((value) => ListTile(
+                                            title:
+                                              Container(
+                                              width: 700.0,
+                                              height: 28.0,
+                                              decoration: BoxDecoration(
+                                                  shape: BoxShape.rectangle,
+                                                  color: const Color(0xFFFFFF),
+                                                  borderRadius: new BorderRadius.all(new Radius.circular(32.0)),
+                                                  border: Border.all(
+                                                    color: Color(weekColor[DateFormat('EEEE').format(value.start)]),
+                                                    width: 2.0,
+                                                  ),
+                                              ),
+                                              child: ListView(
+                                                shrinkWrap: true,
+                                                // padding: const EdgeInsets.all(20.0),
+                                                scrollDirection: Axis.horizontal,
+                                                children: [
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: <Widget>[
+                                                      Padding(
+                                                        padding: const EdgeInsets.only(right: 6, left: 6, top: 2),
+                                                        child: Icon(Icons.circle, color: Color(catMap[value.cat]), size: 18
+                                                        // Color(weekColor[DateFormat('EEEE').format(value.start)])
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                            "${value.event} @${time.format(value.start)}-${time.format(value.stop)}",
+                                                            style: GoogleFonts.mali(
+                                                              textStyle: TextStyle(
+                                                                color: Colors.black,
+                                                                fontWeight: FontWeight.w700,
+                                                                fontSize: 14,
+                                                              ),
+                                                            )
+                                                      ),
+                                                      SizedBox(
+                                                          height: 18.0,
+                                                          width: 18.0,
+                                                          child: IconButton(
+                                                            icon:
+                                                            Icon(Icons.delete, color: Colors.black, size: 18.0),
+                                                            padding: const EdgeInsets.only(bottom: 50.0),
+                                                            onPressed: () {
+                                                              setState(() {
+                                                                _addList.remove(value);
+                                                              });
+                                                            },
+                                                          ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          )),
+                                        ]
                                     ),
                                 ),
-
-                              ],
-                            ),
-                            Container(
-                              width: 700.0,
-                              height: 100.0,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                color: const Color(0xFFFFFF),
-                                borderRadius: new BorderRadius.all(new Radius.circular(32.0)),
-                                border: Border.all(
-                                  color: Colors.black,
-                                  width: 1.0,
-                                ),
-                              ),
-                              child: Center(
-                                  child: ListView(
-                                      shrinkWrap: true,
-                                      padding: const EdgeInsets.all(20.0),
-                                      children: [
-                                        ..._addList.map((value) => ListTile(
-                                          title:
-                                            Container(
-                                            width: 700.0,
-                                            height: 30.0,
-                                            decoration: BoxDecoration(
-                                                shape: BoxShape.rectangle,
-                                                color: const Color(0xFFFFFF),
-                                                borderRadius: new BorderRadius.all(new Radius.circular(32.0)),
-                                                border: Border.all(
-                                                  color: Color(weekColor[DateFormat('EEEE').format(value.start)]),
-                                                  width: 3.0,
-                                                ),
-                                            ),
-                                            child: ListView(
-                                              shrinkWrap: true,
-                                              // padding: const EdgeInsets.all(20.0),
-                                              scrollDirection: Axis.horizontal,
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                  children: <Widget>[
-                                                    Icon(Icons.circle, color: Color(catMap[value.cat])
-                                                    // Color(weekColor[DateFormat('EEEE').format(value.start)])
-                                                    ),
-                                                    Text(
-                                                          "${value.event} @${time.format(value.start)}-${time.format(value.stop)}",
-                                                          style: GoogleFonts.mali(
-                                                            textStyle: TextStyle(
-                                                              color: Colors.black,
-                                                              fontWeight: FontWeight.w700,
-                                                              fontSize: 14,
-                                                            ),
-                                                          )
-                                                    ),
-                                                    SizedBox(
-                                                        height: 18.0,
-                                                        width: 18.0,
-                                                        child: IconButton(
-                                                          icon:
-                                                          Icon(Icons.delete, color: Colors.black, size: 18.0),
-                                                          padding: const EdgeInsets.only(bottom: 50.0),
-                                                          onPressed: () {
-                                                            setState(() {
-                                                              _addList.remove(value);
-                                                            });
-                                                          },
-                                                        ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        )),
-                                      ]
-                                  ),
                               ),
                             ),
                             Center(
@@ -1981,9 +2031,9 @@ class _HomePageState extends State<HomePage> {
                                   textColor: Colors.white,
                                   child: Icon(
                                     Icons.add,
-                                    size: 24,
+                                    size: 22,
                                   ),
-                                  padding: EdgeInsets.all(16),
+                                  padding: EdgeInsets.all(12),
                                   shape: CircleBorder(),
                                 )
                             ),
