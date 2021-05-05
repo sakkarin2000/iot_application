@@ -53,7 +53,7 @@ class _StudyTimetableState extends State<StudyTimetable> {
     "Sunday": 6,
   };
 
-  DateTime _startDate = DateTime.now();
+  DateTime _startDate;
 
   @override
   void initState() {
@@ -72,6 +72,7 @@ class _StudyTimetableState extends State<StudyTimetable> {
       "Friday": [],
       "Saturday": [],
     };
+    _startDate=startSemester;
   }
 
   String _userId;
@@ -460,6 +461,7 @@ class _StudyTimetableState extends State<StudyTimetable> {
               ),
               ElevatedButton(
                 onPressed: () {
+                  _startDate = startSemester;
                   DateTime tem1 = new DateTime(
                     _startDate.year,
                     _startDate.month,
@@ -627,8 +629,9 @@ class _StudyTimetableState extends State<StudyTimetable> {
                                             ),
                                           ),
                                           child: CupertinoDatePicker(
-                                              initialDateTime: startSemester
-                                                  .add(Duration(hours: 6)),
+                                              initialDateTime: _start,
+                                              // startSemester
+                                              //     .add(Duration(hours: 6)),
                                               mode: CupertinoDatePickerMode
                                                   .dateAndTime,
                                               minimumDate: min,
@@ -674,8 +677,9 @@ class _StudyTimetableState extends State<StudyTimetable> {
                                             ),
                                           ),
                                           child: CupertinoDatePicker(
-                                              initialDateTime: startSemester
-                                                  .add(Duration(hours: 7)),
+                                              initialDateTime: _stop,
+                                              // startSemester
+                                              //     .add(Duration(hours: 7)),
                                               mode:
                                                   CupertinoDatePickerMode.time,
                                               use24hFormat: true,
