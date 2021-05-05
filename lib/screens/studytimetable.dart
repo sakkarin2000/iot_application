@@ -14,49 +14,17 @@ class StudyTimetable extends StatefulWidget {
 
 class _StudyTimetableState extends State<StudyTimetable> {
 
-  // CalendarController _controller;
   // Map<DateTime, List<dynamic>> _events;
-  // List<dynamic> _selectedEvents;
   TextEditingController _eventController;
   TextEditingController _repeatController;
   DateTime _start = DateTime.now();
   DateTime _stop = DateTime.now();
   final time = new DateFormat('HH:mm');
-  // final datetime = new DateFormat('dd-MM-yyyy HH:mm');
   bool _eventAlert = false;
   String _eventAlertText = "";
   // String _userId;
   List<Event> myEventList;
   var uuid = Uuid();
-  // String _catValue;
-  // int catColor;
-  // final Map<String, int> catMap = {
-  //   "Family": 0xffFECD4C,
-  //   "Friend": 0xff58DCE4,
-  //   "School": 0xffE17262,
-  //   "Personal": 0xff9776F8,
-  //   "Special": 0xffFFB9A3,
-  //   "Other": 0xffE5A4ED,
-  // };
-  // List<dynamic> _addList=[];
-
-  // final Map<String, int> weekColor = {
-  //   "Sunday": 0xffff0000,
-  //   "Monday": 0xffffff00,
-  //   "Tuesday": 0xffffc0cb,
-  //   "Wednesday": 0xff008000,
-  //   "Thursday": 0xffffa500,
-  //   "Friday": 0xff00bfff,
-  //   "Saturday": 0xff800080,
-  // };
-
-  // List<dynamic> sunday=[];
-  // List<dynamic> monday=[];
-  // List<dynamic> tueday=[];
-  // List<dynamic> wednesday=[];
-  // List<dynamic> thursday=[];
-  // List<dynamic> friday=[];
-  // List<dynamic> saturday=[];
 
   Map<String, List<dynamic>> weekMap = {
     "Sunday": [],
@@ -255,18 +223,6 @@ class _StudyTimetableState extends State<StudyTimetable> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  // final Map<String, int> week = {
-                  //   "Sunday": 0,
-                  //   "Monday": 1,
-                  //   "Tuesday": 2,
-                  //   "Wednesday": 3,
-                  //   "Thursday": 4,
-                  //   "Friday": 5,
-                  //   "Saturday": 6,
-                  // };
-                  // String day=DateFormat('EEEE').format(_startDate);
-                  // int min=week[day];
-                  // int max=6-week[day];
 
                   DateTime tem1=new DateTime(
                     _startDate.year,
@@ -591,19 +547,15 @@ class _StudyTimetableState extends State<StudyTimetable> {
 
                                       String id = uuid.v1();
                                       if (weekMap[day] != null) {
-
-                                        setState(() {
-                                          weekMap[day].add(Event(
-                                            id: id,
-                                            event: _eventController.text
-                                                .trim()
-                                                .replaceAll(RegExp(" +"), " "),
-                                            start: Lstart,
-                                            stop: Lstop,
-                                            cat: cat,
-                                          ));
-                                        });
-
+                                        weekMap[day].add(Event(
+                                          id: id,
+                                          event: _eventController.text
+                                              .trim()
+                                              .replaceAll(RegExp(" +"), " "),
+                                          start: Lstart,
+                                          stop: Lstop,
+                                          cat: cat,
+                                        ));
                                         weekMap[day].sort((a, b) {
                                           var sa = a.start.hour * 60 +
                                               a.start.minute;
@@ -612,21 +564,17 @@ class _StudyTimetableState extends State<StudyTimetable> {
                                           return sa - sb;
                                         });
                                       } else {
-
-                                        setState(() {
-                                          weekMap[day] = [
-                                            Event(
-                                              id: id,
-                                              event: _eventController.text
-                                                  .trim()
-                                                  .replaceAll(RegExp(" +"), " "),
-                                              start: Lstart,
-                                              stop: Lstop,
-                                              cat: cat,
-                                            )
-                                          ];
-                                        });
-
+                                        weekMap[day] = [
+                                          Event(
+                                            id: id,
+                                            event: _eventController.text
+                                                .trim()
+                                                .replaceAll(RegExp(" +"), " "),
+                                            start: Lstart,
+                                            stop: Lstop,
+                                            cat: cat,
+                                          )
+                                        ];
                                       }
                                       setState(() {
                                         weekMap[day].add("remove");
@@ -636,8 +584,6 @@ class _StudyTimetableState extends State<StudyTimetable> {
 
 
                                       //////////////////////////////////////////////////////////////////////////////////Add to MyEvent
-
-
 
                                       // for(int j=0;j<_repeat+1;j++){
                                       //
@@ -712,9 +658,10 @@ class _StudyTimetableState extends State<StudyTimetable> {
       if (event) {
       } else {}
     });
-    // setState(() {
-    //   _events[_controller.selectedDay] = _selectedEvents;
-    // });
+    String day=DateFormat('EEEE').format(_start);
+    setState(() {
+      weekMap[day]=weekMap[day];
+    });
   }
 
 }
