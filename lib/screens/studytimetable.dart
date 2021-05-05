@@ -94,6 +94,7 @@ class _StudyTimetableState extends State<StudyTimetable> {
         dynamic period =
             await DatabaseService(uid: event.uid).getSemesterPeriod;
         print('hey');
+
         print(period["startSemester"]);
         print(period["endSemester"]);
         setState(() {
@@ -254,6 +255,8 @@ class _StudyTimetableState extends State<StudyTimetable> {
                 padding: const EdgeInsets.only(top: 20),
                 child: ElevatedButton(
                   onPressed: () {
+                    _startDate = startSemester;
+
                     DateTime tem1 = new DateTime(
                       _startDate.year,
                       _startDate.month,
@@ -477,7 +480,7 @@ class _StudyTimetableState extends State<StudyTimetable> {
                     // _addList=[];
                   });
 
-                  DateTime minDate = _startDate;
+                  DateTime minDate = startSemester;
                   DateTime maxDate = minDate.add(Duration(days: 6));
                   DateTime minTime = new DateTime(
                       minDate.year, minDate.month, minDate.day, 0, 0);
@@ -624,7 +627,8 @@ class _StudyTimetableState extends State<StudyTimetable> {
                                             ),
                                           ),
                                           child: CupertinoDatePicker(
-                                              initialDateTime: _start,
+                                              initialDateTime: startSemester
+                                                  .add(Duration(hours: 6)),
                                               mode: CupertinoDatePickerMode
                                                   .dateAndTime,
                                               minimumDate: min,
@@ -670,7 +674,8 @@ class _StudyTimetableState extends State<StudyTimetable> {
                                             ),
                                           ),
                                           child: CupertinoDatePicker(
-                                              initialDateTime: _stop,
+                                              initialDateTime: startSemester
+                                                  .add(Duration(hours: 7)),
                                               mode:
                                                   CupertinoDatePickerMode.time,
                                               use24hFormat: true,

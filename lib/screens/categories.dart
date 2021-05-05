@@ -54,8 +54,14 @@ class _CatPageKaState extends State<CatPageKa> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    // TODO: implement initState
+    super.initState();
     getUserId();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return StreamProvider<Map<String, int>>.value(
       initialData: null,
       value: DatabaseService(uid: _userId).categories,
