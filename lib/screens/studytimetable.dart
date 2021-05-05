@@ -636,16 +636,16 @@ class _StudyTimetableState extends State<StudyTimetable> {
                                                   _eventAlert = false;
                                                   _eventAlertText = "";
                                                   _start = dateTime;
-                                                  _stop = new DateTime(
-                                                    _start.year,
-                                                    _start.month,
-                                                    _start.day,
-                                                    _stop.hour,
-                                                    _stop.minute,
-                                                    _start.second,
-                                                    _start.millisecond,
-                                                    _start.microsecond,
-                                                  );
+                                                  // _stop = new DateTime(
+                                                  //   _start.year,
+                                                  //   _start.month,
+                                                  //   _start.day,
+                                                  //   _stop.hour,
+                                                  //   _stop.minute,
+                                                  //   _start.second,
+                                                  //   _start.millisecond,
+                                                  //   _start.microsecond,
+                                                  // );
                                                 });
                                               }))),
                                 ]),
@@ -679,16 +679,17 @@ class _StudyTimetableState extends State<StudyTimetable> {
                                                 setState(() {
                                                   _eventAlert = false;
                                                   _eventAlertText = "";
-                                                  _stop = new DateTime(
-                                                    _start.year,
-                                                    _start.month,
-                                                    _start.day,
-                                                    _stop.hour,
-                                                    _stop.minute,
-                                                    _start.second,
-                                                    _start.millisecond,
-                                                    _start.microsecond,
-                                                  );
+                                                  _stop=dateTime;
+                                                  // _stop = new DateTime(
+                                                  //   _start.year,
+                                                  //   _start.month,
+                                                  //   _start.day,
+                                                  //   _stop.hour,
+                                                  //   _stop.minute,
+                                                  //   _start.second,
+                                                  //   _start.millisecond,
+                                                  //   _start.microsecond,
+                                                  // );
                                                 });
                                               }))),
                                 ]),
@@ -779,6 +780,8 @@ class _StudyTimetableState extends State<StudyTimetable> {
                               var s2 = Lstart.hour * 60 + Lstart.minute;
                               var e2 = Lstop.hour * 60 + Lstop.minute;
                               if (e2 <= s2) {
+                                print('start ${Lstart.hour} ${Lstart.minute}');
+                                print('stop ${Lstop.hour} ${Lstop.minute}');
                                 print("Stop time must be after Start time");
                                 setState(() {
                                   _eventAlert = true;
