@@ -104,7 +104,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    super.initState();
     _controller = CalendarController();
     _eventController = TextEditingController();
     _repeatController=TextEditingController();
@@ -117,6 +116,7 @@ class _HomePageState extends State<HomePage> {
     _removeList=[];
     _repeat=0;
     _replaceList={};
+    super.initState();
   }
 
   Future<void> getEvent() async {
@@ -1086,6 +1086,20 @@ class _HomePageState extends State<HomePage> {
                                           }
                                         }
                                       }
+
+                                      String id = uuid.v1();
+                                      Event newE=Event(
+                                        id: id,
+                                        event: _eventController.text
+                                            .trim()
+                                            .replaceAll(RegExp(" +"), " "),
+                                        start: _start,
+                                        stop: _stop,
+                                        cat: _catValue,
+                                        isTimeTable: false,
+                                      );
+                                      // print("helllll");
+
                                       if (_events[index] != null) {
                                         for (Event e in _events[index]) {
 
@@ -1103,15 +1117,9 @@ class _HomePageState extends State<HomePage> {
                                             // });
 
                                             //hey
-
-                                            // if(_replaceList[e]==null){
-                                            //   _showConflictDialog(false, e, "Conflict with ${e.event} @${datetime.format(e.start)}-${time.format(e.stop)}");
-                                            // }
-
                                             if(_replaceList[e]==null) {
-
                                               if(!e.isTimeTable) {
-                                                _showConflictDialog(false, e, "Conflict with ${e.event} @${datetime.format(e.start)}-${time.format(e.stop)}");
+                                                _showConflictDialog(false, 2, e, newE, "Conflict with ${e.event} @${datetime.format(e.start)}-${time.format(e.stop)}");
                                               }else{
                                                 _replaceList.putIfAbsent(e, () => false);
                                                 setState(() {
@@ -1127,25 +1135,13 @@ class _HomePageState extends State<HomePage> {
                                         }
                                       }
 
-                                      String id = uuid.v1();
                                       if (_addList != null) {
                                         setState(() {
-                                          _addList.add(Event(
-                                            id: id,
-                                            event: _eventController.text
-                                                .trim()
-                                                .replaceAll(RegExp(" +"), " "),
-                                            start: _start,
-                                            stop: _stop,
-                                            cat: _catValue,
-                                            isTimeTable: false,
-                                          ));
+                                          _addList.add(
+                                            newE
+                                          );
                                         });
 
-                                        if(_replaceList!=null){
-                                          _addList.removeLast();
-                                          _replaceList={};
-                                        }else {
                                           _addList.sort((a, b) {
                                             var mda = a.start.month * 31 +
                                                 a.start.day;
@@ -1163,28 +1159,25 @@ class _HomePageState extends State<HomePage> {
                                               return mda - mdb;
                                             }
                                           });
-                                        }
+
                                       } else {
                                         setState(() {
                                           _addList = [
-                                            Event(
-                                              id: id,
-                                              event: _eventController.text
-                                                  .trim()
-                                                  .replaceAll(RegExp(" +"), " "),
-                                              start: _start,
-                                              stop: _stop,
-                                              cat: _catValue,
-                                              isTimeTable: false,
-                                            )
+                                            newE
                                           ];
                                         });
 
-                                        if(_replaceList!=null){
-                                          _addList.removeLast();
-                                          _replaceList={};
-                                        }
+                                      }
 
+                                      //hey
+                                      if(_replaceList!=null){
+                                        _replaceList.forEach((key, value) {
+                                          if(value==false){
+                                            _addList.remove(newE);
+                                            _replaceList={};
+                                          }
+                                          return;
+                                        });
                                       }
 
                                     },
@@ -1998,7 +1991,7 @@ class _HomePageState extends State<HomePage> {
                                             if(_replaceList[e]==null) {
 
                                               if(!e.isTimeTable) {
-                                                _showConflictDialog(true,e,
+                                                _showConflictDialog(true,3,e,null,
                                                     "Conflict with ${e
                                                         .event} @${datetime
                                                         .format(
@@ -2350,11 +2343,16 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Future<void> _showConflictDialog(bool routine, Event e,String alert) async {
+  Future<void> _showConflictDialog(bool routine, int type, Event oldE, Event newE, String alert) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
+
+      // return StatefulBuilder(
+      // builder: (context, setState)
+      // {
+
         return AlertDialog(
           title: Text('Conflict Management'),
           content: SingleChildScrollView(
@@ -2376,10 +2374,9 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [ElevatedButton(
                       onPressed: () {
-
                         // _replaceList[e]=false;
-                        if(routine) {
-                          _replaceList.putIfAbsent(e, () => false);
+                        if (routine) {
+                          _replaceList.putIfAbsent(oldE, () => false);
 
                           _eventController.clear();
                           setState(() {
@@ -2387,8 +2384,14 @@ class _HomePageState extends State<HomePage> {
                             _eventAlertText = "";
                           });
                         }
-                        else if(!routine){
-                          _addList.remove(e);
+                        else if (!routine) {
+                          if (type == 2) {
+
+                            setState(() {
+                              _addList.remove(newE);
+                            });
+
+                          }
                         }
 
                         Navigator.of(context).pop(false);
@@ -2403,7 +2406,7 @@ class _HomePageState extends State<HomePage> {
                           shape: RoundedRectangleBorder(
                               borderRadius: new BorderRadius.circular(5.0))),
                       child: Text(
-                        routine? 'Skip':'Cancel',
+                        routine ? 'Skip' : 'Cancel',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 14,
@@ -2413,20 +2416,18 @@ class _HomePageState extends State<HomePage> {
                   ),
                     ElevatedButton(
                         onPressed: () {
-
                           // _replaceList[e]=true;
-                            _replaceList.putIfAbsent(e, () => true);
+                          _replaceList.putIfAbsent(oldE, () => true);
 
-                            _eventController.clear();
-                            setState(() {
-                              _eventAlert = false;
-                              _eventAlertText = "";
-                            });
+                          _eventController.clear();
+                          setState(() {
+                            _eventAlert = false;
+                            _eventAlertText = "";
+                          });
 
-                            if(!routine){
-                            _removeList.add(e);
-                            }
-
+                          if (!routine) {
+                            _removeList.add(oldE);
+                          }
 
                           Navigator.of(context).pop(true);
                         },
@@ -2447,14 +2448,27 @@ class _HomePageState extends State<HomePage> {
                             fontWeight: FontWeight.bold,
                           ),
                         )
-                    ),],
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
         );
+
+      // }
+      // );
+
       },
     );
+  }
+
+  void rebuildAllChildren(BuildContext context) {
+    void rebuild(Element el) {
+      el.markNeedsBuild();
+      el.visitChildren(rebuild);
+    }
+    (context as Element).visitChildren(rebuild);
   }
 
 }
