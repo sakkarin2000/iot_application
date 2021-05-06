@@ -567,10 +567,18 @@ class _HomePageState extends State<HomePage> {
 
                                               print(_events[_controller.selectedDay]!=null);
 
-                                              // _events[_controller.selectedDay].remove(value);
-                                              // setState(() {
-                                              //   _selectedEvents=_events[_controller.selectedDay];
-                                              // });
+                                              // _events[_controller
+                                              _selectedEvents.remove(value);
+
+                                              DatabaseService(uid: _userId)
+                                                  .removeEvent(value.id);
+                                              //         .selectedDay]
+                                              //     .remove(value);
+                                              setState(() {
+                                                _events[_controller
+                                                    .selectedDay] =
+                                                    _selectedEvents;
+                                              });
                                             },
                                           ),
                                         ),
@@ -1351,6 +1359,12 @@ class _HomePageState extends State<HomePage> {
                                             i.cat,
                                             i.isTimeTable,
                                           );
+
+                                          if("${index.add(Duration(hours: 7)).toString()}"=="${_controller.selectedDay.toString()}"){
+                                            setState(() {
+                                              _selectedEvents=_events[index];
+                                            });
+                                          }
 
                                           if("${index.add(Duration(hours: 7)).toString()}"=="${_controller.selectedDay.toString()}"){
                                             setState(() {
