@@ -563,22 +563,25 @@ class _HomePageState extends State<HomePage> {
                                           child: IconButton(
                                             icon:
                                             Icon(Icons.delete, color: Colors.white, size: 19),
-                                            onPressed: () {
+                                            onPressed: () async {
 
                                               print(_events[_controller.selectedDay]!=null);
 
-                                              // _events[_controller
-                                              _selectedEvents.remove(value);
+                                              bool _check= await _deleteConfirmDialog("You are going to delete ${value.event} @${time.format(value.start)}-${time.format(value.stop)}. Are you sure?");
 
-                                              DatabaseService(uid: _userId)
-                                                  .removeEvent(value.id);
-                                              //         .selectedDay]
-                                              //     .remove(value);
-                                              setState(() {
-                                                _events[_controller
-                                                    .selectedDay] =
-                                                    _selectedEvents;
-                                              });
+                                              if(_check) {
+                                                _selectedEvents.remove(value);
+                                                DatabaseService(uid: _userId)
+                                                    .removeEvent(value.id);
+                                                //         .selectedDay]
+                                                //     .remove(value);
+                                                setState(() {
+                                                  _events[_controller
+                                                      .selectedDay] =
+                                                      _selectedEvents;
+                                                });
+                                              }
+
                                             },
                                           ),
                                         ),
@@ -648,6 +651,7 @@ class _HomePageState extends State<HomePage> {
                   int max=6-week[day];
 
                   _eventController.clear();
+                  _repeatController.clear();
                   setState(() {
                     _eventAlert = false;
                     _eventAlertText = "";
@@ -715,10 +719,19 @@ class _HomePageState extends State<HomePage> {
                                   IconButton(
                                     icon:
                                     Icon(Icons.delete, color: Colors.black),
-                                    onPressed: () {
+                                    onPressed: () async {
                                       String id=argEvent.id;
-                                      _selectedEvents.remove(argEvent);
-                                      DatabaseService(uid: _userId).removeEvent(id);
+
+                                      bool _check= await _deleteConfirmDialog("You are going to delete this event. Are you sure?");
+
+                                      if(_check) {
+                                        _selectedEvents.remove(argEvent);
+                                        DatabaseService(uid: _userId)
+                                            .removeEvent(id);
+                                      }else{
+                                        return;
+                                      }
+
                                       Navigator.pop(context, false);
                                     },
                                   ),
@@ -981,10 +994,17 @@ class _HomePageState extends State<HomePage> {
                                                           icon:
                                                           Icon(Icons.delete, color: Colors.black, size: 18.0),
                                                           padding: const EdgeInsets.only(bottom: 50.0),
-                                                          onPressed: () {
-                                                            setState(() {
-                                                              _addList.remove(value);
-                                                            });
+                                                          onPressed: () async {
+                                                            bool _check = await _deleteConfirmDialog("You are going to delete ${value.event} @${datetime.format(value.start)}-${time.format(value.stop)}. Are you sure?");
+
+                                                            if(_check) {
+                                                              setState(() {
+                                                                _addList
+                                                                    .remove(
+                                                                    value);
+                                                              });
+                                                            }
+
                                                           },
                                                         ),
                                                       ),
@@ -1004,7 +1024,7 @@ class _HomePageState extends State<HomePage> {
                               visible: (_addMore && type==0) ? true : false,
                               child: Center(
                                   child: MaterialButton(
-                                    onPressed: () {
+                                    onPressed: () async {
                                       FocusScope.of(context).unfocus();
                                       DateTime index = new DateTime(
                                         _start.year,
@@ -1116,18 +1136,27 @@ class _HomePageState extends State<HomePage> {
                                             //   "Conflict with ${e.event} @${datetime.format(e.start)}-${time.format(e.stop)}";
                                             // });
 
-                                            //hey
+                                            //hey1
+                                            bool _check;
                                             if(_replaceList[e]==null) {
                                               if(!e.isTimeTable) {
-                                                _showConflictDialog(false, 2, e, newE, "Conflict with ${e.event} @${datetime.format(e.start)}-${time.format(e.stop)}");
+                                                _check =await _showConflictDialog(false, 2, e, newE, "Conflict with ${e.event} @${datetime.format(e.start)}-${time.format(e.stop)}");
                                               }else{
-                                                _replaceList.putIfAbsent(e, () => false);
+                                                _check=false;
                                                 setState(() {
                                                   _eventAlert = true;
                                                   _eventAlertText =
                                                   "Cannot replace subject from study timetable (${e.event} @${time.format(e.start)}-${time.format(e.stop)}), atomatically choose skip";
                                                 });
                                               }
+
+                                              if(!_check){
+                                                return;
+                                              }else{
+                                                _removeList.add(e);
+                                              }
+                                              // print("heyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+                                              // print(_check);
 
                                             }
 
@@ -1165,18 +1194,6 @@ class _HomePageState extends State<HomePage> {
                                           _addList = [
                                             newE
                                           ];
-                                        });
-
-                                      }
-
-                                      //hey
-                                      if(_replaceList!=null){
-                                        _replaceList.forEach((key, value) {
-                                          if(value==false){
-                                            _addList.remove(newE);
-                                            _replaceList={};
-                                          }
-                                          return;
                                         });
                                       }
 
@@ -1231,7 +1248,7 @@ class _HomePageState extends State<HomePage> {
                                     )
                                 ),
                                 ElevatedButton(
-                                    onPressed: () {
+                                    onPressed: () async {
                                       if(_addMore) {
                                         for(Event i in _addList){
                                           DateTime index = new DateTime(
@@ -1428,6 +1445,25 @@ class _HomePageState extends State<HomePage> {
                                           return;
                                         }
 
+                                        String id;
+                                        if(type==0) {
+                                          id = uuid.v1();
+                                        }else if(type==1) {
+                                          id = argEvent.id;
+                                        }
+
+                                        Event newE;
+                                          newE = Event(
+                                            id: id,
+                                            event: _eventController.text
+                                                .trim()
+                                                .replaceAll(RegExp(" +"), " "),
+                                            start: _start,
+                                            stop: _stop,
+                                            cat: _catValue,
+                                            isTimeTable: false,
+                                          );
+
                                         if (_events[index] != null) {
                                           for (Event e in _events[index]) {
                                             if(type==1){
@@ -1441,64 +1477,64 @@ class _HomePageState extends State<HomePage> {
                                             if ((s2 <= s1 && s1 < e2) ||
                                                 (s2 < e1 && e1 <= e2) ||
                                                 (s1 <= s2 && e2 <= e1)) {
-                                              // print("case1");
-                                              // print(s2 <= s1 && s1 <= e2);
-                                              // print("case2");
-                                              // print(s2 < e1 && e1 <= e2);
-                                              // print("case3");
-                                              // print(s1 <= s2 && e2 <= e1);
 
                                               //hello
-                                              setState(() {
-                                                _eventAlert = true;
-                                                _eventAlertText =
-                                                "Conflict with ${e.event} @${time.format(e.start)}-${time.format(e.stop)}";
-                                              });
-                                              return;
+                                              // setState(() {
+                                              //   _eventAlert = true;
+                                              //   _eventAlertText =
+                                              //   "Conflict with ${e.event} @${time.format(e.start)}-${time.format(e.stop)}";
+                                              // });
+                                              // return;
+
+                                              //hey2
+                                              bool _check;
+                                              if(_replaceList[e]==null) {
+                                                if(!e.isTimeTable) {
+                                                  _check =await _showConflictDialog(false, 1, e, newE, "Conflict with ${e.event} @${datetime.format(e.start)}-${time.format(e.stop)}");
+                                                }else{
+                                                  _check=false;
+                                                  setState(() {
+                                                    _eventAlert = true;
+                                                    _eventAlertText =
+                                                    "Cannot replace subject from study timetable (${e.event} @${time.format(e.start)}-${time.format(e.stop)}), atomatically choose skip";
+                                                  });
+                                                }
+
+                                                if(!_check){
+                                                  return;
+                                                }else{
+                                                  _removeList.add(e);
+                                                }
+                                                // print("heyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+                                                // print(_check);
+
+                                              }
+
                                             }
                                             print(
                                                 "${e.event} ${time.format(e.start)}-${time.format(e.stop)}");
                                           }
                                         }
 
+                                        if(type==1) {
+                                          _events[index].remove(argEvent);
+                                        }
+                                        if (_events[index] != null) {
+                                          _events[index].add(newE);
+
+                                          _events[index].sort((a, b) {
+                                            var sa = a.start.hour * 60 + a.start.minute;
+                                            var sb = b.start.hour * 60 + b.start.minute;
+                                            return sa - sb;
+                                          });
+                                        } else {
+                                          _events[index] = [
+                                            newE
+                                          ];
+                                        }
+
                                         if(type==0) {
-                                          String id = uuid.v1();
-                                          if (_events[index] != null) {
-                                            _events[index].add(Event(
-                                              id: id,
-                                              event: _eventController.text
-                                                  .trim()
-                                                  .replaceAll(RegExp(" +"), " "),
-                                              start: _start,
-                                              stop: _stop,
-                                              cat: _catValue,
-                                              isTimeTable: false,
-                                            ));
-
-                                            _events[index].sort((a, b) {
-                                              var sa = a.start.hour * 60 + a.start.minute;
-                                              var sb = b.start.hour * 60 + b.start.minute;
-                                              return sa - sb;
-                                            });
-
-                                            print('[DB] Add new event to the day');
-                                          } else {
-                                            _events[index] = [
-                                              Event(
-                                                id: id,
-                                                event: _eventController.text
-                                                    .trim()
-                                                    .replaceAll(RegExp(" +"), " "),
-                                                start: _start,
-                                                stop: _stop,
-                                                cat: _catValue,
-                                                isTimeTable: false,
-                                              )
-                                            ];
-
-                                            print('[DB] Add first event to the day');
-                                          }
-
+                                          print('[DB] Add first event to the day');
                                           DatabaseService(uid: _userId).addEvent(
                                             id,
                                             _eventController.text
@@ -1511,41 +1547,6 @@ class _HomePageState extends State<HomePage> {
                                           );
                                         }
                                         else if(type==1) {
-                                          String id = argEvent.id;
-                                          _events[index].remove(argEvent);
-
-                                          if (_events[index] != null) {
-                                            _events[index].add(Event(
-                                              id: id,
-                                              event: _eventController.text
-                                                  .trim()
-                                                  .replaceAll(RegExp(" +"), " "),
-                                              start: _start,
-                                              stop: _stop,
-                                              cat: _catValue,
-                                              isTimeTable: false,
-                                            ));
-
-                                            _events[index].sort((a, b) {
-                                              var sa = a.start.hour * 60 + a.start.minute;
-                                              var sb = b.start.hour * 60 + b.start.minute;
-                                              return sa - sb;
-                                            });
-                                          } else {
-                                            _events[index] = [
-                                              Event(
-                                                id: id,
-                                                event: _eventController.text
-                                                    .trim()
-                                                    .replaceAll(RegExp(" +"), " "),
-                                                start: _start,
-                                                stop: _stop,
-                                                cat: _catValue,
-                                                isTimeTable: false,
-                                              )
-                                            ];
-                                          }
-
                                           print('[DB] Update event');
                                           DatabaseService(uid: _userId).updateEvent(
                                             id,
@@ -1564,6 +1565,16 @@ class _HomePageState extends State<HomePage> {
                                             _selectedEvents=_events[index];
                                           });
                                         }
+
+                                        if(_removeList!=null){
+                                          for(Event e in _removeList){
+                                            setState(() {
+                                              _events[index].remove(e);
+                                            });
+                                            DatabaseService(uid: _userId).removeEvent(e.id);
+                                          }
+                                        }
+
                                       }
 
                                       Navigator.pop(context, true);
@@ -1901,10 +1912,16 @@ class _HomePageState extends State<HomePage> {
                                                         icon:
                                                         Icon(Icons.delete, color: Colors.black, size: 18.0),
                                                         padding: const EdgeInsets.only(bottom: 50.0),
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            _addList.remove(value);
-                                                          });
+                                                        onPressed: () async {
+
+                                                          bool _check = await _deleteConfirmDialog("You are going to delete ${value.event} @${time.format(value.start)}-${time.format(value.stop)}. Are you sure?");
+
+                                                          if(_check) {
+                                                            setState(() {
+                                                              _addList.remove(value);
+                                                            });
+                                                          }
+
                                                         },
                                                       ),
                                                     ),
@@ -2343,8 +2360,8 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Future<void> _showConflictDialog(bool routine, int type, Event oldE, Event newE, String alert) async {
-    return showDialog<void>(
+  Future<bool> _showConflictDialog(bool routine, int type, Event oldE, Event newE, String alert) async {
+    return await showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
@@ -2384,17 +2401,10 @@ class _HomePageState extends State<HomePage> {
                             _eventAlertText = "";
                           });
                         }
-                        else if (!routine) {
-                          if (type == 2) {
 
-                            setState(() {
-                              _addList.remove(newE);
-                            });
+                        // Navigator.of(context).pop(false);
+                        Navigator.pop(context, false);
 
-                          }
-                        }
-
-                        Navigator.of(context).pop(false);
                       },
                       style: ElevatedButton.styleFrom(
                           minimumSize: Size(103, 30),
@@ -2416,7 +2426,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                     ElevatedButton(
                         onPressed: () {
-                          // _replaceList[e]=true;
                           _replaceList.putIfAbsent(oldE, () => true);
 
                           _eventController.clear();
@@ -2425,11 +2434,7 @@ class _HomePageState extends State<HomePage> {
                             _eventAlertText = "";
                           });
 
-                          if (!routine) {
-                            _removeList.add(oldE);
-                          }
-
-                          Navigator.of(context).pop(true);
+                          Navigator.pop(context, true);
                         },
                         style: ElevatedButton.styleFrom(
                             minimumSize: Size(103, 30),
@@ -2463,12 +2468,81 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void rebuildAllChildren(BuildContext context) {
-    void rebuild(Element el) {
-      el.markNeedsBuild();
-      el.visitChildren(rebuild);
-    }
-    (context as Element).visitChildren(rebuild);
+  Future<bool> _deleteConfirmDialog(String alert) async {
+    return await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Confirmation'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                // Opacity(
+                //   opacity: _eventAlert ? 1 : 0,
+                //   child:
+                Text(alert,
+                    style: GoogleFonts.mali(
+                      textStyle: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
+                    )),
+                // ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context, false);
+                      },
+                      style: ElevatedButton.styleFrom(
+                          minimumSize: Size(103, 30),
+                          primary: Colors.grey,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 30,
+                            vertical: 8,
+                          ),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(5.0))),
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                  ),
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context, true);
+                        },
+                        style: ElevatedButton.styleFrom(
+                            minimumSize: Size(103, 30),
+                            primary: Color(0xFFE17262),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 30,
+                              vertical: 8,
+                            ),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(5.0))),
+                        child: Text(
+                          'Apply',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
-
 }
