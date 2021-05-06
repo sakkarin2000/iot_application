@@ -81,7 +81,9 @@ class _HamburgerjaState extends State<Hamburgerja> {
                     decoration:
                         InputDecoration(labelText: ('Enter your email')),
                     validator: (value) {
-                      return "Please input an email";
+                      if (value.isEmpty) {
+                        return "Please input an email";
+                      }
                     },
                     onChanged: (value) {
                       setState(() {
@@ -122,6 +124,7 @@ class _HamburgerjaState extends State<Hamburgerja> {
                       auth.sendPasswordResetEmail(email: _email);
                       Navigator.of(context).pop();
                       print("Password was sent");
+                      openCheckEmail();
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -145,6 +148,30 @@ class _HamburgerjaState extends State<Hamburgerja> {
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  void openCheckEmail() {
+    showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: ListTile(
+          title: Center(
+            child: Text(
+              'Request Successful',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20.0),
+            child: Center(
+                child: Text("Please check the link in your email",
+                    style: TextStyle(fontSize: 15))),
+          )
         ],
       ),
     );
