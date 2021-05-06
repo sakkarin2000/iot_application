@@ -1094,9 +1094,27 @@ class _HomePageState extends State<HomePage> {
                                             //   "Conflict with ${e.event} @${datetime.format(e.start)}-${time.format(e.stop)}";
                                             // });
 
-                                            if(_replaceList[e]==null){
-                                              _showConflictDialog(false, e, "Conflict with ${e.event} @${datetime.format(e.start)}-${time.format(e.stop)}");
+                                            //hey
+
+                                            // if(_replaceList[e]==null){
+                                            //   _showConflictDialog(false, e, "Conflict with ${e.event} @${datetime.format(e.start)}-${time.format(e.stop)}");
+                                            // }
+
+                                            if(_replaceList[e]==null) {
+
+                                              if(!e.isTimeTable) {
+                                                _showConflictDialog(false, e, "Conflict with ${e.event} @${datetime.format(e.start)}-${time.format(e.stop)}");
+                                              }else{
+                                                _replaceList.putIfAbsent(e, () => false);
+                                                setState(() {
+                                                  _eventAlert = true;
+                                                  _eventAlertText =
+                                                  "Cannot replace subject from study timetable (${e.event} @${time.format(e.start)}-${time.format(e.stop)}), atomatically choose skip";
+                                                });
+                                              }
+
                                             }
+
                                           }
                                         }
                                       }
@@ -1116,20 +1134,28 @@ class _HomePageState extends State<HomePage> {
                                           ));
                                         });
 
+                                        if(_replaceList!=null){
+                                          _addList.removeLast();
+                                          _replaceList={};
+                                        }else {
+                                          _addList.sort((a, b) {
+                                            var mda = a.start.month * 31 +
+                                                a.start.day;
+                                            var mdb = b.start.month * 31 +
+                                                b.start.day;
 
-                                        _addList.sort((a, b) {
-                                          var mda = a.start.month * 31 + a.start.day;
-                                          var mdb = b.start.month * 31 + b.start.day;
+                                            var sa = a.start.hour * 60 +
+                                                a.start.minute;
+                                            var sb = b.start.hour * 60 +
+                                                b.start.minute;
 
-                                          var sa = a.start.hour * 60 + a.start.minute;
-                                          var sb = b.start.hour * 60 + b.start.minute;
-
-                                          if(mda==mdb){
-                                            return sa - sb;
-                                          }else{
-                                            return mda-mdb;
-                                          }
-                                        });
+                                            if (mda == mdb) {
+                                              return sa - sb;
+                                            } else {
+                                              return mda - mdb;
+                                            }
+                                          });
+                                        }
                                       } else {
                                         setState(() {
                                           _addList = [
@@ -1145,7 +1171,14 @@ class _HomePageState extends State<HomePage> {
                                             )
                                           ];
                                         });
+
+                                        if(_replaceList!=null){
+                                          _addList.removeLast();
+                                          _replaceList={};
+                                        }
+
                                       }
+
                                     },
                                     color: Colors.blue,
                                     textColor: Colors.white,
@@ -1251,11 +1284,14 @@ class _HomePageState extends State<HomePage> {
                                                 // });
 
 
-                                                if(_replaceList!=null){
-                                                  if(_replaceList[e]){
-                                                    _removeList.add(e);
-                                                  }
-                                                }
+                                                // if(_replaceList!=null){
+                                                //   if(_replaceList[e]){
+                                                //     _removeList.add(e);
+                                                //   }
+                                                // }
+
+                                                //hello world
+
                                               }
                                               print(
                                                   "${e.event} ${datetime.format(e.start)}-${time.format(e.stop)}");
@@ -2365,13 +2401,18 @@ class _HomePageState extends State<HomePage> {
                         onPressed: () {
 
                           // _replaceList[e]=true;
-                          _replaceList.putIfAbsent(e, () => true);
+                            _replaceList.putIfAbsent(e, () => true);
 
-                          _eventController.clear();
-                          setState(() {
-                            _eventAlert = false;
-                            _eventAlertText = "";
-                          });
+                            _eventController.clear();
+                            setState(() {
+                              _eventAlert = false;
+                              _eventAlertText = "";
+                            });
+
+                            if(!routine){
+                            _removeList.add(e);
+                            }
+
 
                           Navigator.of(context).pop(true);
                         },
