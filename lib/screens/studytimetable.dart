@@ -1207,7 +1207,7 @@ class _StudyTimetableState extends State<StudyTimetable> {
                         Text("Warning",
                             style: GoogleFonts.mali(
                               textStyle: TextStyle(
-                                color: Colors.red,
+                                color: Colors.black,
                                 fontWeight: FontWeight.w700,
                                 fontSize: 20,
                               ),
@@ -1218,7 +1218,7 @@ class _StudyTimetableState extends State<StudyTimetable> {
                               "All subject events will permanently be deleted! ",
                               style: GoogleFonts.mali(
                                 textStyle: TextStyle(
-                                  color: Colors.black,
+                                  color: Colors.red,
                                   fontWeight: FontWeight.w500,
                                   fontSize: 16,
                                 ),
