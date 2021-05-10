@@ -111,6 +111,21 @@ class DatabaseService {
             });
   }
 
+  Future removeSubject(String id) async {
+    return await eventCollection
+        .doc(uid)
+        .collection('mysubject')
+        .doc(id)
+        .delete()
+        .then((e) => {
+              print('Document Removed $id'),
+              print(id),
+            })
+        .catchError((e) => {
+              print('Error removing document: ' + e),
+            });
+  }
+
   List<Event> _eventListFromSnapshot(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) {
       return Event(

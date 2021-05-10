@@ -21,6 +21,7 @@ class _StudyTimetableState extends State<StudyTimetable> {
   TextEditingController _eventController;
   TextEditingController _repeatController;
   DateTime _start = DateTime.now();
+  List<Event> myEventListForDelete;
   DateTime _stop = DateTime.now();
   DateTime startSemester = DateTime.now();
   DateTime endSemester = DateTime.now();
@@ -72,7 +73,7 @@ class _StudyTimetableState extends State<StudyTimetable> {
       "Friday": [],
       "Saturday": [],
     };
-    _startDate=startSemester;
+    _startDate = startSemester;
   }
 
   String _userId;
@@ -171,6 +172,27 @@ class _StudyTimetableState extends State<StudyTimetable> {
             var sb = b.start.hour * 60 + b.start.minute;
             return sa - sb;
           });
+        });
+      });
+    });
+    print('_userId $_userId');
+  }
+
+  Future<void> getEventList() async {
+    print('getEventList has been called');
+    await Firebase.initializeApp().then((value) async {
+      FirebaseAuth.instance.authStateChanges().listen((event) async {
+        setState(() {
+          this._userId = event.uid;
+        });
+        List<Event> eventlist = await DatabaseService(uid: event.uid).myEventNa;
+        setState(() {
+          myEventListForDelete = eventlist;
+        });
+        print('Here iss jaaa ');
+        myEventListForDelete.forEach((myEvent) {
+          print(
+              'EventName : ${myEvent.event} StartTime : ${myEvent.start} EndTime : ${myEvent.stop}');
         });
       });
     });
@@ -408,14 +430,10 @@ class _StudyTimetableState extends State<StudyTimetable> {
                                                                 color: Colors
                                                                     .black),
                                                             onPressed: () {
-                                                              setState(() {
-                                                                weekMap[DateFormat(
-                                                                            'EEEE')
-                                                                        .format(value
-                                                                            .start)]
-                                                                    .remove(
-                                                                        value);
-                                                              });
+                                                              getEventList();
+                                                              _showRemoveSubjectDialog(
+                                                                  value);
+
                                                               if (modifyMap[
                                                                       value] !=
                                                                   null) {
@@ -688,7 +706,7 @@ class _StudyTimetableState extends State<StudyTimetable> {
                                                 setState(() {
                                                   _eventAlert = false;
                                                   _eventAlertText = "";
-                                                  _stop=dateTime;
+                                                  _stop = dateTime;
                                                   // _stop = new DateTime(
                                                   //   _start.year,
                                                   //   _start.month,
@@ -781,7 +799,8 @@ class _StudyTimetableState extends State<StudyTimetable> {
                                 print("Subject name cannot be blank");
                                 setState(() {
                                   _eventAlert = true;
-                                  _eventAlertText = "Subject name cannot be blank";
+                                  _eventAlertText =
+                                      "Subject name cannot be blank";
                                 });
                                 return;
                               }
@@ -820,7 +839,8 @@ class _StudyTimetableState extends State<StudyTimetable> {
                                 print("Stop time must be after Start time");
                                 setState(() {
                                   _eventAlert = true;
-                                  _eventAlertText = "Stop time must be after Start time";
+                                  _eventAlertText =
+                                      "Stop time must be after Start time";
                                 });
                                 return;
                               }
@@ -1158,6 +1178,142 @@ class _StudyTimetableState extends State<StudyTimetable> {
     String day = DateFormat('EEEE').format(_start);
     setState(() {
       weekMap[day] = weekMap[day];
+    });
+  }
+
+  _showRemoveSubjectDialog(Event value) async {
+    await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+                // title: Center(child:Text(type==0? "Add Event":"Edit Event")),
+                content: Container(
+              width: 700.0,
+              height: 150.0,
+              decoration: new BoxDecoration(
+                shape: BoxShape.rectangle,
+                color: const Color(0xFFFFFF),
+                borderRadius: new BorderRadius.all(new Radius.circular(32.0)),
+              ),
+              child: SingleChildScrollView(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                    Center(
+                        child: Column(
+                      children: [
+                        Text("Warning",
+                            style: GoogleFonts.mali(
+                              textStyle: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 20,
+                              ),
+                            )),
+                        Container(
+                          padding: EdgeInsets.only(top: 10, bottom: 20),
+                          child: Text(
+                              "All subject events will permanently be deleted! ",
+                              style: GoogleFonts.mali(
+                                textStyle: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                ),
+                              )),
+                        ),
+                      ],
+                    )),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context, false);
+
+                              print(weekMap[
+                                  DateFormat('EEEE').format(value.start)]);
+                            },
+                            style: ElevatedButton.styleFrom(
+                                minimumSize: Size(103, 30),
+                                primary: Colors.grey,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 30,
+                                  vertical: 8,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        new BorderRadius.circular(5.0))),
+                            child: Text(
+                              'Cancel',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )),
+                        ElevatedButton(
+                            onPressed: () {
+                              for (Event e in weekMap[
+                                  DateFormat('EEEE').format(value.start)]) {
+                                print(e.id);
+                                myEventListForDelete.forEach((myEvent) {
+                                  var i = 0;
+                                  print(
+                                      'EventName : ${myEvent.event} StartTime : ${myEvent.start} EndTime : ${myEvent.stop}');
+
+                                  if (myEvent.event.toString() ==
+                                      e.event.toString()) {
+                                    print('match $i');
+                                    DatabaseService(uid: _userId)
+                                        .removeEvent(myEvent.id);
+                                  }
+                                });
+                                DatabaseService(uid: _userId)
+                                    .removeSubject(e.id);
+                              }
+                              setState(() {
+                                weekMap[DateFormat('EEEE').format(value.start)]
+                                    .remove(value);
+                              });
+                              Navigator.pop(context, true);
+                            },
+                            style: ElevatedButton.styleFrom(
+                                minimumSize: Size(103, 30),
+                                primary: Color(0xFFE17262),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 30,
+                                  vertical: 8,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        new BorderRadius.circular(5.0))),
+                            child: Text(
+                              'Delete',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )),
+                      ],
+                    )
+                  ])),
+              // actions:
+            ));
+          });
+        }).then((event) {
+      if (event == null) return;
+      if (event) {
+      } else {}
+    });
+
+    // _events[_controller.selectedDay] = _selectedEvents;
+    setState(() {
+      weekMap[DateFormat('EEEE').format(value.start)] =
+          weekMap[DateFormat('EEEE').format(value.start)];
     });
   }
 }
