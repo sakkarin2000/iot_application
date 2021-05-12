@@ -767,7 +767,7 @@ class _HomePageState extends State<HomePage> {
                                         shape: RoundedRectangleBorder(
                                             borderRadius: new BorderRadius.circular(15))),
                                     child: Text(
-                                      _addMore? 'Back' : 'Add More Events',
+                                      _addMore? 'Back' : 'Add Many Events',
                                       style: TextStyle(
                                         color: Colors.grey[800],
                                         fontSize: 14,
@@ -1818,7 +1818,7 @@ class _HomePageState extends State<HomePage> {
                                         color: Colors.black
                                     ),
                                     decoration: InputDecoration(
-                                      labelText: "Repeat", hintText: "In weeks",
+                                      labelText: "Weekly Repeat", hintText: "Weeks",
                                       counterText: '',
                                       isDense: true,
                                       contentPadding: EdgeInsets.all(2),
